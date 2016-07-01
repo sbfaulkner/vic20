@@ -1,4 +1,5 @@
 require 'vic20/version'
+require 'vic20/memory'
 require 'vic20/nmos6502'
 
 module Vic20
