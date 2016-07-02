@@ -1,21 +1,23 @@
 require 'spec_helper'
 
-describe Vic20::NMOS6502::Processor do
+describe Vic20::Processor do
+  subject { described_class.new([]) }
+
   describe 'registers' do
     it 'has an 8-bit accumulator' do
-      expect(subject.a).to be_a(Vic20::NMOS6502::Register)
+      expect(subject.a).to be_a(Vic20::Register)
     end
 
     it 'has an 8-bit x index register' do
-      expect(subject.x).to be_a(Vic20::NMOS6502::Register)
+      expect(subject.x).to be_a(Vic20::Register)
     end
 
     it 'has an 8-bit y index register' do
-      expect(subject.y).to be_a(Vic20::NMOS6502::Register)
+      expect(subject.y).to be_a(Vic20::Register)
     end
 
     it 'has 7 processor status flag bits' do
-      expect(subject.p).to be_a(Vic20::NMOS6502::Register)
+      expect(subject.p).to be_a(Vic20::Register)
     end
 
     describe 'processor status flag bits' do
@@ -49,11 +51,11 @@ describe Vic20::NMOS6502::Processor do
     end
 
     it 'has an 8-bit stack pointer' do
-      expect(subject.s).to be_a(Vic20::NMOS6502::Register)
+      expect(subject.s).to be_a(Vic20::Register)
     end
 
     it 'has a 16-bite program counter' do
-      expect(subject.pc).to be_a(Vic20::NMOS6502::Register)
+      expect(subject.pc).to be_a(Vic20::Register)
     end
   end
 end

@@ -2,11 +2,7 @@ require 'spec_helper'
 
 describe Vic20::Memory do
   describe 'firmware' do
-    let(:rom) { subject.memory[address, size] }
-
-    before do
-      subject.load_firmware
-    end
+    let(:rom) { subject[address, size] }
 
     RSpec::Matchers.define_negated_matcher :be_present, :be_nil
 
