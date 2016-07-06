@@ -79,7 +79,7 @@ module Vic20
       0x39 => { method: :and, addressing_mode: :absolute_y,  bytes: 3, cycles: 4 },
       0x3D => { method: :and, addressing_mode: :absolute_x,  bytes: 3, cycles: 4 },
       0x3E => { method: :rol, addressing_mode: :absolute_x,  bytes: 3, cycles: 7 },
-      0x40 => { method: :rti, addressing_mode: :implied,     bytes: 3, cycles: 6 },
+      0x40 => { method: :rti, addressing_mode: :implied,     bytes: 1, cycles: 6 },
       0x41 => { method: :eor, addressing_mode: :indirect_x,  bytes: 2, cycles: 6 },
       0x45 => { method: :eor, addressing_mode: :zero_page,   bytes: 2, cycles: 3 },
       0x46 => { method: :lsr, addressing_mode: :zero_page,   bytes: 2, cycles: 5 },
@@ -195,23 +195,30 @@ module Vic20
       0xFE => { method: :inc, addressing_mode: :absolute_x,  bytes: 3, cycles: 7 },
     }.freeze
 
+    def current_flags
+      %w(C Z I D B V N).collect { |flag| send("#{flag.downcase}?") ? flag : '.' }.join
+    end
+
+    def current_state
+      format('A=%02X X=%02X Y=%02X P=%s S=%02X PC=%04X', a, x, y, current_flags, s, pc)
+    end
+
     def each
-      while opcode = @memory[pc]
+      address = pc
+      while opcode = @memory[address]
         raise "invalid opcode (#{opcode})" unless instruction = INSTRUCTIONS[opcode]
         count = instruction[:bytes]
-        address = pc
-        self.pc += count
         yield instruction[:method], instruction[:addressing_mode], *@memory[address + 1, count - 1]
+        address += count
       end
     end
 
+    # STDERR.printf '%04X: %02X', pc, opcode
+    # @memory[pc + 1, count - 1].each { |data| STDERR.printf ' %02X', data }
+    # STDERR.puts
+
     def inspect
-      flags = %w(C Z I D B V N).collect { |flag| send("#{flag.downcase}?") ? flag : '.' }.join
-      format(
-        '#<%s:0x%014x A=%02X X=%02X Y=%02X P=%s S=%02X PC=%04X>',
-        self.class.name, object_id << 1,
-        a, x, y, flags, s, pc
-      )
+      format('#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state)
     end
   end
 end

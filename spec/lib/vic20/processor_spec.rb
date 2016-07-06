@@ -90,10 +90,11 @@ describe Vic20::Processor do
       )
     end
 
-    it 'advances the program counter' do
-      subject.pc = 0x0600
+    it 'does not advance the program counter' do
+      pc = 0x0600
+      subject.pc = pc
       subject.each {}
-      expect(subject.pc).to eq(0x0613)
+      expect(subject.pc).to eq(pc)
     end
   end
 end

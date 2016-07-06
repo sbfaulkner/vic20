@@ -1,22 +1,36 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
+require 'pry'
 require 'vic20'
-
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
-
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require 'pry'
-# Pry.start
 
 memory = Vic20::Memory.new
 processor = Vic20::Processor.new(memory)
 processor.pc = memory.word_at(0xC000)
 
-require 'irb'
-IRB.setup nil
-IRB.conf[:IRB_NAME] = 'vic20'
-IRB.conf[:MAIN_CONTEXT] = IRB::Irb.new.context
-require 'irb/ext/multi-irb'
-IRB.irb nil, processor
+# def dasm
+#   each do |method, addressing_mode, *args|
+#     puts "#{method.upcase} #{args.inspect} (#{addressing_mode})"
+#   end
+# end
+
+Pry.commands.block_command 'dasm' do
+  processor.each do |method, addressing_mode, *args|
+    case addressing_mode
+    when :implied
+      puts method.upcase
+    else
+      puts "#{method.upcase} #{args.inspect} (#{addressing_mode})"
+    end
+  end
+end
+
+processor.pry prompt: [proc { "#{processor.current_state} > " }, proc { ' | ' }]
+
+# require 'irb'
+# IRB.setup nil
+# IRB.conf[:IRB_NAME] = 'vic20'
+# IRB.conf[:MAIN_CONTEXT] = IRB::Irb.new.context
+# # IRB.conf[:PROMPT] = ">"
+# require 'irb/ext/multi-irb'
+# IRB.irb nil, processor
