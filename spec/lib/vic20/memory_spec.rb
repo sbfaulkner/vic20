@@ -44,5 +44,11 @@ describe Vic20::Memory do
         expect(rom.size).to eq(size)
       end
     end
+
+    describe '#word_at' do
+      it 'returns the Basic cold start address' do
+        expect(subject.word_at(0xC000)).to eq(0xE378)
+      end
+    end
   end
 end

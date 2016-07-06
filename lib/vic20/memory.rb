@@ -25,5 +25,9 @@ module Vic20
         end
       end
     end
+
+    def word_at(address)
+      self[address] + 256 * self[address + 1]
+    end
   end
 end
