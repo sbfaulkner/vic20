@@ -204,18 +204,14 @@ module Vic20
     end
 
     def each
-      address = pc
-      while opcode = @memory[address]
+      while opcode = @memory[pc]
         raise "invalid opcode (#{opcode})" unless instruction = INSTRUCTIONS[opcode]
         count = instruction[:bytes]
-        yield instruction[:method], instruction[:addressing_mode], *@memory[address + 1, count - 1]
-        address += count
+        address = pc
+        self.pc += count
+        yield address, instruction[:method], instruction[:addressing_mode], *@memory[address + 1, count - 1]
       end
     end
-
-    # STDERR.printf '%04X: %02X', pc, opcode
-    # @memory[pc + 1, count - 1].each { |data| STDERR.printf ' %02X', data }
-    # STDERR.puts
 
     def inspect
       format('#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state)

@@ -77,24 +77,23 @@ describe Vic20::Processor do
     it 'yields the instructions' do
       subject.pc = 0x0600
       expect { |b| subject.each(&b) }.to yield_successive_args(
-        [:jsr, :absolute, 0x09, 0x06],
-        [:jsr, :absolute, 12, 6],
-        [:jsr, :absolute, 18, 6],
-        [:ldx, :immediate, 0],
-        [:rts, :implied],
-        [:inx, :implied],
-        [:cpx, :immediate, 5],
-        [:bne, :relative, 251],
-        [:rts, :implied],
-        [:brk, :implied]
+        [0x0600, :jsr, :absolute, 0x09, 0x06],
+        [0x0603, :jsr, :absolute, 12, 6],
+        [0x0606, :jsr, :absolute, 18, 6],
+        [0x0609, :ldx, :immediate, 0],
+        [0x060b, :rts, :implied],
+        [0x060c, :inx, :implied],
+        [0x060d, :cpx, :immediate, 5],
+        [0x060f, :bne, :relative, 251],
+        [0x0611, :rts, :implied],
+        [0x0612, :brk, :implied]
       )
     end
 
-    it 'does not advance the program counter' do
-      pc = 0x0600
-      subject.pc = pc
+    it 'advances the program counter' do
+      subject.pc = 0x0600
       subject.each {}
-      expect(subject.pc).to eq(pc)
+      expect(subject.pc).to eq(0x0613)
     end
   end
 end

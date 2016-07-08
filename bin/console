@@ -15,13 +15,35 @@ processor.pc = memory.word_at(0xC000)
 # end
 
 Pry.commands.block_command 'dasm' do
-  processor.each do |method, addressing_mode, *args|
+  processor.each do |address, method, addressing_mode, *args|
+    printf "%04X  #{method.upcase}", address
+
     case addressing_mode
+    when :absolute
+      printf ' $%04X', args[0] + args[1] * 256
+    when :absolute_x
+      printf ' $%04X,X', args[0] + args[1] * 256
+    when :absolute_y
+      printf ' $%04X,Y', args[0] + args[1] * 256
+    when :immediate
+      printf ' #$%02X', args[0]
     when :implied
-      puts method.upcase
+    when :indirect
+      printf ' ($%04X)', args[0] + args[1] * 256
+    when :indirect_x
+      printf ' ($%02X,X)', args[0]
+    when :indirect_y
+      printf ' ($%02X),Y', args[0]
+    when :zero_page, :relative
+      printf ' $%02X', args[0]
+    when :zero_page_x
+      printf ' $%02X,X', args[0]
+    when :zero_page_y
+      printf ' $%02X,Y', args[0]
     else
-      puts "#{method.upcase} #{args.inspect} (#{addressing_mode})"
+      raise "Unknown addressing mode (#{addressing_mode.inspect})"
     end
+    puts
   end
 end
 
