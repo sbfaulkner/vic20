@@ -216,7 +216,7 @@ module Vic20
         count = instruction[:bytes]
         address = pc
         self.pc += count
-        yield address, instruction[:method], instruction[:addressing_mode], *@memory[address + 1, count - 1]
+        yield address, instruction[:method], instruction[:addressing_mode], *@memory[address, count]
       end
     end
 

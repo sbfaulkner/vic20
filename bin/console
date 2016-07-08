@@ -4,57 +4,51 @@ require 'bundler/setup'
 require 'pry'
 require 'vic20'
 
-memory = Vic20::Memory.new
-processor = Vic20::Processor.new(memory)
+processor = Vic20::Processor.new(Vic20::Memory.new)
 processor.pc = memory.word_at(0xC000)
 
-# def dasm
-#   each do |method, addressing_mode, *args|
-#     puts "#{method.upcase} #{args.inspect} (#{addressing_mode})"
-#   end
-# end
-
 Pry.commands.block_command 'dasm' do
-  processor.each do |address, method, addressing_mode, *args|
-    printf "%04X  #{method.upcase}", address
+  processor.each do |address, method, addressing_mode, *memory|
+    printf '%04X  %02X ', address, memory[0]
+
+    case addressing_mode
+    when :accumulator, :implied
+      print '     '
+    when :immediate, :indirect_x, :indirect_y, :relative, :zero_page, :zero_page_x, :zero_page_y
+      printf '%02X   ', memory[1]
+    when :absolute, :absolute_x, :absolute_y, :indirect
+      printf '%02X %02X', memory[1], memory[2]
+    end
+
+    printf "  ; #{method.upcase}"
 
     case addressing_mode
     when :absolute
-      printf ' $%04X', args[0] + args[1] * 256
+      printf ' $%04X', memory[1] + memory[2] * 256
     when :absolute_x
-      printf ' $%04X,X', args[0] + args[1] * 256
+      printf ' $%04X,X', memory[1] + memory[2] * 256
     when :absolute_y
-      printf ' $%04X,Y', args[0] + args[1] * 256
+      printf ' $%04X,Y', memory[1] + memory[2] * 256
     when :accumulator
       printf ' A'
     when :immediate
-      printf ' #$%02X', args[0]
+      printf ' #$%02X', memory[1]
     when :implied
     when :indirect
-      printf ' ($%04X)', args[0] + args[1] * 256
+      printf ' ($%04X)', memory[1] + memory[2] * 256
     when :indirect_x
-      printf ' ($%02X,X)', args[0]
+      printf ' ($%02X,X)', memory[1]
     when :indirect_y
-      printf ' ($%02X),Y', args[0]
-    when :zero_page, :relative
-      printf ' $%02X', args[0]
+      printf ' ($%02X),Y', memory[1]
+    when :relative, :zero_page
+      printf ' $%02X', memory[1]
     when :zero_page_x
-      printf ' $%02X,X', args[0]
+      printf ' $%02X,X', memory[1]
     when :zero_page_y
-      printf ' $%02X,Y', args[0]
-    else
-      raise "Unknown addressing mode (#{addressing_mode.inspect})"
+      printf ' $%02X,Y', memory[1]
     end
     puts
   end
 end
 
 processor.pry prompt: [proc { "#{processor.current_state} > " }, proc { ' | ' }]
-
-# require 'irb'
-# IRB.setup nil
-# IRB.conf[:IRB_NAME] = 'vic20'
-# IRB.conf[:MAIN_CONTEXT] = IRB::Irb.new.context
-# # IRB.conf[:PROMPT] = ">"
-# require 'irb/ext/multi-irb'
-# IRB.irb nil, processor

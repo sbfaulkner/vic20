@@ -77,16 +77,16 @@ describe Vic20::Processor do
     it 'yields the instructions' do
       subject.pc = 0x0600
       expect { |b| subject.each(&b) }.to yield_successive_args(
-        [0x0600, :jsr, :absolute, 0x09, 0x06],
-        [0x0603, :jsr, :absolute, 12, 6],
-        [0x0606, :jsr, :absolute, 18, 6],
-        [0x0609, :ldx, :immediate, 0],
-        [0x060b, :rts, :implied],
-        [0x060c, :inx, :implied],
-        [0x060d, :cpx, :immediate, 5],
-        [0x060f, :bne, :relative, 251],
-        [0x0611, :rts, :implied],
-        [0x0612, :brk, :implied]
+        [0x0600, :jsr, :absolute, 0x20, 0x09, 0x06],
+        [0x0603, :jsr, :absolute, 0x20, 0x0c, 0x06],
+        [0x0606, :jsr, :absolute, 0x20, 0x12, 0x06],
+        [0x0609, :ldx, :immediate, 0xa2, 0x00],
+        [0x060b, :rts, :implied, 0x60],
+        [0x060c, :inx, :implied, 0xe8],
+        [0x060d, :cpx, :immediate, 0xe0, 0x05],
+        [0x060f, :bne, :relative, 0xd0, 0xfb],
+        [0x0611, :rts, :implied, 0x60],
+        [0x0612, :brk, :implied, 0x00]
       )
     end
 
