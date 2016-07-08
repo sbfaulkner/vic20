@@ -25,6 +25,8 @@ Pry.commands.block_command 'dasm' do
       printf ' $%04X,X', args[0] + args[1] * 256
     when :absolute_y
       printf ' $%04X,Y', args[0] + args[1] * 256
+    when :accumulator
+      printf ' A'
     when :immediate
       printf ' #$%02X', args[0]
     when :implied

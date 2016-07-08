@@ -195,6 +195,13 @@ module Vic20
       0xFE => { method: :inc, addressing_mode: :absolute_x,  bytes: 3, cycles: 7 },
     }.freeze
 
+    UNKNOWN_INSTRUCTION = {
+      method: '???',
+      addressing_mode: :implied,
+      bytes: 1,
+      cycles: 0,
+    }.freeze
+
     def current_flags
       %w(C Z I D B V N).collect { |flag| send("#{flag.downcase}?") ? flag : '.' }.join
     end
@@ -205,7 +212,7 @@ module Vic20
 
     def each
       while opcode = @memory[pc]
-        raise "invalid opcode (#{opcode})" unless instruction = INSTRUCTIONS[opcode]
+        instruction = INSTRUCTIONS[opcode] || UNKNOWN_INSTRUCTION
         count = instruction[:bytes]
         address = pc
         self.pc += count
