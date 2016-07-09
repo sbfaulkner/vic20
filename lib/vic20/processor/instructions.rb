@@ -43,6 +43,12 @@ module Vic20
 
         self.p |= I_FLAG
       end
+
+      def txs(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.s = x
+      end
     end
   end
 end

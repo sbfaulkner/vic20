@@ -28,4 +28,16 @@ describe Vic20::Processor do
       expect(subject.i?).to be_truthy
     end
   end
+
+  describe '#txs' do
+    before do
+      subject.s = 0x00
+      subject.x = 0xbf
+    end
+
+    it 'transfers x-index register to stack pointer' do
+      subject.txs(:implied, [0x9a])
+      expect(subject.s).to eq(subject.x)
+    end
+  end
 end
