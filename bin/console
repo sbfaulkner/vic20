@@ -4,51 +4,50 @@ require 'bundler/setup'
 require 'pry'
 require 'vic20'
 
-processor = Vic20::Processor.new(Vic20::Memory.new)
+memory = Vic20::Memory.new
+processor = Vic20::Processor.new(memory)
 processor.pc = memory.word_at(0xC000)
 
-Pry.commands.block_command 'dasm' do
-  processor.each do |address, method, addressing_mode, *memory|
-    printf '%04X  %02X ', address, memory[0]
+commands = Pry::CommandSet.new do
+  import_from Pry::Commands, 'help'
 
-    case addressing_mode
-    when :accumulator, :implied
-      print '     '
-    when :immediate, :indirect_x, :indirect_y, :relative, :zero_page, :zero_page_x, :zero_page_y
-      printf '%02X   ', memory[1]
-    when :absolute, :absolute_x, :absolute_y, :indirect
-      printf '%02X %02X', memory[1], memory[2]
+  create_command 'dasm' do
+    group '6502'
+    description 'Disassemble instructions at current program counter: dasm'
+
+    def setup
+      @processor = target.receiver
     end
 
-    printf "  ; #{method.upcase}"
+    def process
+      initial_pc = @processor.pc
 
-    case addressing_mode
-    when :absolute
-      printf ' $%04X', memory[1] + memory[2] * 256
-    when :absolute_x
-      printf ' $%04X,X', memory[1] + memory[2] * 256
-    when :absolute_y
-      printf ' $%04X,Y', memory[1] + memory[2] * 256
-    when :accumulator
-      printf ' A'
-    when :immediate
-      printf ' #$%02X', memory[1]
-    when :implied
-    when :indirect
-      printf ' ($%04X)', memory[1] + memory[2] * 256
-    when :indirect_x
-      printf ' ($%02X,X)', memory[1]
-    when :indirect_y
-      printf ' ($%02X),Y', memory[1]
-    when :relative, :zero_page
-      printf ' $%02X', memory[1]
-    when :zero_page_x
-      printf ' $%02X,X', memory[1]
-    when :zero_page_y
-      printf ' $%02X,Y', memory[1]
+      @processor.each do |address, method, addressing_mode, *bytes|
+        print_instruction(address, method, addressing_mode, *bytes)
+      end
+
+    ensure
+      @processor.pc = initial_pc
     end
-    puts
+
+    private
+
+    def format_assembly(method, addressing_mode, *bytes)
+      format = Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format]
+      operand = bytes[1..-1].reverse.inject { |a, e| a * 256 + e }
+      format("; #{method.upcase} #{format}", operand)
+    end
+
+    def print_instruction(address, method, addressing_mode, *bytes)
+      text = [
+        format('%04X', address),
+        bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
+        format_assembly(method, addressing_mode, *bytes),
+      ].join('  ')
+
+      output.puts text
+    end
   end
 end
 
-processor.pry prompt: [proc { "#{processor.current_state} > " }, proc { ' | ' }]
+processor.pry commands: commands, prompt: [proc { "#{processor.current_state} > " }, proc { ' | ' }]
