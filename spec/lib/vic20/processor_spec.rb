@@ -102,7 +102,7 @@ describe Vic20::Processor do
     let(:byte) { 0xbf }
 
     before do
-      subject.memory[0x100 + top] = byte
+      memory[0x100 + top] = byte
       subject.s = top - 1
     end
 
@@ -126,7 +126,7 @@ describe Vic20::Processor do
 
     it 'stores a byte at the offset of the current stack pointer' do
       subject.push byte
-      expect(subject.memory[0x100 + top]).to eq(byte)
+      expect(memory[0x100 + top]).to eq(byte)
     end
 
     it 'decrements the stack pointer' do

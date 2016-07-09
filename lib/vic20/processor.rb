@@ -2,6 +2,8 @@ require_relative 'register'
 
 module Vic20
   class Processor
+    STACK_PAGE    = 0x0100
+
     NMI_VECTOR    = 0xFFFA
     RESET_VECTOR  = 0xFFFC
     IRQ_VECTOR    = 0xFFFE
@@ -260,9 +262,13 @@ module Vic20
     end
 
     def pop
+      self.s += 1
+      @memory[STACK_PAGE + s]
     end
 
     def push(byte)
+      @memory[STACK_PAGE + s] = byte
+      self.s -= 1
     end
 
     def reset
