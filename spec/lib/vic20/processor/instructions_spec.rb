@@ -15,6 +15,26 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#lda' do
+    let(:address) { 0xfd4c }
+    let(:a0cbm) { ['A'.ord, '0'.ord, 0xc3, 0xc2, 0xcd] }
+    let(:value) { a0cbm[4] }
+
+    before do
+      subject.x = 0x05
+      memory[address + 1, 5] = a0cbm
+    end
+
+    it 'should affect the N & Z flags'
+
+    context 'with absolute,x addressing mode' do
+      it 'sets the accumulator to the value' do
+        subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
+        expect(subject.a).to eq(value)
+      end
+    end
+  end
+
   describe '#ldx' do
     let(:value) { 0xff }
 

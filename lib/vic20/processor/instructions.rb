@@ -39,6 +39,12 @@ module Vic20
         self.pc = self.class.extract_operand(bytes)
       end
 
+      def lda(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute_x
+
+        self.a = @memory[self.class.extract_operand(bytes) + x]
+      end
+
       def ldx(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
 
