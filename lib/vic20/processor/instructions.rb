@@ -26,6 +26,12 @@ module Vic20
         end
       end
 
+      def cld(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p &= ~D_FLAG
+      end
+
       def jsr(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 
