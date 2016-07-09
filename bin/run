@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'vic20'
+
+memory = Vic20::Memory.new
+processor = Vic20::Processor.new(memory)
+
+processor.reset
+
+def format_assembly(method, addressing_mode, bytes)
+  "; #{method.upcase} #{Vic20::Processor.format_operand(addressing_mode, bytes)}"
+end
+
+def format_instruction(address, method, addressing_mode, bytes)
+  [
+    format('%04X', address),
+    bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
+    format_assembly(method, addressing_mode, bytes),
+  ].join('  ')
+end
+
+processor.each do |address, method, addressing_mode, bytes|
+  puts format_instruction(address, method, addressing_mode, bytes)
+  processor.send(method, addressing_mode, bytes)
+end
