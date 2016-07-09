@@ -22,6 +22,8 @@ describe Vic20::Processor do
       subject.x = 0x00
     end
 
+    it 'should affect the N & Z flags'
+
     context 'with immediate addressing mode' do
       it 'sets the x index register to the value' do
         subject.ldx(:immediate, [0xa2, value])
