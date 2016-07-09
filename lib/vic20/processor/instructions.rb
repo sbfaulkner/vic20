@@ -35,7 +35,8 @@ module Vic20
       def jsr(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 
-        raise "JSR #{self.class.extract_operand(bytes)}"
+        push_word pc - 1
+        self.pc = self.class.extract_operand(bytes)
       end
 
       def ldx(addressing_mode, bytes)

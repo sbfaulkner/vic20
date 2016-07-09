@@ -29,6 +29,24 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#jsr' do
+    let(:pc) { 0xbeef }
+    before do
+      subject.s = 0xff
+      subject.pc = pc
+    end
+
+    it 'pushes address-1 to the stack' do
+      subject.jsr(:absolute, [0x20, 0xad, 0xde])
+      expect(word_at(0x01fe)).to eq(pc - 1)
+    end
+
+    it 'jumps to the specified address' do
+      subject.jsr(:absolute, [0x20, 0xad, 0xde])
+      expect(subject.pc).to eq(0xdead)
+    end
+  end
+
   describe '#sei' do
     before do
       subject.p = 0x00
@@ -50,5 +68,11 @@ describe Vic20::Processor do
       subject.txs(:implied, [0x9a])
       expect(subject.s).to eq(subject.x)
     end
+  end
+
+  private
+
+  def word_at(address)
+    memory[address] | memory[address + 1] << 8
   end
 end
