@@ -27,21 +27,21 @@ module Vic20
       end
 
       def jsr(addressing_mode, bytes)
-        case addressing_mode
-        when :absolute
-          raise "JSR #{self.class.extract_operand(bytes)}"
-        else
-          raise UnsupportedAddressingMode, addressing_mode
-        end
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
+
+        raise "JSR #{self.class.extract_operand(bytes)}"
       end
 
       def ldx(addressing_mode, bytes)
-        case addressing_mode
-        when :immediate
-          self.x = self.class.extract_operand(bytes)
-        else
-          raise UnsupportedAddressingMode, addressing_mode
-        end
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+
+        self.x = self.class.extract_operand(bytes)
+      end
+
+      def sei(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p |= I_FLAG
       end
     end
   end
