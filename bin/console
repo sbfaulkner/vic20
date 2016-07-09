@@ -35,9 +35,15 @@ commands = Pry::CommandSet.new do
     description 'Execute single instruction at current program counter.'
 
     def process
+      initial_pc = processor.pc
+
       address, method, addressing_mode, bytes = processor.each.next
       output.puts format_instruction(address, method, addressing_mode, bytes)
       processor.send(method, addressing_mode, bytes)
+
+    rescue
+      processor.pc = initial_pc
+      raise
     end
   end
 
