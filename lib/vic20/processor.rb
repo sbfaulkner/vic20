@@ -2,6 +2,10 @@ require_relative 'register'
 
 module Vic20
   class Processor
+    NMI_VECTOR    = 0xFFFA
+    RESET_VECTOR  = 0xFFFC
+    IRQ_VECTOR    = 0xFFFE
+
     def initialize(memory)
       @memory = memory
 
@@ -57,6 +61,19 @@ module Vic20
       zero_page_x: { bytes: 2, format: '$%02X,X' },
       zero_page_y: { bytes: 2, format: '$%02X,Y' },
     }.freeze
+
+    def self.format_operand(addressing_mode, bytes)
+      format Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format], extract_operand(bytes)
+    end
+
+    def self.extract_operand(bytes)
+      case bytes.size
+      when 3
+        bytes[1] + bytes[2] * 256
+      when 2
+        bytes[1]
+      end
+    end
 
     INSTRUCTIONS = {
       0x00 => { method: :brk, addressing_mode: :implied,     cycles: 2 },
@@ -226,18 +243,39 @@ module Vic20
     end
 
     def each
+      return enum_for(:each) unless block_given?
+
       while opcode = @memory[pc]
         instruction = INSTRUCTIONS[opcode] || UNKNOWN_INSTRUCTION
         addressing_mode = instruction[:addressing_mode]
         count = ADDRESSING_MODES[addressing_mode][:bytes]
         address = pc
         self.pc += count
-        yield address, instruction[:method], addressing_mode, *@memory[address, count]
+        yield address, instruction[:method], addressing_mode, @memory[address, count]
       end
     end
 
     def inspect
-      format('#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state)
+      format '#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state
     end
+
+    def pop
+    end
+
+    def push(byte)
+    end
+
+    def reset
+      self.pc = @memory.word_at(RESET_VECTOR)
+    end
+
+    # def jsr(addressing_mode, bytes)
+    #   case addressing_mode
+    #   when :absolute
+    #     STDERR.puts "JSR #{self.class.extract_operand(bytes)}"
+    #   else
+    #     raise "Unsupported addressing mode: #{addressing_mode}"
+    #   end
+    # end
   end
 end

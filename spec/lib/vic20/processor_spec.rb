@@ -77,16 +77,16 @@ describe Vic20::Processor do
     it 'yields the instructions' do
       subject.pc = 0x0600
       expect { |b| subject.each(&b) }.to yield_successive_args(
-        [0x0600, :jsr, :absolute, 0x20, 0x09, 0x06],
-        [0x0603, :jsr, :absolute, 0x20, 0x0c, 0x06],
-        [0x0606, :jsr, :absolute, 0x20, 0x12, 0x06],
-        [0x0609, :ldx, :immediate, 0xa2, 0x00],
-        [0x060b, :rts, :implied, 0x60],
-        [0x060c, :inx, :implied, 0xe8],
-        [0x060d, :cpx, :immediate, 0xe0, 0x05],
-        [0x060f, :bne, :relative, 0xd0, 0xfb],
-        [0x0611, :rts, :implied, 0x60],
-        [0x0612, :brk, :implied, 0x00]
+        [0x0600, :jsr, :absolute, [0x20, 0x09, 0x06]],
+        [0x0603, :jsr, :absolute, [0x20, 0x0c, 0x06]],
+        [0x0606, :jsr, :absolute, [0x20, 0x12, 0x06]],
+        [0x0609, :ldx, :immediate, [0xa2, 0x00]],
+        [0x060b, :rts, :implied, [0x60]],
+        [0x060c, :inx, :implied, [0xe8]],
+        [0x060d, :cpx, :immediate, [0xe0, 0x05]],
+        [0x060f, :bne, :relative, [0xd0, 0xfb]],
+        [0x0611, :rts, :implied, [0x60]],
+        [0x0612, :brk, :implied, [0x00]]
       )
     end
 
@@ -94,6 +94,44 @@ describe Vic20::Processor do
       subject.pc = 0x0600
       subject.each {}
       expect(subject.pc).to eq(0x0613)
+    end
+  end
+
+  describe '#pop' do
+    let(:top)  { 0xff }
+    let(:byte) { 0xbf }
+
+    before do
+      subject.memory[0x100 + top] = byte
+      subject.s = top - 1
+    end
+
+    it 'increments the stack pointer' do
+      subject.pop
+      expect(subject.s).to eq(top)
+    end
+
+    it 'retrieves the byte at the offset of the new stack pointer' do
+      expect(subject.pop).to eq(byte)
+    end
+  end
+
+  describe '#push' do
+    let(:top)  { 0xff }
+    let(:byte) { 0xbf }
+
+    before do
+      subject.s = top
+    end
+
+    it 'stores a byte at the offset of the current stack pointer' do
+      subject.push byte
+      expect(subject.memory[0x100 + top]).to eq(byte)
+    end
+
+    it 'decrements the stack pointer' do
+      subject.push byte
+      expect(subject.s).to eq(top - 1)
     end
   end
 end

@@ -6,42 +6,56 @@ require 'vic20'
 
 memory = Vic20::Memory.new
 processor = Vic20::Processor.new(memory)
-processor.pc = memory.word_at(0xC000)
+
+processor.reset
 
 commands = Pry::CommandSet.new do
   import_from Pry::Commands, 'help'
 
-  create_command 'dasm' do
-    group '6502'
-    description 'Disassemble instructions at current program counter.'
+  create_command 'list' do
+    group 'Machine'
+    description 'List instructions at current program counter.'
 
     def process
-      initial_pc = target_self.pc
+      initial_pc = processor.pc
 
       _pry_.pager.open do |output|
-        target_self.each do |address, method, addressing_mode, *bytes|
-          output.puts format_instruction(address, method, addressing_mode, *bytes)
+        processor.each do |address, method, addressing_mode, bytes|
+          output.puts format_instruction(address, method, addressing_mode, bytes)
         end
       end
 
     ensure
-      target_self.pc = initial_pc
+      processor.pc = initial_pc
+    end
+  end
+
+  create_command 'step' do
+    group 'Machine'
+    description 'Execute single instruction at current program counter.'
+
+    def process
+      address, method, addressing_mode, bytes = processor.each.next
+      output.puts format_instruction(address, method, addressing_mode, bytes)
+      processor.send(method, addressing_mode, bytes)
+    end
+  end
+
+  helpers do
+    def format_assembly(method, addressing_mode, bytes)
+      "; #{method.upcase} #{Vic20::Processor.format_operand(addressing_mode, bytes)}"
     end
 
-    private
-
-    def format_assembly(method, addressing_mode, *bytes)
-      format = Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format]
-      operand = bytes[1..-1].reverse.inject { |a, e| a * 256 + e }
-      format("; #{method.upcase} #{format}", operand)
-    end
-
-    def format_instruction(address, method, addressing_mode, *bytes)
+    def format_instruction(address, method, addressing_mode, bytes)
       [
         format('%04X', address),
         bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
-        format_assembly(method, addressing_mode, *bytes),
+        format_assembly(method, addressing_mode, bytes),
       ].join('  ')
+    end
+
+    def processor
+      target_self
     end
   end
 end
