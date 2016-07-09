@@ -16,13 +16,14 @@ describe Vic20::Processor do
   end
 
   describe '#ldx' do
+    let(:value) { 0xff }
+
     before do
       subject.x = 0x00
     end
 
     context 'with immediate addressing mode' do
       it 'sets the x index register to the value' do
-        value = 0xbf
         subject.ldx(:immediate, [0xa2, value])
         expect(subject.x).to eq(value)
       end
@@ -30,20 +31,21 @@ describe Vic20::Processor do
   end
 
   describe '#jsr' do
-    let(:pc) { 0xbeef }
+    let(:pc) { 0xfd27 }
+
     before do
       subject.s = 0xff
       subject.pc = pc
     end
 
     it 'pushes address-1 to the stack' do
-      subject.jsr(:absolute, [0x20, 0xad, 0xde])
+      subject.jsr(:absolute, [0x20, 0x3f, 0xfd])
       expect(word_at(0x01fe)).to eq(pc - 1)
     end
 
     it 'jumps to the specified address' do
-      subject.jsr(:absolute, [0x20, 0xad, 0xde])
-      expect(subject.pc).to eq(0xdead)
+      subject.jsr(:absolute, [0x20, 0x3f, 0xfd])
+      expect(subject.pc).to eq(0xfd3f)
     end
   end
 
