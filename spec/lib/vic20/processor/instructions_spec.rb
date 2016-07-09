@@ -33,7 +33,9 @@ describe Vic20::Processor do
   end
 
   describe '#jsr' do
+    let(:top) { 0x1ff }
     let(:pc) { 0xfd27 }
+    let(:address) { 0xfd3f }
 
     before do
       subject.s = 0xff
@@ -41,13 +43,13 @@ describe Vic20::Processor do
     end
 
     it 'pushes address-1 to the stack' do
-      subject.jsr(:absolute, [0x20, 0x3f, 0xfd])
-      expect(word_at(0x01fe)).to eq(pc - 1)
+      subject.jsr(:absolute, [0x20, lsb(address), msb(address)])
+      expect(word_at(top - 1)).to eq(pc - 1)
     end
 
     it 'jumps to the specified address' do
-      subject.jsr(:absolute, [0x20, 0x3f, 0xfd])
-      expect(subject.pc).to eq(0xfd3f)
+      subject.jsr(:absolute, [0x20, lsb(address), msb(address)])
+      expect(subject.pc).to eq(address)
     end
   end
 
@@ -75,6 +77,14 @@ describe Vic20::Processor do
   end
 
   private
+
+  def lsb(word)
+    word & 0xff
+  end
+
+  def msb(word)
+    word >> 8
+  end
 
   def word_at(address)
     memory[address] | memory[address + 1] << 8
