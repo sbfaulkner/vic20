@@ -1,8 +1,11 @@
 require_relative 'register'
+require_relative 'processor/instructions'
+require_relative 'processor/stack'
 
 module Vic20
   class Processor
-    STACK_PAGE    = 0x0100
+    include Instructions
+    include Stack
 
     NMI_VECTOR    = 0xFFFA
     RESET_VECTOR  = 0xFFFC
@@ -63,19 +66,6 @@ module Vic20
       zero_page_x: { bytes: 2, format: '$%02X,X' },
       zero_page_y: { bytes: 2, format: '$%02X,Y' },
     }.freeze
-
-    def self.format_operand(addressing_mode, bytes)
-      format Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format], extract_operand(bytes)
-    end
-
-    def self.extract_operand(bytes)
-      case bytes.size
-      when 3
-        bytes[1] | bytes[2] << 8
-      when 2
-        bytes[1]
-      end
-    end
 
     INSTRUCTIONS = {
       0x00 => { method: :brk, addressing_mode: :implied,     cycles: 2 },
@@ -261,36 +251,8 @@ module Vic20
       format '#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state
     end
 
-    def pop
-      self.s += 1
-      @memory[STACK_PAGE + s]
-    end
-
-    def pop_word
-      pop | pop << 8
-    end
-
-    def push(byte)
-      @memory[STACK_PAGE + s] = byte
-      self.s -= 1
-    end
-
-    def push_word(word)
-      push(word >> 8)
-      push(word & 0xff)
-    end
-
     def reset
       self.pc = @memory.word_at(RESET_VECTOR)
     end
-
-    # def jsr(addressing_mode, bytes)
-    #   case addressing_mode
-    #   when :absolute
-    #     STDERR.puts "JSR #{self.class.extract_operand(bytes)}"
-    #   else
-    #     raise "Unsupported addressing mode: #{addressing_mode}"
-    #   end
-    # end
   end
 end
