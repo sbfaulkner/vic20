@@ -13,21 +13,19 @@ commands = Pry::CommandSet.new do
 
   create_command 'dasm' do
     group '6502'
-    description 'Disassemble instructions at current program counter: dasm'
-
-    def setup
-      @processor = target.receiver
-    end
+    description 'Disassemble instructions at current program counter.'
 
     def process
-      initial_pc = @processor.pc
+      initial_pc = target_self.pc
 
-      @processor.each do |address, method, addressing_mode, *bytes|
-        print_instruction(address, method, addressing_mode, *bytes)
+      _pry_.pager.open do |output|
+        target_self.each do |address, method, addressing_mode, *bytes|
+          output.puts format_instruction(address, method, addressing_mode, *bytes)
+        end
       end
 
     ensure
-      @processor.pc = initial_pc
+      target_self.pc = initial_pc
     end
 
     private
@@ -38,14 +36,12 @@ commands = Pry::CommandSet.new do
       format("; #{method.upcase} #{format}", operand)
     end
 
-    def print_instruction(address, method, addressing_mode, *bytes)
-      text = [
+    def format_instruction(address, method, addressing_mode, *bytes)
+      [
         format('%04X', address),
         bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
         format_assembly(method, addressing_mode, *bytes),
       ].join('  ')
-
-      output.puts text
     end
   end
 end
