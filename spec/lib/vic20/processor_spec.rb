@@ -6,19 +6,19 @@ describe Vic20::Processor do
 
   describe 'registers' do
     it 'has an 8-bit accumulator' do
-      expect(subject.a).to be_a(Vic20::Register)
+      expect(subject.a).to be_a(Integer)
     end
 
     it 'has an 8-bit x index register' do
-      expect(subject.x).to be_a(Vic20::Register)
+      expect(subject.x).to be_a(Integer)
     end
 
     it 'has an 8-bit y index register' do
-      expect(subject.y).to be_a(Vic20::Register)
+      expect(subject.y).to be_a(Integer)
     end
 
     it 'has 7 processor status flag bits' do
-      expect(subject.p).to be_a(Vic20::Register)
+      expect(subject.p).to be_a(Integer)
     end
 
     describe 'processor status flag bits' do
@@ -52,11 +52,11 @@ describe Vic20::Processor do
     end
 
     it 'has an 8-bit stack pointer' do
-      expect(subject.s).to be_a(Vic20::Register)
+      expect(subject.s).to be_a(Integer)
     end
 
     it 'has a 16-bit program counter' do
-      expect(subject.pc).to be_a(Vic20::Register)
+      expect(subject.pc).to be_a(Integer)
     end
   end
 

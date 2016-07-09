@@ -1,4 +1,3 @@
-require_relative 'register'
 require_relative 'processor/instructions'
 require_relative 'processor/stack'
 
@@ -14,12 +13,12 @@ module Vic20
     def initialize(memory)
       @memory = memory
 
-      self.a = Register.new
-      self.x = Register.new
-      self.y = Register.new
-      self.p = Register.new
-      self.s = Register.new
-      self.pc = Register.new
+      self.a = 0
+      self.x = 0
+      self.y = 0
+      self.p = 0
+      self.s = 0
+      self.pc = 0
     end
 
     # https://en.wikipedia.org/wiki/MOS_Technology_6502#Registers
