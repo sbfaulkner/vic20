@@ -71,7 +71,7 @@ module Vic20
     def self.extract_operand(bytes)
       case bytes.size
       when 3
-        bytes[1] + bytes[2] * 256
+        bytes[1] | bytes[2] << 8
       when 2
         bytes[1]
       end
@@ -266,9 +266,18 @@ module Vic20
       @memory[STACK_PAGE + s]
     end
 
+    def pop_word
+      pop | pop << 8
+    end
+
     def push(byte)
       @memory[STACK_PAGE + s] = byte
       self.s -= 1
+    end
+
+    def push_word(word)
+      push(word >> 8)
+      push(word & 0xff)
     end
 
     def reset
