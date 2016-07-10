@@ -29,7 +29,13 @@ module Vic20
       def bne(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.extract_operand(bytes) unless z?
+        unless z?
+          byte = self.class.extract_operand(bytes)
+
+          displacement = byte > 0x7F ? byte - 0x100 : byte
+
+          self.pc += displacement
+        end
       end
 
       def cld(addressing_mode, _bytes)
