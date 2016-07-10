@@ -64,9 +64,14 @@ module Vic20
       end
 
       def lda(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute_x
-
-        self.a = @memory[self.class.operand(bytes) + x]
+        self.a = case addressing_mode
+        when :absolute_x
+          @memory[self.class.operand(bytes) + x]
+        when :immediate
+          self.class.operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
         set_flags(a, N_FLAG | Z_FLAG)
       end
