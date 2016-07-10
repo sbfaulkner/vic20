@@ -75,6 +75,12 @@ module Vic20
         self.x = self.class.operand(bytes)
       end
 
+      def rts(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.pc = pop_word + 1
+      end
+
       def sei(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 

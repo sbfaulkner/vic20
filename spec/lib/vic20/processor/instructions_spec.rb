@@ -159,8 +159,12 @@ describe Vic20::Processor do
     let(:destination) { 0xfd3f }
 
     before do
-      subject.s = 0xff
+      subject.s = top & 0xff
       subject.pc = pc
+    end
+
+    it 'pushes a word onto the stack' do
+      expect { subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)]) }.to change { subject.s }.by(-2)
     end
 
     it 'pushes address-1 to the stack' do
@@ -168,9 +172,29 @@ describe Vic20::Processor do
       expect(word_at(top - 1)).to eq(pc - 1)
     end
 
-    it 'jumps to the specified address' do
+    it 'transfers program control to the new address' do
       subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
       expect(subject.pc).to eq(destination)
+    end
+  end
+
+  describe '#rts' do
+    let(:top) { 0x1ff }
+    let(:destination) { 0xfd30 }
+
+    before do
+      subject.s = top & 0xff - 2
+      subject.pc = 0xfd4d
+      memory[top - 1, 2] = [lsb(destination) - 1, msb(destination)]
+    end
+
+    it 'transfers program control to address+1' do
+      subject.rts(:implied, [0x60])
+      expect(subject.pc).to eq(destination)
+    end
+
+    it 'pops a word off the stack' do
+      expect { subject.rts(:implied, [0x60]) }.to change { subject.s }.by(2)
     end
   end
 
