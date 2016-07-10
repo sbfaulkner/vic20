@@ -292,6 +292,41 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#sta' do
+    let(:offset) { 0x0f }
+    let(:value) { 0 }
+
+    before do
+      subject.a = value
+      subject.x = offset
+    end
+
+    context 'with zero,x addressing mode' do
+      before do
+        memory[offset] = 0xff
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:zero_page_x, [0x95, 0x00])
+        expect(memory[offset]).to eq(value)
+      end
+    end
+
+    context 'with absolute,x addressing mode' do
+      let(:page) { 0x02 }
+      let(:address) { page << 8 | offset }
+
+      before do
+        memory[address] = 0xff
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:absolute_x, [0x9d, 0x00, page])
+        expect(memory[address]).to eq(value)
+      end
+    end
+  end
+
   describe '#tax' do
     let(:value) { 0xff }
 

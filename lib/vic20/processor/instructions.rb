@@ -96,6 +96,19 @@ module Vic20
         self.p |= I_FLAG
       end
 
+      def sta(addressing_mode, bytes)
+        address = case addressing_mode
+        when :absolute_x
+          self.class.operand(bytes) + x
+        when :zero_page_x
+          self.class.operand(bytes) + x
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        @memory[address] = a
+      end
+
       def tax(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
