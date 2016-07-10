@@ -117,6 +117,67 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#inx' do
+    let(:x) { 0 }
+
+    before do
+      subject.x = x
+    end
+
+    it 'increments the x-index register' do
+      subject.inx(:implied, [0xe8])
+      expect(subject.x).to eq(x + 1)
+    end
+
+    it 'clears the sign flag' do
+      subject.inx(:implied, [0xe8])
+      expect(subject.n?).to be_falsey
+    end
+
+    it 'clears the zero flag' do
+      subject.inx(:implied, [0xe8])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'when the initial value is 0x7f' do
+      let(:x) { 0x7f }
+
+      it 'increments the x-index register' do
+        subject.inx(:implied, [0xe8])
+        expect(subject.x).to eq(x + 1)
+      end
+
+      it 'sets the sign flag' do
+        subject.inx(:implied, [0xe8])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.inx(:implied, [0xe8])
+        expect(subject.z?).to be_falsey
+      end
+    end
+
+    context 'when the initial value is 0xff' do
+      let(:x) { 0xff }
+
+      it 'rolls over to zero' do
+        subject.inx(:implied, [0xe8])
+        expect(subject.x).to eq(0)
+      end
+
+      it 'clears the sign flag' do
+        subject.inx(:implied, [0xe8])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.inx(:implied, [0xe8])
+        expect(subject.z?).to be_truthy
+      end
+    end
+  end
+
   describe '#lda' do
     context 'with absolute,x addressing mode' do
       let(:address) { signature_address - 1 }
