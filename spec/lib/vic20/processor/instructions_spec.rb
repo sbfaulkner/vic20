@@ -126,19 +126,43 @@ describe Vic20::Processor do
 
       before do
         subject.a = 0x00
-        subject.x = 0x05
+        subject.x = 5
       end
 
       it 'sets the accumulator to the value' do
         subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
         expect(subject.a).to eq(value)
       end
+
+      it 'sets the sign flag' do
+        subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        before do
+          memory[address + 5] = 0
+        end
+
+        it 'clears the sign flag' do
+          subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
     end
   end
 
   describe '#ldx' do
-    it 'should affect the N & Z flags'
-
     context 'with immediate addressing mode' do
       let(:value) { 0xff }
 
@@ -149,6 +173,30 @@ describe Vic20::Processor do
       it 'sets the x index register to the value' do
         subject.ldx(:immediate, [0xa2, value])
         expect(subject.x).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.ldx(:immediate, [0xa2, value])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.ldx(:immediate, [0xa2, value])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.ldx(:immediate, [0xa2, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ldx(:immediate, [0xa2, value])
+          expect(subject.z?).to be_truthy
+        end
       end
     end
   end

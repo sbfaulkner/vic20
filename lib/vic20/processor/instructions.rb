@@ -67,12 +67,16 @@ module Vic20
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute_x
 
         self.a = @memory[self.class.operand(bytes) + x]
+
+        set_flags(a, N_FLAG | Z_FLAG)
       end
 
       def ldx(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
 
         self.x = self.class.operand(bytes)
+
+        set_flags(x, N_FLAG | Z_FLAG)
       end
 
       def rts(addressing_mode, _bytes)
