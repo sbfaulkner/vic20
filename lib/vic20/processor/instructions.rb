@@ -32,6 +32,19 @@ module Vic20
         self.p &= ~D_FLAG
       end
 
+      def cmp(addressing_mode, bytes)
+        value = case addressing_mode
+        when :absolute_x
+          @memory[self.class.extract_operand(bytes) + x]
+        # when :immediate
+        #   self.class.extract_operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        set_flags(a - value, C_FLAG | N_FLAG | Z_FLAG)
+      end
+
       def jsr(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 

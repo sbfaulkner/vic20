@@ -253,5 +253,13 @@ module Vic20
     def reset
       self.pc = @memory.word_at(RESET_VECTOR)
     end
+
+    def set_flags(value, flags)
+      self.p &= ~flags
+
+      self.p |= (flags & Z_FLAG) if value.zero?
+      self.p |= (flags & C_FLAG) if value >= 0
+      self.p |= (flags & N_FLAG) if (value & 0x80) == 0x80
+    end
   end
 end

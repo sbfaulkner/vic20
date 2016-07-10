@@ -1,8 +1,15 @@
 require 'spec_helper'
 
 describe Vic20::Processor do
+  let(:signature_address) { 0xfd4d }
+  let(:signature) { ['A'.ord, '0'.ord, 0xc3, 0xc2, 0xcd] }
   let(:memory) { [] }
+
   subject { described_class.new(memory) }
+
+  before do
+    memory[signature_address, 5] = signature
+  end
 
   describe '#cld' do
     before do
@@ -15,19 +22,87 @@ describe Vic20::Processor do
     end
   end
 
-  describe '#lda' do
-    let(:address) { 0xfd4c }
-    let(:a0cbm) { ['A'.ord, '0'.ord, 0xc3, 0xc2, 0xcd] }
-    let(:value) { a0cbm[4] }
+  describe '#cmp' do
+    context 'with absolute,x addressing mode' do
+      let(:address) { 0xa003 }
 
-    before do
-      subject.x = 0x05
-      memory[address + 1, 5] = a0cbm
+      before do
+        subject.a = signature[4]
+        subject.x = 0x05
+        memory[address + 5] = value
+      end
+
+      context 'when the accumulator is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the accumulator is equal to the addressed value' do
+        let(:value) { subject.a }
+
+        it 'sets the carry flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the accumulator is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:absolute_x, [0xdd, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
     end
+  end
 
+  describe '#lda' do
     it 'should affect the N & Z flags'
 
     context 'with absolute,x addressing mode' do
+      let(:address) { signature_address - 1 }
+      let(:value) { signature[4] }
+
+      before do
+        subject.a = 0x00
+        subject.x = 0x05
+      end
+
       it 'sets the accumulator to the value' do
         subject.lda(:absolute_x, [0xbd, lsb(address), msb(address)])
         expect(subject.a).to eq(value)
@@ -36,15 +111,15 @@ describe Vic20::Processor do
   end
 
   describe '#ldx' do
-    let(:value) { 0xff }
-
-    before do
-      subject.x = 0x00
-    end
-
     it 'should affect the N & Z flags'
 
     context 'with immediate addressing mode' do
+      let(:value) { 0xff }
+
+      before do
+        subject.x = 0x00
+      end
+
       it 'sets the x index register to the value' do
         subject.ldx(:immediate, [0xa2, value])
         expect(subject.x).to eq(value)
@@ -55,7 +130,7 @@ describe Vic20::Processor do
   describe '#jsr' do
     let(:top) { 0x1ff }
     let(:pc) { 0xfd27 }
-    let(:address) { 0xfd3f }
+    let(:destination) { 0xfd3f }
 
     before do
       subject.s = 0xff
@@ -63,13 +138,13 @@ describe Vic20::Processor do
     end
 
     it 'pushes address-1 to the stack' do
-      subject.jsr(:absolute, [0x20, lsb(address), msb(address)])
+      subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
       expect(word_at(top - 1)).to eq(pc - 1)
     end
 
     it 'jumps to the specified address' do
-      subject.jsr(:absolute, [0x20, lsb(address), msb(address)])
-      expect(subject.pc).to eq(address)
+      subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
+      expect(subject.pc).to eq(destination)
     end
   end
 
@@ -85,14 +160,16 @@ describe Vic20::Processor do
   end
 
   describe '#txs' do
+    let(:value) { 0xff }
+
     before do
       subject.s = 0x00
-      subject.x = 0xbf
+      subject.x = value
     end
 
     it 'transfers the x-index register to the stack pointer' do
       subject.txs(:implied, [0x9a])
-      expect(subject.s).to eq(subject.x)
+      expect(subject.s).to eq(value)
     end
   end
 
