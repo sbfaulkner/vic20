@@ -3,16 +3,21 @@ module Vic20
     module Instructions
       module ClassMethods
         def format_operand(addressing_mode, bytes)
-          format Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format], extract_operand(bytes)
+          format Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format], operand(bytes)
         end
 
-        def extract_operand(bytes)
+        def operand(bytes)
           case bytes.size
           when 3
             bytes[1] | bytes[2] << 8
           when 2
             bytes[1]
           end
+        end
+
+        def relative_operand(bytes)
+          value = operand(bytes)
+          value > 0x7F ? value - 0x100 : value
         end
       end
 
@@ -29,13 +34,7 @@ module Vic20
       def bne(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        unless z?
-          byte = self.class.extract_operand(bytes)
-
-          displacement = byte > 0x7F ? byte - 0x100 : byte
-
-          self.pc += displacement
-        end
+        self.pc += self.class.relative_operand(bytes) unless z?
       end
 
       def cld(addressing_mode, _bytes)
@@ -47,9 +46,9 @@ module Vic20
       def cmp(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute_x
-          @memory[self.class.extract_operand(bytes) + x]
+          @memory[self.class.operand(bytes) + x]
         # when :immediate
-        #   self.class.extract_operand(bytes)
+        #   self.class.operand(bytes)
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -61,19 +60,19 @@ module Vic20
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 
         push_word pc - 1
-        self.pc = self.class.extract_operand(bytes)
+        self.pc = self.class.operand(bytes)
       end
 
       def lda(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute_x
 
-        self.a = @memory[self.class.extract_operand(bytes) + x]
+        self.a = @memory[self.class.operand(bytes) + x]
       end
 
       def ldx(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
 
-        self.x = self.class.extract_operand(bytes)
+        self.x = self.class.operand(bytes)
       end
 
       def sei(addressing_mode, _bytes)
