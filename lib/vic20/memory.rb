@@ -9,7 +9,7 @@ module Vic20
     }.freeze
 
     def initialize
-      super []
+      super Array.new(64 * 1024) { |offset| offset >> 8 }
       load_firmware
     end
 
