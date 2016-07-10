@@ -11,6 +11,27 @@ describe Vic20::Processor do
     memory[signature_address, 5] = signature
   end
 
+  describe '#bne' do
+    let(:pc) { 0xfd49 }
+
+    before do
+      subject.pc = pc
+    end
+
+    # FD47  D0 03     ; BNE $03
+    it 'branches when zero flag is clear' do
+      subject.p = 0x00
+      subject.bne(:relative, [0xd0, 0x03])
+      expect(subject.pc).to eq(pc + 3)
+    end
+
+    it 'does not branch when zero flag is set' do
+      subject.p = 0xff
+      subject.bne(:relative, [0xd0, 0x03])
+      expect(subject.pc).to eq(pc)
+    end
+  end
+
   describe '#cld' do
     before do
       subject.p = 0xff
