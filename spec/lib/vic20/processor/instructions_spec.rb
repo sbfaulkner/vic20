@@ -448,6 +448,22 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#sty' do
+    let(:address) { 0xb3 }
+    let(:value) { 0x03 }
+
+    before do
+      subject.y = value
+    end
+
+    context 'with zero page addressing mode' do
+      it 'stores the y-index register value at the correct address' do
+        subject.sty(:zero_page, [0x84, address])
+        expect(memory[address]).to eq(value)
+      end
+    end
+  end
+
   describe '#tax' do
     let(:value) { 0xff }
 
