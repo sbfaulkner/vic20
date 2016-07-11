@@ -125,6 +125,12 @@ module Vic20
         @memory[address] = a
       end
 
+      def stx(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page
+
+        @memory[self.class.operand(bytes)] = x
+      end
+
       def tax(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
