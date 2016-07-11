@@ -56,6 +56,16 @@ module Vic20
         set_flags(a - value, C_FLAG | N_FLAG | Z_FLAG)
       end
 
+      def inc(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page
+
+        address = self.class.operand(bytes)
+
+        @memory[address] = (@memory[address] + 1) & 0xff
+
+        set_flags(@memory[address], N_FLAG | Z_FLAG)
+      end
+
       def inx(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
