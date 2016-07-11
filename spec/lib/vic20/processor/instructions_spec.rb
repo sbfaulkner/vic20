@@ -297,6 +297,45 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#ldy' do
+    context 'with immediate addressing mode' do
+      let(:value) { 0xff }
+
+      before do
+        subject.y = 0x00
+      end
+
+      it 'sets the y index register to the value' do
+        subject.ldy(:immediate, [0xa0, value])
+        expect(subject.y).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.ldy(:immediate, [0xa0, value])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.ldy(:immediate, [0xa0, value])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.ldy(:immediate, [0xa0, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ldy(:immediate, [0xa0, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe '#jsr' do
     let(:top) { 0x1ff }
     let(:pc) { 0xfd27 }
