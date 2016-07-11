@@ -393,17 +393,31 @@ describe Vic20::Processor do
   end
 
   describe '#sta' do
-    let(:offset) { 0x0f }
     let(:value) { 0 }
 
     before do
       subject.a = value
-      subject.x = offset
+    end
+
+    context 'with zero page addressing mode' do
+      let(:offset) { 0xc1 }
+
+      before do
+        memory[offset] = 0xff
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:zero_page, [0x85, offset])
+        expect(memory[offset]).to eq(value)
+      end
     end
 
     context 'with zero page,x addressing mode' do
+      let(:offset) { 0x0f }
+
       before do
         memory[offset] = 0xff
+        subject.x = offset
       end
 
       it 'stores the accumulator value at the correct address' do
@@ -419,10 +433,12 @@ describe Vic20::Processor do
 
     context 'with absolute,x addressing mode' do
       let(:page) { 0x02 }
+      let(:offset) { 0x0f }
       let(:address) { page << 8 | offset }
 
       before do
         memory[address] = 0xff
+        subject.x = offset
       end
 
       it 'stores the accumulator value at the correct address' do

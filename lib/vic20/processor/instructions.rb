@@ -116,6 +116,8 @@ module Vic20
         address = case addressing_mode
         when :absolute_x
           self.class.operand(bytes) + x
+        when :zero_page
+          self.class.operand(bytes)
         when :zero_page_x
           (self.class.operand(bytes) + x) & 0xff
         else
