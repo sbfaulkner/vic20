@@ -410,6 +410,11 @@ describe Vic20::Processor do
         subject.sta(:zero_page_x, [0x95, 0x00])
         expect(memory[offset]).to eq(value)
       end
+
+      it 'is subject to wrap-around' do
+        subject.sta(:zero_page_x, [0x95, 0xff])
+        expect(memory[offset - 1]).to eq(value)
+      end
     end
 
     context 'with absolute,x addressing mode' do
