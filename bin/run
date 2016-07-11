@@ -21,6 +21,7 @@ def format_instruction(address, method, addressing_mode, bytes)
 end
 
 processor.each do |address, method, addressing_mode, bytes|
+  puts processor.current_state
   puts format_instruction(address, method, addressing_mode, bytes)
   processor.send(method, addressing_mode, bytes)
 end
