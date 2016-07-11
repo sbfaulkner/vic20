@@ -531,6 +531,44 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#tay' do
+    let(:value) { 0xff }
+
+    before do
+      subject.y = 0xdd
+      subject.a = value
+    end
+
+    it 'transfers the accumulator to the y-index register' do
+      subject.tay(:implied, [0xa8])
+      expect(subject.y).to eq(value)
+    end
+
+    it 'sets the sign flag' do
+      subject.tay(:implied, [0xa8])
+      expect(subject.n?).to be_truthy
+    end
+
+    it 'clears the zero flag' do
+      subject.tay(:implied, [0xa8])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'with a value of zero' do
+      let(:value) { 0 }
+
+      it 'clears the sign flag' do
+        subject.tay(:implied, [0xa8])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.tay(:implied, [0xa8])
+        expect(subject.z?).to be_truthy
+      end
+    end
+  end
+
   describe '#txs' do
     let(:value) { 0xff }
 

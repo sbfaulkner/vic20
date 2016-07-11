@@ -149,6 +149,14 @@ module Vic20
         set_flags(x, N_FLAG | Z_FLAG)
       end
 
+      def tay(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.y = a
+
+        set_flags(y, N_FLAG | Z_FLAG)
+      end
+
       def txs(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
