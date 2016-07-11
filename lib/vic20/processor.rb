@@ -21,17 +21,6 @@ module Vic20
       self.pc = 0
     end
 
-    # https://en.wikipedia.org/wiki/MOS_Technology_6502#Registers
-    # The 6502's registers include one 8-bit accumulator register (A),
-    # two 8-bit index registers (X and Y), 7 processor status flag bits (P),
-    # an 8-bit stack pointer (S), and a 16-bit program counter (PC).
-    # The stack's address space is hardwired to memory page $01,
-    # i.e. the address range $0100–$01FF (256–511).
-    # Software access to the stack is done via four implied addressing mode instructions,
-    # whose functions are to push or pop (pull) the accumulator or the processor status register.
-    # The same stack is also used for subroutine calls via the JSR (Jump to Subroutine)
-    # and RTS (Return from Subroutine) instructions and for interrupt handling.
-
     attr_accessor :a, :x, :y, :p, :s, :pc
 
     C_FLAG = 0b00000001 # Carry
