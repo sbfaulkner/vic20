@@ -114,6 +114,8 @@ module Vic20
 
       def sta(addressing_mode, bytes)
         address = case addressing_mode
+        when :absolute
+          self.class.operand(bytes)
         when :absolute_x
           self.class.operand(bytes) + x
         when :zero_page

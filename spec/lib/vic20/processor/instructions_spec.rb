@@ -399,6 +399,35 @@ describe Vic20::Processor do
       subject.a = value
     end
 
+    context 'with absolute addressing mode' do
+      let(:address) { 0x0281 }
+
+      before do
+        memory[address] = 0xff
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:absolute, [0x8d, lsb(address), msb(address)])
+        expect(memory[address]).to eq(value)
+      end
+    end
+
+    context 'with absolute,x addressing mode' do
+      let(:page) { 0x02 }
+      let(:offset) { 0x0f }
+      let(:address) { page << 8 | offset }
+
+      before do
+        memory[address] = 0xff
+        subject.x = offset
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:absolute_x, [0x9d, 0x00, page])
+        expect(memory[address]).to eq(value)
+      end
+    end
+
     context 'with zero page addressing mode' do
       let(:offset) { 0xc1 }
 
@@ -428,22 +457,6 @@ describe Vic20::Processor do
       it 'is subject to wrap-around' do
         subject.sta(:zero_page_x, [0x95, 0xff])
         expect(memory[offset - 1]).to eq(value)
-      end
-    end
-
-    context 'with absolute,x addressing mode' do
-      let(:page) { 0x02 }
-      let(:offset) { 0x0f }
-      let(:address) { page << 8 | offset }
-
-      before do
-        memory[address] = 0xff
-        subject.x = offset
-      end
-
-      it 'stores the accumulator value at the correct address' do
-        subject.sta(:absolute_x, [0x9d, 0x00, page])
-        expect(memory[address]).to eq(value)
       end
     end
   end
