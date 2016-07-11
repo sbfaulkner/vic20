@@ -321,6 +321,48 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with indirect_y addressing mode' do
+      let(:indirect_address) { 0x034a }
+      let(:address) { 0xc1 }
+      let(:offset) { 2 }
+      let(:value) { 0xff }
+
+      before do
+        memory[indirect_address + offset] = value
+        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.y = offset
+      end
+
+      it 'sets the accumulator to the value' do
+        subject.lda(:indirect_y, [0xb1, address])
+        expect(subject.a).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.lda(:indirect_y, [0xb1, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.lda(:indirect_y, [0xb1, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'with a value of zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.lda(:indirect_y, [0xb1, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.lda(:indirect_y, [0xb1, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
   end
 
   describe '#ldx' do

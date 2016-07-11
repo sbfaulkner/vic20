@@ -87,6 +87,10 @@ module Vic20
           @memory[self.class.operand(bytes) + x]
         when :immediate
           self.class.operand(bytes)
+        when :indirect_y
+          address = self.class.operand(bytes)
+          address = (@memory[address] | @memory[address + 1] << 8) + y
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
