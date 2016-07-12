@@ -535,6 +535,25 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with indirect,y addressing mode' do
+      let(:indirect_address) { 0x034a }
+      let(:address) { 0xc1 }
+      let(:offset) { 2 }
+      let(:value) { 0x55 }
+
+      before do
+        memory[indirect_address + offset] = 0xff
+        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.y = offset
+        subject.a = value
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:indirect_y, [0x91, address])
+        expect(memory[indirect_address + offset]).to eq(value)
+      end
+    end
+
     context 'with zero page addressing mode' do
       let(:offset) { 0xc1 }
 
