@@ -49,11 +49,19 @@ module Vic20
           @memory[self.class.operand(bytes) + x]
         # when :immediate
         #   self.class.operand(bytes)
+        when :indirect_y
+          address = self.class.operand(bytes)
+          address = (@memory[address] | @memory[address + 1] << 8) + y
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        set_flags(a - value, C_FLAG | N_FLAG | Z_FLAG)
+        result = a - value
+
+        affect_carry_flag(result)
+        affect_sign_flag(result)
+        affect_zero_flag(result)
       end
 
       def inc(addressing_mode, bytes)
@@ -61,9 +69,10 @@ module Vic20
 
         address = self.class.operand(bytes)
 
-        @memory[address] = (@memory[address] + 1) & 0xff
+        result = @memory[address] = (@memory[address] + 1) & 0xff
 
-        set_flags(@memory[address], N_FLAG | Z_FLAG)
+        affect_sign_flag(result)
+        affect_zero_flag(result)
       end
 
       def inx(addressing_mode, _bytes)
@@ -71,7 +80,8 @@ module Vic20
 
         self.x = (x + 1) & 0xff
 
-        set_flags(x, N_FLAG | Z_FLAG)
+        affect_sign_flag(x)
+        affect_zero_flag(x)
       end
 
       def jsr(addressing_mode, bytes)
@@ -95,7 +105,8 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        set_flags(a, N_FLAG | Z_FLAG)
+        affect_sign_flag(a)
+        affect_zero_flag(a)
       end
 
       def ldx(addressing_mode, bytes)
@@ -103,7 +114,8 @@ module Vic20
 
         self.x = self.class.operand(bytes)
 
-        set_flags(x, N_FLAG | Z_FLAG)
+        affect_sign_flag(x)
+        affect_zero_flag(x)
       end
 
       def ldy(addressing_mode, bytes)
@@ -111,7 +123,8 @@ module Vic20
 
         self.y = self.class.operand(bytes)
 
-        set_flags(y, N_FLAG | Z_FLAG)
+        affect_sign_flag(y)
+        affect_zero_flag(y)
       end
 
       def rts(addressing_mode, _bytes)
@@ -163,7 +176,8 @@ module Vic20
 
         self.x = a
 
-        set_flags(x, N_FLAG | Z_FLAG)
+        affect_sign_flag(x)
+        affect_zero_flag(x)
       end
 
       def tay(addressing_mode, _bytes)
@@ -171,7 +185,8 @@ module Vic20
 
         self.y = a
 
-        set_flags(y, N_FLAG | Z_FLAG)
+        affect_sign_flag(y)
+        affect_zero_flag(y)
       end
 
       def txs(addressing_mode, _bytes)

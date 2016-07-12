@@ -180,7 +180,7 @@ module Vic20
       0xCD => { method: :cmp, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement CMP (absolute)
       0xCE => { method: :dec, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement DEC (absolute)
       0xD0 => { method: :bne, addressing_mode: :relative,    cycles: 2 },
-      0xD1 => { method: :cmp, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement CMP (indirect_y)
+      0xD1 => { method: :cmp, addressing_mode: :indirect_y,  cycles: 5 },
       0xD5 => { method: :cmp, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement CMP (zero_page_x)
       0xD6 => { method: :dec, addressing_mode: :zero_page_x, cycles: 6 }, # TODO: implement DEC (zero_page_x)
       0xD8 => { method: :cld, addressing_mode: :implied,     cycles: 2 },
@@ -214,6 +214,30 @@ module Vic20
       cycles: 0,
     }.freeze
 
+    def affect_carry_flag(value)
+      if value >= 0
+        self.p |= C_FLAG
+      else
+        self.p &= ~C_FLAG
+      end
+    end
+
+    def affect_sign_flag(value)
+      if (value & 0x80) == 0x80
+        self.p |= N_FLAG
+      else
+        self.p &= ~N_FLAG
+      end
+    end
+
+    def affect_zero_flag(value)
+      if value.zero?
+        self.p |= Z_FLAG
+      else
+        self.p &= ~Z_FLAG
+      end
+    end
+
     def current_flags
       %w(C Z I D B V N).collect { |flag| send("#{flag.downcase}?") ? flag : '.' }.join
     end
@@ -241,14 +265,6 @@ module Vic20
 
     def reset
       self.pc = @memory.word_at(RESET_VECTOR)
-    end
-
-    def set_flags(value, flags)
-      self.p &= ~flags
-
-      self.p |= (flags & Z_FLAG) if value.zero?
-      self.p |= (flags & C_FLAG) if value >= 0
-      self.p |= (flags & N_FLAG) if (value & 0x80) == 0x80
     end
   end
 end
