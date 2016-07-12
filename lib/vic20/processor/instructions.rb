@@ -127,6 +127,19 @@ module Vic20
         affect_zero_flag(y)
       end
 
+      def ror(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
+
+        shifted = (a << 8) >> 1
+
+        self.a = shifted >> 8
+        self.a |= 0x80 if c?
+
+        affect_carry_flag(shifted & 0x80 == 0 ? -1 : 1)
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def rts(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
