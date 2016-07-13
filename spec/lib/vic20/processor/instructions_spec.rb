@@ -11,8 +11,34 @@ describe Vic20::Processor do
     memory[signature_address, 5] = signature
   end
 
+  describe '#bcc' do
+    let(:pc) { 0xfdde }
+
+    before do
+      subject.pc = pc
+    end
+
+    it 'branches when carry flag is clear' do
+      subject.p = 0x00
+      subject.bcc(:relative, [0x90, 0x03])
+      expect(subject.pc).to eq(pc + 3)
+    end
+
+    it 'branches backwards when carry flag is clear' do
+      subject.p = 0x00
+      subject.bcc(:relative, [0x90, 0xfd])
+      expect(subject.pc).to eq(pc - 3)
+    end
+
+    it 'does not branch when carry flag is set' do
+      subject.p = 0xff
+      subject.bcc(:relative, [0x90, 0x03])
+      expect(subject.pc).to eq(pc)
+    end
+  end
+
   describe '#beq' do
-    let(:pc) { 0xfd49 }
+    let(:pc) { 0xfdba }
 
     before do
       subject.pc = pc
