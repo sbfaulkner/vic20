@@ -433,6 +433,45 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0x9 }
+      let(:value) { 0xff }
+
+      before do
+        memory[address] = value
+        subject.a = 0x00
+      end
+
+      it 'sets the accumulator to the value' do
+        subject.lda(:zero_page, [0xa5, address])
+        expect(subject.a).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.lda(:zero_page, [0xa5, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.lda(:zero_page, [0xa5, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'with a value of zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.lda(:zero_page, [0xa5, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.lda(:zero_page, [0xa5, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
   end
 
   describe '#ldx' do

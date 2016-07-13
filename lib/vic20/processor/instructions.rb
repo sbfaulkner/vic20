@@ -101,6 +101,8 @@ module Vic20
           address = self.class.operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
+        when :zero_page
+          @memory[self.class.operand(bytes)]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
