@@ -20,8 +20,23 @@ def format_instruction(address, method, addressing_mode, bytes)
   ].join('  ')
 end
 
+def verbose?
+  @verbose ||= ARGV.include?('-v') || ARGV.include?('--verbose')
+end
+
 processor.each do |address, method, addressing_mode, bytes|
-  puts processor.current_state
-  puts format_instruction(address, method, addressing_mode, bytes)
-  processor.send(method, addressing_mode, bytes)
+  if verbose?
+    STDERR.puts processor.current_state
+    STDERR.puts format_instruction(address, method, addressing_mode, bytes)
+  end
+
+  begin
+    processor.send(method, addressing_mode, bytes)
+  rescue
+    unless verbose?
+      STDERR.puts processor.current_state
+      STDERR.puts format_instruction(address, method, addressing_mode, bytes)
+    end
+    raise
+  end
 end
