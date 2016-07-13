@@ -835,6 +835,44 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#txa' do
+    let(:value) { 0xff }
+
+    before do
+      subject.x = value
+      subject.a = 0xdd
+    end
+
+    it 'transfers the x-index register to the accumulator' do
+      subject.txa(:implied, [0x8a])
+      expect(subject.a).to eq(value)
+    end
+
+    it 'sets the sign flag' do
+      subject.txa(:implied, [0x8a])
+      expect(subject.n?).to be_truthy
+    end
+
+    it 'clears the zero flag' do
+      subject.txa(:implied, [0x8a])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'with a value of zero' do
+      let(:value) { 0 }
+
+      it 'clears the sign flag' do
+        subject.txa(:implied, [0x8a])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.txa(:implied, [0x8a])
+        expect(subject.z?).to be_truthy
+      end
+    end
+  end
+
   describe '#txs' do
     let(:value) { 0xff }
 

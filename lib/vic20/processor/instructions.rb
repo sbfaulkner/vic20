@@ -202,6 +202,15 @@ module Vic20
         affect_zero_flag(y)
       end
 
+      def txa(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.a = x
+
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def txs(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
