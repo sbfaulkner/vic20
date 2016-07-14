@@ -896,6 +896,20 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#jmp' do
+    let(:pc) { 0xfdd2 }
+    let(:destination) { 0xfe7b }
+
+    before do
+      subject.pc = pc
+    end
+
+    it 'transfers program control to the new address' do
+      subject.jmp(:absolute, [0x4c, lsb(destination), msb(destination)])
+      expect(subject.pc).to eq(destination)
+    end
+  end
+
   describe '#jsr' do
     let(:top) { 0x1ff }
     let(:pc) { 0xfd27 }

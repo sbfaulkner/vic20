@@ -99,7 +99,7 @@ module Vic20
       0x48 => { method: :pha, addressing_mode: :implied,     cycles: 3 }, # TODO: implement PHA (implied)
       0x49 => { method: :eor, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement EOR (immediate)
       0x4A => { method: :lsr, addressing_mode: :accumulator, cycles: 2 }, # TODO: implement LSR (accumulator)
-      0x4C => { method: :jmp, addressing_mode: :absolute,    cycles: 3 }, # TODO: implement JMP (absolute)
+      0x4C => { method: :jmp, addressing_mode: :absolute,    cycles: 3 },
       0x4D => { method: :eor, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement EOR (absolute)
       0x4E => { method: :lsr, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement LSR (absolute)
       0x50 => { method: :bvc, addressing_mode: :relative,    cycles: 2 }, # TODO: implement BVC (relative)

@@ -134,6 +134,12 @@ module Vic20
         affect_zero_flag(x)
       end
 
+      def jmp(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
+
+        self.pc = self.class.operand(bytes)
+      end
+
       def jsr(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 
