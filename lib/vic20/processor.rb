@@ -168,7 +168,7 @@ module Vic20
       0xBA => { method: :tsx, addressing_mode: :implied,     cycles: 2 }, # TODO: implement TSX (implied)
       0xBC => { method: :ldy, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement LDY (absolute_x)
       0xBD => { method: :lda, addressing_mode: :absolute_x,  cycles: 4 },
-      0xC0 => { method: :cpy, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement CPY (immediate)
+      0xC0 => { method: :cpy, addressing_mode: :immediate,   cycles: 2 },
       0xC1 => { method: :cmp, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement CMP (indirect_x)
       0xC4 => { method: :cpy, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement CPY (zero_page)
       0xC5 => { method: :cmp, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement CMP (zero_page)

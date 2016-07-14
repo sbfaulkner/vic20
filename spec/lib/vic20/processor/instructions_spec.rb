@@ -340,6 +340,71 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#cpy' do
+    context 'with immediate addressing mode' do
+      before do
+        subject.y = 0xc5
+      end
+
+      context 'when the y-index register is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the y-index register is equal to the addressed value' do
+        let(:value) { subject.y }
+
+        it 'sets the carry flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the y-index register is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cpy(:immediate, [0xc0, value])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+  end
+
   describe '#eor' do
     context 'with zero page,x addressing mode' do
       let(:address) { 0xc1 }

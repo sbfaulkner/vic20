@@ -88,6 +88,21 @@ module Vic20
         affect_zero_flag(result)
       end
 
+      def cpy(addressing_mode, bytes)
+        value = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        result = y - value
+
+        affect_carry_flag(result)
+        affect_sign_flag(result)
+        affect_zero_flag(result)
+      end
+
       def eor(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page_x
 
