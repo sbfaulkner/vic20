@@ -174,7 +174,7 @@ module Vic20
       0xC5 => { method: :cmp, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement CMP (zero_page)
       0xC6 => { method: :dec, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement DEC (zero_page)
       0xC8 => { method: :iny, addressing_mode: :implied,     cycles: 2 }, # TODO: implement INY (implied)
-      0xC9 => { method: :cmp, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement CMP (immediate)
+      0xC9 => { method: :cmp, addressing_mode: :immediate,   cycles: 2 },
       0xCA => { method: :dex, addressing_mode: :implied,     cycles: 2 }, # TODO: implement DEX (implied)
       0xCC => { method: :cpy, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement CPY (absolute)
       0xCD => { method: :cmp, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement CMP (absolute)

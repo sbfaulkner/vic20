@@ -195,6 +195,69 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with immediate addressing mode' do
+      before do
+        subject.a = 0xc5
+      end
+
+      context 'when the accumulator is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the accumulator is equal to the addressed value' do
+        let(:value) { subject.a }
+
+        it 'sets the carry flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the accumulator is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:immediate, [0xc9, value])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+
     context 'with indirect,y addressing mode' do
       let(:indirect_address) { 0x034a }
       let(:address) { 0xc1 }
