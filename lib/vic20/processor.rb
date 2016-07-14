@@ -151,7 +151,7 @@ module Vic20
       0xA2 => { method: :ldx, addressing_mode: :immediate,   cycles: 2 },
       0xA4 => { method: :ldy, addressing_mode: :zero_page,   cycles: 3 },
       0xA5 => { method: :lda, addressing_mode: :zero_page,   cycles: 3 },
-      0xA6 => { method: :ldx, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement LDX (zero_page)
+      0xA6 => { method: :ldx, addressing_mode: :zero_page,   cycles: 3 },
       0xA8 => { method: :tay, addressing_mode: :implied,     cycles: 2 },
       0xA9 => { method: :lda, addressing_mode: :immediate,   cycles: 2 },
       0xAA => { method: :tax, addressing_mode: :implied,     cycles: 2 },

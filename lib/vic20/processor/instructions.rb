@@ -147,9 +147,14 @@ module Vic20
       end
 
       def ldx(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
-
-        self.x = self.class.operand(bytes)
+        self.x = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
         affect_sign_flag(x)
         affect_zero_flag(x)
