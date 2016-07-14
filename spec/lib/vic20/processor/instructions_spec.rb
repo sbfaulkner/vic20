@@ -116,6 +116,17 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#clc' do
+    before do
+      subject.p = 0xff
+    end
+
+    it 'clears the carry flag' do
+      subject.clc(:implied, [0x18])
+      expect(subject.c?).to be_falsey
+    end
+  end
+
   describe '#cld' do
     before do
       subject.p = 0xff
