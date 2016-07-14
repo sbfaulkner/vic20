@@ -38,6 +38,32 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#bcs' do
+    let(:pc) { 0xfdde }
+
+    before do
+      subject.pc = pc
+    end
+
+    it 'branches when carry flag is set' do
+      subject.p = 0xff
+      subject.bcs(:relative, [0xb0, 0x03])
+      expect(subject.pc).to eq(pc + 3)
+    end
+
+    it 'branches backwards when carry flag is set' do
+      subject.p = 0xff
+      subject.bcs(:relative, [0xb0, 0xfd])
+      expect(subject.pc).to eq(pc - 3)
+    end
+
+    it 'does not branch when carry flag is clear' do
+      subject.p = 0x00
+      subject.bcs(:relative, [0xb0, 0x03])
+      expect(subject.pc).to eq(pc)
+    end
+  end
+
   describe '#beq' do
     let(:pc) { 0xfdba }
 
