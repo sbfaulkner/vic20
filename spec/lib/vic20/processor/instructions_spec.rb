@@ -751,6 +751,45 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0xc2 }
+      let(:value) { 0xff }
+
+      before do
+        memory[address] = value
+        subject.y = 0x00
+      end
+
+      it 'sets the y index register to the value' do
+        subject.ldy(:zero_page, [0xa4, address])
+        expect(subject.y).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.ldy(:zero_page, [0xa4, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.ldy(:zero_page, [0xa4, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.ldy(:zero_page, [0xa4, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ldy(:zero_page, [0xa4, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
   end
 
   describe '#jsr' do

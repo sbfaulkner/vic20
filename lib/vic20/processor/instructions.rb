@@ -156,9 +156,14 @@ module Vic20
       end
 
       def ldy(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
-
-        self.y = self.class.operand(bytes)
+        self.y = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
         affect_sign_flag(y)
         affect_zero_flag(y)
