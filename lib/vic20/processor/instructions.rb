@@ -82,6 +82,17 @@ module Vic20
         affect_zero_flag(result)
       end
 
+      def eor(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page_x
+
+        address = (self.class.operand(bytes) + x) & 0xff
+
+        self.a ^= @memory[address]
+
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def inc(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page
 
