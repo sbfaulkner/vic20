@@ -560,6 +560,72 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0x34 }
+
+      before do
+        subject.a = 0xc5
+        memory[address] = value
+      end
+
+      context 'when the accumulator is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the accumulator is equal to the addressed value' do
+        let(:value) { subject.a }
+
+        it 'sets the carry flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the accumulator is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:zero_page, [0xc5, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
   end
 
   describe '#cpx' do
