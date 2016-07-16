@@ -1545,7 +1545,7 @@ describe Vic20::Processor do
       subject.y = value
     end
 
-    context 'with zero page addressing mode' do
+    context 'with absolute addressing mode' do
       let(:address) { 0x0284 }
 
       it 'stores the y-index register value at the correct address' do
@@ -1560,6 +1560,25 @@ describe Vic20::Processor do
       it 'stores the y-index register value at the correct address' do
         subject.sty(:zero_page, [0x84, address])
         expect(memory[address]).to eq(value)
+      end
+    end
+
+    context 'with zero page,x addressing mode' do
+      let(:offset) { 0x0f }
+
+      before do
+        memory[offset] = 0xff
+        subject.x = offset
+      end
+
+      it 'stores the y-index register value at the correct address' do
+        subject.sty(:zero_page_x, [0x94, 0x00])
+        expect(memory[offset]).to eq(value)
+      end
+
+      it 'is subject to wrap-around' do
+        subject.sty(:zero_page_x, [0x94, 0xff])
+        expect(memory[offset - 1]).to eq(value)
       end
     end
   end
