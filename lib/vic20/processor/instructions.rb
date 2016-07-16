@@ -358,6 +358,7 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
+        # TODO: verify that SBC is implemented correctly
         borrow = c? ? 0 : 1
 
         result = a - value - borrow
