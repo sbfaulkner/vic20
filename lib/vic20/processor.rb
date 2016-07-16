@@ -96,7 +96,7 @@ module Vic20
       0x41 => { method: :eor, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement EOR (indirect_x)
       0x45 => { method: :eor, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement EOR (zero_page)
       0x46 => { method: :lsr, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement LSR (zero_page)
-      0x48 => { method: :pha, addressing_mode: :implied,     cycles: 3 }, # TODO: implement PHA (implied)
+      0x48 => { method: :pha, addressing_mode: :implied,     cycles: 3 },
       0x49 => { method: :eor, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement EOR (immediate)
       0x4A => { method: :lsr, addressing_mode: :accumulator, cycles: 2 }, # TODO: implement LSR (accumulator)
       0x4C => { method: :jmp, addressing_mode: :absolute,    cycles: 3 },

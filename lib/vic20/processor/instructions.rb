@@ -331,6 +331,12 @@ module Vic20
         affect_zero_flag(a)
       end
 
+      def pha(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        push a
+      end
+
       def php(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 

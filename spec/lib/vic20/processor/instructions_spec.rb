@@ -1938,6 +1938,28 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#pha' do
+    let(:top) { 0x1ff }
+
+    before do
+      subject.a = 0xbd
+      subject.s = top & 0xff
+    end
+
+    it 'pushes a byte onto the stack' do
+      expect { subject.pha(:implied, [0x48]) }.to change { subject.s }.by(-1)
+    end
+
+    it 'pushes the current accumulator onto the stack' do
+      subject.pha(:implied, [0x48])
+      expect(memory[top]).to eq(subject.a)
+    end
+
+    it 'does not change the current accumulator' do
+      expect { subject.pha(:implied, [0x48]) }.not_to change { subject.a }
+    end
+  end
+
   describe '#php' do
     let(:top) { 0x1ff }
 
