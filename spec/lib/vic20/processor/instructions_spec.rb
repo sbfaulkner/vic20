@@ -116,6 +116,32 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#bpl' do
+    let(:pc) { 0xfd49 }
+
+    before do
+      subject.pc = pc
+    end
+
+    it 'branches when sign flag is clear' do
+      subject.p = 0x00
+      subject.bpl(:relative, [0x10, 0x03])
+      expect(subject.pc).to eq(pc + 3)
+    end
+
+    it 'branches backwards when sign flag is clear' do
+      subject.p = 0x00
+      subject.bpl(:relative, [0x10, 0xfd])
+      expect(subject.pc).to eq(pc - 3)
+    end
+
+    it 'does not branch when sign flag is set' do
+      subject.p = 0xff
+      subject.bpl(:relative, [0x10, 0x03])
+      expect(subject.pc).to eq(pc)
+    end
+  end
+
   describe '#clc' do
     before do
       subject.p = 0xff
