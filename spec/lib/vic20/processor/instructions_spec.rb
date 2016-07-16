@@ -1488,6 +1488,47 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page,x addressing mode' do
+      let(:address) { 0x09 }
+      let(:offset) { 5 }
+      let(:value) { 0xc5 }
+
+      before do
+        memory[address + offset] = value
+        subject.y = 0x00
+        subject.x = offset
+      end
+
+      it 'sets the accumulator to the value' do
+        subject.ldy(:zero_page_x, [0xb4, address])
+        expect(subject.y).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.ldy(:zero_page_x, [0xb4, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.ldy(:zero_page_x, [0xb4, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.ldy(:zero_page_x, [0xb4, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ldy(:zero_page_x, [0xb4, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
   end
 
   describe '#ora' do
