@@ -118,6 +118,15 @@ module Vic20
         affect_zero_flag(result)
       end
 
+      def dex(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.x = (x - 1) & 0xff
+
+        affect_sign_flag(x)
+        affect_zero_flag(x)
+      end
+
       def dey(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 

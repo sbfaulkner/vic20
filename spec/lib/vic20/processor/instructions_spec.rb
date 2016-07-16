@@ -475,6 +475,67 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#dex' do
+    let(:x) { 1 }
+
+    before do
+      subject.x = x
+    end
+
+    it 'decrements the x-index register' do
+      subject.dex(:implied, [0xca])
+      expect(subject.x).to eq(x - 1)
+    end
+
+    it 'clears the sign flag' do
+      subject.dex(:implied, [0xca])
+      expect(subject.n?).to be_falsey
+    end
+
+    it 'sets the zero flag' do
+      subject.dex(:implied, [0xca])
+      expect(subject.z?).to be_truthy
+    end
+
+    context 'when the initial value is 0xff' do
+      let(:x) { 0xff }
+
+      it 'decrements the x-index register' do
+        subject.dex(:implied, [0xca])
+        expect(subject.x).to eq(x - 1)
+      end
+
+      it 'sets the sign flag' do
+        subject.dex(:implied, [0xca])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.dex(:implied, [0xca])
+        expect(subject.z?).to be_falsey
+      end
+    end
+
+    context 'when the initial value is 0' do
+      let(:x) { 0 }
+
+      it 'rolls over to 0xff' do
+        subject.dex(:implied, [0xca])
+        expect(subject.x).to eq(0xff)
+      end
+
+      it 'sets the sign flag' do
+        subject.dex(:implied, [0xca])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.dex(:implied, [0xca])
+        expect(subject.z?).to be_falsey
+      end
+    end
+  end
+
   describe '#dey' do
     let(:y) { 1 }
 
