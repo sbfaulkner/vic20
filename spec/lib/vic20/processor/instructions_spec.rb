@@ -1125,11 +1125,18 @@ describe Vic20::Processor do
   end
 
   describe '#stx' do
-    let(:address) { 0xb2 }
-    let(:value) { 0x3c }
+    let(:address) { 0x0283 }
+    let(:value) { 0x98 }
 
     before do
       subject.x = value
+    end
+
+    context 'with absolute addressing mode' do
+      it 'stores the x-index register value at the correct address' do
+        subject.stx(:absolute, [0x8e, lsb(address), msb(address)])
+        expect(memory[address]).to eq(value)
+      end
     end
 
     context 'with zero page addressing mode' do

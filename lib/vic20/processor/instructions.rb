@@ -241,9 +241,16 @@ module Vic20
       end
 
       def stx(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page
+        address = case addressing_mode
+        when :absolute
+          self.class.operand(bytes)
+        when :zero_page
+          self.class.operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
-        @memory[self.class.operand(bytes)] = x
+        @memory[address] = x
       end
 
       def sty(addressing_mode, bytes)

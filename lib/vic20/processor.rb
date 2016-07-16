@@ -136,7 +136,7 @@ module Vic20
       0x8A => { method: :txa, addressing_mode: :implied,     cycles: 2 },
       0x8C => { method: :sty, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement STY (absolute)
       0x8D => { method: :sta, addressing_mode: :absolute,    cycles: 4 },
-      0x8E => { method: :stx, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement STX (absolute)
+      0x8E => { method: :stx, addressing_mode: :absolute,    cycles: 4 },
       0x90 => { method: :bcc, addressing_mode: :relative,    cycles: 2 },
       0x91 => { method: :sta, addressing_mode: :indirect_y,  cycles: 6 },
       0x94 => { method: :sty, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement STY (zero_page_x)
