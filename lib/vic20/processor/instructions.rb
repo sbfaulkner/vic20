@@ -112,6 +112,12 @@ module Vic20
         self.p &= ~C_FLAG
       end
 
+      def cli(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p &= ~I_FLAG
+      end
+
       def cmp(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute_x

@@ -349,6 +349,17 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#cli' do
+    before do
+      subject.p = 0xff
+    end
+
+    it 'clears the interrupt flag' do
+      subject.cli(:implied, [0x58])
+      expect(subject.i?).to be_falsey
+    end
+  end
+
   describe '#cmp' do
     context 'with absolute,x addressing mode' do
       let(:address) { 0xa003 }
