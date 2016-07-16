@@ -223,6 +223,15 @@ module Vic20
         affect_zero_flag(y)
       end
 
+      def ora(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+
+        self.a |= self.class.operand(bytes)
+
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def ror(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
 

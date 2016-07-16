@@ -710,6 +710,45 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#jmp' do
+    let(:pc) { 0xfdd2 }
+    let(:destination) { 0xfe7b }
+
+    before do
+      subject.pc = pc
+    end
+
+    it 'transfers program control to the new address' do
+      subject.jmp(:absolute, [0x4c, lsb(destination), msb(destination)])
+      expect(subject.pc).to eq(destination)
+    end
+  end
+
+  describe '#jsr' do
+    let(:top) { 0x1ff }
+    let(:pc) { 0xfd27 }
+    let(:destination) { 0xfd3f }
+
+    before do
+      subject.s = top & 0xff
+      subject.pc = pc
+    end
+
+    it 'pushes a word onto the stack' do
+      expect { subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)]) }.to change { subject.s }.by(-2)
+    end
+
+    it 'pushes address-1 to the stack' do
+      subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
+      expect(word_at(top - 1)).to eq(pc - 1)
+    end
+
+    it 'transfers program control to the new address' do
+      subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
+      expect(subject.pc).to eq(destination)
+    end
+  end
+
   describe '#lda' do
     context 'with absolute addressing mode' do
       let(:address) { signature_address + 4 }
@@ -1108,42 +1147,48 @@ describe Vic20::Processor do
     end
   end
 
-  describe '#jmp' do
-    let(:pc) { 0xfdd2 }
-    let(:destination) { 0xfe7b }
+  describe '#ora' do
+    context 'with immediate addressing mode' do
+      let(:mask) { 0x1c }
+      let(:value) { 0x45 }
 
-    before do
-      subject.pc = pc
-    end
+      before do
+        subject.a = mask
+      end
 
-    it 'transfers program control to the new address' do
-      subject.jmp(:absolute, [0x4c, lsb(destination), msb(destination)])
-      expect(subject.pc).to eq(destination)
-    end
-  end
+      it 'ors the accumulator with the provided value' do
+        subject.ora(:immediate, [0x09, value])
+        expect(subject.a).to eq(value | mask)
+      end
 
-  describe '#jsr' do
-    let(:top) { 0x1ff }
-    let(:pc) { 0xfd27 }
-    let(:destination) { 0xfd3f }
+      it 'clears the sign flag' do
+        subject.ora(:immediate, [0x09, value])
+        expect(subject.n?).to be_falsey
+      end
 
-    before do
-      subject.s = top & 0xff
-      subject.pc = pc
-    end
+      it 'clears the zero flag' do
+        subject.ora(:immediate, [0x09, value])
+        expect(subject.z?).to be_falsey
+      end
 
-    it 'pushes a word onto the stack' do
-      expect { subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)]) }.to change { subject.s }.by(-2)
-    end
+      context 'when the result has bit 7 set' do
+        let(:value) { 0xc5 }
 
-    it 'pushes address-1 to the stack' do
-      subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
-      expect(word_at(top - 1)).to eq(pc - 1)
-    end
+        it 'sets the sign flag' do
+          subject.ora(:immediate, [0x09, value])
+          expect(subject.n?).to be_truthy
+        end
+      end
 
-    it 'transfers program control to the new address' do
-      subject.jsr(:absolute, [0x20, lsb(destination), msb(destination)])
-      expect(subject.pc).to eq(destination)
+      context 'when the result is zero' do
+        let(:mask) { 0 }
+        let(:value) { 0 }
+
+        it 'sets the zero flag' do
+          subject.ora(:immediate, [0x09, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
     end
   end
 
