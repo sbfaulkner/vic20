@@ -114,7 +114,7 @@ module Vic20
       0x61 => { method: :adc, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement ADC (indirect_x)
       0x65 => { method: :adc, addressing_mode: :zero_page,   cycles: 3 },
       0x66 => { method: :ror, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement ROR (zero_page)
-      0x68 => { method: :pla, addressing_mode: :implied,     cycles: 4 }, # TODO: implement PLA (implied)
+      0x68 => { method: :pla, addressing_mode: :implied,     cycles: 4 },
       0x69 => { method: :adc, addressing_mode: :immediate,   cycles: 2 },
       0x6A => { method: :ror, addressing_mode: :accumulator, cycles: 2 },
       0x6C => { method: :jmp, addressing_mode: :indirect,    cycles: 5 },

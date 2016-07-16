@@ -1940,9 +1940,10 @@ describe Vic20::Processor do
 
   describe '#pha' do
     let(:top) { 0x1ff }
+    let(:value) { 0xbd }
 
     before do
-      subject.a = 0xbd
+      subject.a = value
       subject.s = top & 0xff
     end
 
@@ -1952,7 +1953,7 @@ describe Vic20::Processor do
 
     it 'pushes the current accumulator onto the stack' do
       subject.pha(:implied, [0x48])
-      expect(memory[top]).to eq(subject.a)
+      expect(memory[top]).to eq(value)
     end
 
     it 'does not change the current accumulator' do
@@ -1962,9 +1963,10 @@ describe Vic20::Processor do
 
   describe '#php' do
     let(:top) { 0x1ff }
+    let(:value) { 0xbd }
 
     before do
-      subject.p = 0xbd
+      subject.p = value
       subject.s = top & 0xff
     end
 
@@ -1974,11 +1976,55 @@ describe Vic20::Processor do
 
     it 'pushes the current processor status onto the stack' do
       subject.php(:implied, [0x08])
-      expect(memory[top]).to eq(subject.p)
+      expect(memory[top]).to eq(value)
     end
 
     it 'does not change the current processor status' do
       expect { subject.php(:implied, [0x08]) }.not_to change { subject.p }
+    end
+  end
+
+  describe '#pla' do
+    let(:top) { 0x1ff }
+    let(:value) { 0xbd }
+
+    before do
+      subject.a = 0
+      subject.s = (top - 1) & 0xff
+      memory[top] = value
+    end
+
+    it 'pulls a byte off of the stack' do
+      expect { subject.pla(:implied, [0x68]) }.to change { subject.s }.by(1)
+    end
+
+    it 'sets the accumulator to the value pulled off the stack' do
+      subject.pla(:implied, [0x68])
+      expect(subject.a).to eq(value)
+    end
+
+    it 'sets the sign flag' do
+      subject.pla(:implied, [0x68])
+      expect(subject.n?).to be_truthy
+    end
+
+    it 'clears the zero flag' do
+      subject.pla(:implied, [0x68])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'when the value is 0' do
+      let(:value) { 0 }
+
+      it 'clears the sign flag' do
+        subject.pla(:implied, [0x68])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.pla(:implied, [0x68])
+        expect(subject.z?).to be_truthy
+      end
     end
   end
 

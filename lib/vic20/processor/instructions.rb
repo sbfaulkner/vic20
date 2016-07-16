@@ -343,6 +343,15 @@ module Vic20
         push p
       end
 
+      def pla(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.a = pop
+
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def ror(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
 
