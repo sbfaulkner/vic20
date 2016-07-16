@@ -1387,6 +1387,45 @@ describe Vic20::Processor do
   end
 
   describe '#ldx' do
+    context 'with absolute addressing mode' do
+      let(:address) { 0xc15a }
+      let(:value) { 0xff }
+
+      before do
+        memory[address] = value
+        subject.x = 0x00
+      end
+
+      it 'sets the x index register to the value' do
+        subject.ldx(:absolute, [0xae, lsb(address), msb(address)])
+        expect(subject.x).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.ldx(:absolute, [0xae, lsb(address), msb(address)])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.ldx(:absolute, [0xae, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.ldx(:absolute, [0xae, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ldx(:absolute, [0xae, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       let(:value) { 0xff }
 

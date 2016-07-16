@@ -274,6 +274,8 @@ module Vic20
 
       def ldx(addressing_mode, bytes)
         self.x = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :immediate
           self.class.operand(bytes)
         when :zero_page
