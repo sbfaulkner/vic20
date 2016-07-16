@@ -1763,6 +1763,17 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#sec' do
+    before do
+      subject.p = 0x00
+    end
+
+    it 'sets the carry flag' do
+      subject.sec(:implied, [0x38])
+      expect(subject.c?).to be_truthy
+    end
+  end
+
   describe '#sei' do
     before do
       subject.p = 0x00

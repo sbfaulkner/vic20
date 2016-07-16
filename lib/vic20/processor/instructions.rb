@@ -335,6 +335,12 @@ module Vic20
         self.pc = pop_word + 1
       end
 
+      def sec(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p |= C_FLAG
+      end
+
       def sei(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 

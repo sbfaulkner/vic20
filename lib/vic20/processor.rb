@@ -88,7 +88,7 @@ module Vic20
       0x31 => { method: :and, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement AND (indirect_y)
       0x35 => { method: :and, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement AND (zero_page_x)
       0x36 => { method: :rol, addressing_mode: :zero_page_x, cycles: 6 }, # TODO: implement ROL (zero_page_x)
-      0x38 => { method: :sec, addressing_mode: :implied,     cycles: 2 }, # TODO: implement SEC (implied)
+      0x38 => { method: :sec, addressing_mode: :implied,     cycles: 2 },
       0x39 => { method: :and, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement AND (absolute_y)
       0x3D => { method: :and, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement AND (absolute_x)
       0x3E => { method: :rol, addressing_mode: :absolute_x,  cycles: 7 }, # TODO: implement ROL (absolute_x)
