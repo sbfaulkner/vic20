@@ -667,6 +667,46 @@ describe Vic20::Processor do
   end
 
   describe '#lda' do
+    context 'with absolute addressing mode' do
+      let(:address) { signature_address + 4 }
+      let(:value) { signature[4] }
+
+      before do
+        subject.a = 0x00
+      end
+
+      it 'sets the accumulator to the value' do
+        subject.lda(:absolute, [0xad, lsb(address), msb(address)])
+        expect(subject.a).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.lda(:absolute, [0xad, lsb(address), msb(address)])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.lda(:absolute, [0xad, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        before do
+          memory[address] = 0
+        end
+
+        it 'clears the sign flag' do
+          subject.lda(:absolute, [0xad, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.lda(:absolute, [0xad, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with absolute,x addressing mode' do
       let(:address) { signature_address - 1 }
       let(:value) { signature[4] }

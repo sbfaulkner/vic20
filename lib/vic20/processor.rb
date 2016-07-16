@@ -156,7 +156,7 @@ module Vic20
       0xA9 => { method: :lda, addressing_mode: :immediate,   cycles: 2 },
       0xAA => { method: :tax, addressing_mode: :implied,     cycles: 2 },
       0xAC => { method: :ldy, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement LDY (absolute)
-      0xAD => { method: :lda, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement LDA (absolute)
+      0xAD => { method: :lda, addressing_mode: :absolute,    cycles: 4 },
       0xAE => { method: :ldx, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement LDX (absolute)
       0xB0 => { method: :bcs, addressing_mode: :relative,    cycles: 2 },
       0xB1 => { method: :lda, addressing_mode: :indirect_y,  cycles: 5 },
