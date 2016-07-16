@@ -115,7 +115,7 @@ module Vic20
       0x65 => { method: :adc, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement ADC (zero_page)
       0x66 => { method: :ror, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement ROR (zero_page)
       0x68 => { method: :pla, addressing_mode: :implied,     cycles: 4 }, # TODO: implement PLA (implied)
-      0x69 => { method: :adc, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement ADC (immediate)
+      0x69 => { method: :adc, addressing_mode: :immediate,   cycles: 2 },
       0x6A => { method: :ror, addressing_mode: :accumulator, cycles: 2 },
       0x6C => { method: :jmp, addressing_mode: :indirect,    cycles: 5 }, # TODO: implement JMP (indirect)
       0x6D => { method: :adc, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement ADC (absolute)
@@ -215,7 +215,7 @@ module Vic20
     }.freeze
 
     def affect_carry_flag(value)
-      if value >= 0
+      if value
         self.p |= C_FLAG
       else
         self.p &= ~C_FLAG

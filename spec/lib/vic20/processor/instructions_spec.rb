@@ -12,6 +12,56 @@ describe Vic20::Processor do
     memory[signature_address, 5] = signature
   end
 
+  describe '#adc' do
+    let(:a) { 0x40 }
+    let(:value) { 0x0f }
+
+    before do
+      subject.a = a
+      subject.p = 0xff
+    end
+
+    context 'with immediate addressing mode' do
+      it 'adds the specified value to the accumulator' do
+        subject.adc(:immediate, [0x69, value])
+        expect(subject.a).to eq(a + value)
+      end
+
+      it 'clears the carry flag' do
+        subject.adc(:immediate, [0x69, value])
+        expect(subject.c?).to be_falsey
+      end
+
+      it 'clears the sign flag' do
+        subject.adc(:immediate, [0x69, value])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.adc(:immediate, [0x69, value])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result is > 255' do
+        let(:a) { 0xfe }
+
+        it 'sets the carry flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.c?).to be_truthy
+        end
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:a) { 0x7e }
+
+        it 'sets the sign flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.n?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe '#and' do
     context 'with immediate addressing mode' do
       let(:mask) { 0xfc }

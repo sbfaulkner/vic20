@@ -31,6 +31,18 @@ module Vic20
         end
       end
 
+      def adc(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+
+        result = a + self.class.operand(bytes)
+
+        self.a = result & 0xff
+
+        affect_carry_flag(result > 0xff)
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def and(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
 
@@ -47,7 +59,7 @@ module Vic20
 
         self.a = shifted & 0xff
 
-        affect_carry_flag(shifted & 0x100 == 0 ? -1 : 1)
+        affect_carry_flag(shifted & 0x100 != 0)
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
@@ -110,7 +122,7 @@ module Vic20
 
         result = a - value
 
-        affect_carry_flag(result)
+        affect_carry_flag(result >= 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -125,7 +137,7 @@ module Vic20
 
         result = y - value
 
-        affect_carry_flag(result)
+        affect_carry_flag(result >= 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -261,7 +273,7 @@ module Vic20
         self.a = shifted >> 8
         self.a |= 0x80 if c?
 
-        affect_carry_flag(shifted & 0x80 == 0 ? -1 : 1)
+        affect_carry_flag(shifted & 0x80 != 0)
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
