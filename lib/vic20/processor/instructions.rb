@@ -151,6 +151,8 @@ module Vic20
         self.a = case addressing_mode
         when :absolute_x
           @memory[self.class.operand(bytes) + x]
+        when :absolute_y
+          @memory[self.class.operand(bytes) + y]
         when :immediate
           self.class.operand(bytes)
         when :indirect_y

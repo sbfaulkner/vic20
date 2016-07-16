@@ -164,7 +164,7 @@ module Vic20
       0xB5 => { method: :lda, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement LDA (zero_page_x)
       0xB6 => { method: :ldx, addressing_mode: :zero_page_y, cycles: 4 }, # TODO: implement LDX (zero_page_y)
       0xB8 => { method: :clv, addressing_mode: :implied,     cycles: 2 }, # TODO: implement CLV (implied)
-      0xB9 => { method: :lda, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement LDA (absolute_y)
+      0xB9 => { method: :lda, addressing_mode: :absolute_y,  cycles: 4 },
       0xBA => { method: :tsx, addressing_mode: :implied,     cycles: 2 }, # TODO: implement TSX (implied)
       0xBC => { method: :ldy, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement LDY (absolute_x)
       0xBD => { method: :lda, addressing_mode: :absolute_x,  cycles: 4 },
