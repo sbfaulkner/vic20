@@ -63,7 +63,7 @@ module Vic20
       0x08 => { method: :php, addressing_mode: :implied,     cycles: 2 }, # TODO: implement PHP (implied)
       0x09 => { method: :ora, addressing_mode: :immediate,   cycles: 2 },
       0x0A => { method: :asl, addressing_mode: :accumulator, cycles: 2 },
-      0x0D => { method: :ora, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement ORA (absolute)
+      0x0D => { method: :ora, addressing_mode: :absolute,    cycles: 4 },
       0x0E => { method: :asl, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement ASL (absolute)
       0x10 => { method: :bpl, addressing_mode: :relative,    cycles: 2 },
       0x11 => { method: :ora, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement ORA (indirect_y)

@@ -283,9 +283,14 @@ module Vic20
       end
 
       def ora(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
-
-        self.a |= self.class.operand(bytes)
+        self.a |= case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
+        when :immediate
+          self.class.operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
         affect_sign_flag(a)
         affect_zero_flag(a)
