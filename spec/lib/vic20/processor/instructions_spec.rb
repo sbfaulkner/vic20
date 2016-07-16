@@ -1938,6 +1938,28 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#php' do
+    let(:top) { 0x1ff }
+
+    before do
+      subject.p = 0xbd
+      subject.s = top & 0xff
+    end
+
+    it 'pushes a byte onto the stack' do
+      expect { subject.php(:implied, [0x08]) }.to change { subject.s }.by(-1)
+    end
+
+    it 'pushes the current processor status onto the stack' do
+      subject.php(:implied, [0x08])
+      expect(memory[top]).to eq(subject.p)
+    end
+
+    it 'does not change the current processor status' do
+      expect { subject.php(:implied, [0x08]) }.not_to change { subject.p }
+    end
+  end
+
   describe '#ror' do
     context 'with accumulator addressing mode' do
       let(:value) { 0b01010101 }
