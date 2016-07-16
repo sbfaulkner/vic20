@@ -79,7 +79,7 @@ module Vic20
       0x25 => { method: :and, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement AND (zero_page)
       0x26 => { method: :rol, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement ROL (zero_page)
       0x28 => { method: :plp, addressing_mode: :implied,     cycles: 4 }, # TODO: implement PLP (implied)
-      0x29 => { method: :and, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement AND (immediate)
+      0x29 => { method: :and, addressing_mode: :immediate,   cycles: 2 },
       0x2A => { method: :rol, addressing_mode: :accumulator, cycles: 2 }, # TODO: implement ROL (accumulator)
       0x2C => { method: :bit, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement BIT (absolute)
       0x2D => { method: :and, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement AND (absolute)

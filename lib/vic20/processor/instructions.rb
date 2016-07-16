@@ -31,6 +31,15 @@ module Vic20
         end
       end
 
+      def and(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+
+        self.a &= self.class.operand(bytes)
+
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def bcc(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
