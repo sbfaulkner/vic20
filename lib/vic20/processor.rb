@@ -134,7 +134,7 @@ module Vic20
       0x86 => { method: :stx, addressing_mode: :zero_page,   cycles: 3 },
       0x88 => { method: :dey, addressing_mode: :implied,     cycles: 2 }, # TODO: implement DEY (implied)
       0x8A => { method: :txa, addressing_mode: :implied,     cycles: 2 },
-      0x8C => { method: :sty, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement STY (absolute)
+      0x8C => { method: :sty, addressing_mode: :absolute,    cycles: 4 },
       0x8D => { method: :sta, addressing_mode: :absolute,    cycles: 4 },
       0x8E => { method: :stx, addressing_mode: :absolute,    cycles: 4 },
       0x90 => { method: :bcc, addressing_mode: :relative,    cycles: 2 },

@@ -1125,14 +1125,15 @@ describe Vic20::Processor do
   end
 
   describe '#stx' do
-    let(:address) { 0x0283 }
-    let(:value) { 0x98 }
+    let(:value) { 0x3c }
 
     before do
       subject.x = value
     end
 
     context 'with absolute addressing mode' do
+      let(:address) { 0x0283 }
+
       it 'stores the x-index register value at the correct address' do
         subject.stx(:absolute, [0x8e, lsb(address), msb(address)])
         expect(memory[address]).to eq(value)
@@ -1140,6 +1141,8 @@ describe Vic20::Processor do
     end
 
     context 'with zero page addressing mode' do
+      let(:address) { 0xb2 }
+
       it 'stores the x-index register value at the correct address' do
         subject.stx(:zero_page, [0x86, address])
         expect(memory[address]).to eq(value)
@@ -1148,7 +1151,6 @@ describe Vic20::Processor do
   end
 
   describe '#sty' do
-    let(:address) { 0xb3 }
     let(:value) { 0x03 }
 
     before do
@@ -1156,6 +1158,17 @@ describe Vic20::Processor do
     end
 
     context 'with zero page addressing mode' do
+      let(:address) { 0x0284 }
+
+      it 'stores the y-index register value at the correct address' do
+        subject.sty(:absolute, [0x8c, lsb(address), msb(address)])
+        expect(memory[address]).to eq(value)
+      end
+    end
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0xb3 }
+
       it 'stores the y-index register value at the correct address' do
         subject.sty(:zero_page, [0x84, address])
         expect(memory[address]).to eq(value)
