@@ -40,7 +40,7 @@ module Vic20
         affect_zero_flag(a)
       end
 
-      def asl(addressing_mode, bytes)
+      def asl(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
 
         shifted = a << 1
@@ -130,7 +130,7 @@ module Vic20
         affect_zero_flag(result)
       end
 
-      def dex(addressing_mode, bytes)
+      def dex(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
         self.x = (x - 1) & 0xff
@@ -139,7 +139,7 @@ module Vic20
         affect_zero_flag(x)
       end
 
-      def dey(addressing_mode, bytes)
+      def dey(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
         self.y = (y - 1) & 0xff
