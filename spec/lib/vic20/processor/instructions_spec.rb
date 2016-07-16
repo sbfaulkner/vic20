@@ -249,6 +249,32 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#bmi' do
+    let(:pc) { 0xfd49 }
+
+    before do
+      subject.pc = pc
+    end
+
+    it 'branches when sign flag is set' do
+      subject.p = 0xff
+      subject.bmi(:relative, [0x30, 0x03])
+      expect(subject.pc).to eq(pc + 3)
+    end
+
+    it 'branches backwards when sign flag is set' do
+      subject.p = 0xff
+      subject.bmi(:relative, [0x30, 0xfd])
+      expect(subject.pc).to eq(pc - 3)
+    end
+
+    it 'does not branch when sign flag is clear' do
+      subject.p = 0x00
+      subject.bmi(:relative, [0x30, 0x03])
+      expect(subject.pc).to eq(pc)
+    end
+  end
+
   describe '#bne' do
     let(:pc) { 0xfd49 }
 

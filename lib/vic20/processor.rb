@@ -84,7 +84,7 @@ module Vic20
       0x2C => { method: :bit, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement BIT (absolute)
       0x2D => { method: :and, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement AND (absolute)
       0x2E => { method: :rol, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement ROL (absolute)
-      0x30 => { method: :bmi, addressing_mode: :relative,    cycles: 2 }, # TODO: implement BMI (relative)
+      0x30 => { method: :bmi, addressing_mode: :relative,    cycles: 2 },
       0x31 => { method: :and, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement AND (indirect_y)
       0x35 => { method: :and, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement AND (zero_page_x)
       0x36 => { method: :rol, addressing_mode: :zero_page_x, cycles: 6 }, # TODO: implement ROL (zero_page_x)

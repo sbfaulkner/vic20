@@ -82,6 +82,12 @@ module Vic20
         self.pc += self.class.relative_operand(bytes) if z?
       end
 
+      def bmi(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
+
+        self.pc += self.class.relative_operand(bytes) if n?
+      end
+
       def bne(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
