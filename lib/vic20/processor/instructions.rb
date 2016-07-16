@@ -317,6 +317,10 @@ module Vic20
         affect_zero_flag(y)
       end
 
+      def nop(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+      end
+
       def ora(addressing_mode, bytes)
         self.a |= case addressing_mode
         when :absolute

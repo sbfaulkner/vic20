@@ -1848,6 +1848,12 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#nop' do
+    it 'is successful' do
+      expect { subject.nop(:implied, [0xea]) }.not_to raise_exception
+    end
+  end
+
   describe '#ora' do
     context 'with absolute addressing mode' do
       let(:address) { 0x0288 }
