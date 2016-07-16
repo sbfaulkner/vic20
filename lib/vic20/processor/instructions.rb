@@ -127,6 +127,21 @@ module Vic20
         affect_zero_flag(result)
       end
 
+      def cpx(addressing_mode, bytes)
+        value = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        result = x - value
+
+        affect_carry_flag(result >= 0)
+        affect_sign_flag(result)
+        affect_zero_flag(result)
+      end
+
       def cpy(addressing_mode, bytes)
         value = case addressing_mode
         when :immediate

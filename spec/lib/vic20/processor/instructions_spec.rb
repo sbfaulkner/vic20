@@ -59,6 +59,15 @@ describe Vic20::Processor do
           expect(subject.n?).to be_truthy
         end
       end
+
+      context 'when the result is 0' do
+        let(:a) { 0xf1 }
+
+        it 'sets the zero flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
     end
   end
 
@@ -510,6 +519,71 @@ describe Vic20::Processor do
 
         it 'clears the zero flag' do
           subject.cmp(:indirect_y, [0xd1, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+  end
+
+  describe '#cpx' do
+    context 'with immediate addressing mode' do
+      before do
+        subject.x = 0xc5
+      end
+
+      context 'when the x-index register is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the y-index register is equal to the addressed value' do
+        let(:value) { subject.x }
+
+        it 'sets the carry flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the y-index register is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cpx(:immediate, [0xe0, value])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cpx(:immediate, [0xe0, value])
           expect(subject.z?).to be_falsey
         end
       end
