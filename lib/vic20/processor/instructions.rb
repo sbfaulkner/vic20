@@ -32,9 +32,16 @@ module Vic20
       end
 
       def adc(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+        value = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
-        result = a + self.class.operand(bytes)
+        result = a + value
 
         self.a = result & 0xff
 
