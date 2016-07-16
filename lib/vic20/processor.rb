@@ -193,7 +193,7 @@ module Vic20
       0xE5 => { method: :sbc, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement SBC (zero_page)
       0xE6 => { method: :inc, addressing_mode: :zero_page,   cycles: 5 },
       0xE8 => { method: :inx, addressing_mode: :implied,     cycles: 2 },
-      0xE9 => { method: :sbc, addressing_mode: :immediate,   cycles: 2 }, # TODO: implement SBC (immediate)
+      0xE9 => { method: :sbc, addressing_mode: :immediate,   cycles: 2 },
       0xEA => { method: :nop, addressing_mode: :implied,     cycles: 2 }, # TODO: implement NOP (implied)
       0xEC => { method: :cpx, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement CPX (absolute)
       0xED => { method: :sbc, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement SBC (absolute)

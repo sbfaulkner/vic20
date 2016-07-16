@@ -2028,6 +2028,65 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#sbc' do
+    let(:a) { 0x19 }
+    let(:value) { 0x03 }
+
+    before do
+      subject.a = a
+      subject.p = 0xff
+    end
+
+    context 'with immediate addressing mode' do
+      it 'subtracts the value from the accumulator' do
+        subject.sbc(:immediate, [0xe9, value])
+        expect(subject.a).to eq(a - value)
+      end
+
+      it 'sets the carry flag' do
+        subject.sbc(:immediate, [0xe9, value])
+        expect(subject.c?).to be_truthy
+      end
+
+      it 'clears the sign flag' do
+        subject.sbc(:immediate, [0xe9, value])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.sbc(:immediate, [0xe9, value])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result < 0' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.c?).to be_falsey
+        end
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x20 }
+
+        it 'sets the sign flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is 0' do
+        let(:value) { subject.a }
+
+        it 'sets the zero flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe '#sec' do
     before do
       subject.p = 0x00

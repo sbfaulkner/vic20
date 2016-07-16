@@ -350,6 +350,25 @@ module Vic20
         self.pc = pop_word + 1
       end
 
+      def sbc(addressing_mode, bytes)
+        value = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        borrow = c? ? 0 : 1
+
+        result = a - value - borrow
+
+        self.a = result & 0xff
+
+        affect_carry_flag(result >= 0)
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def sec(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
