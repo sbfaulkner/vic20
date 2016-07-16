@@ -951,6 +951,67 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#iny' do
+    let(:y) { 0 }
+
+    before do
+      subject.y = y
+    end
+
+    it 'increments the y-index register' do
+      subject.iny(:implied, [0xc8])
+      expect(subject.y).to eq(y + 1)
+    end
+
+    it 'clears the sign flag' do
+      subject.iny(:implied, [0xc8])
+      expect(subject.n?).to be_falsey
+    end
+
+    it 'clears the zero flag' do
+      subject.iny(:implied, [0xc8])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'when the initial value is 0x7f' do
+      let(:y) { 0x7f }
+
+      it 'increments the x-index register' do
+        subject.iny(:implied, [0xc8])
+        expect(subject.y).to eq(y + 1)
+      end
+
+      it 'sets the sign flag' do
+        subject.iny(:implied, [0xc8])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.iny(:implied, [0xc8])
+        expect(subject.z?).to be_falsey
+      end
+    end
+
+    context 'when the initial value is 0xff' do
+      let(:y) { 0xff }
+
+      it 'rolls over to zero' do
+        subject.iny(:implied, [0xc8])
+        expect(subject.y).to eq(0)
+      end
+
+      it 'clears the sign flag' do
+        subject.iny(:implied, [0xc8])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.iny(:implied, [0xc8])
+        expect(subject.z?).to be_truthy
+      end
+    end
+  end
+
   describe '#jmp' do
     let(:pc) { 0xfdd2 }
     let(:destination) { 0xfe7b }

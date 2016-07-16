@@ -206,6 +206,15 @@ module Vic20
         affect_zero_flag(x)
       end
 
+      def iny(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.y = (y + 1) & 0xff
+
+        affect_sign_flag(y)
+        affect_zero_flag(y)
+      end
+
       def jmp(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 
