@@ -1057,9 +1057,24 @@ describe Vic20::Processor do
       subject.pc = pc
     end
 
-    it 'transfers program control to the new address' do
-      subject.jmp(:absolute, [0x4c, lsb(destination), msb(destination)])
-      expect(subject.pc).to eq(destination)
+    context 'with absolute addressing mode' do
+      it 'transfers program control to the new address' do
+        subject.jmp(:absolute, [0x4c, lsb(destination), msb(destination)])
+        expect(subject.pc).to eq(destination)
+      end
+    end
+
+    context 'with indirect addressing mode' do
+      let(:address) { 0xc000 }
+
+      before do
+        memory[address, 2] = [lsb(destination), msb(destination)]
+      end
+
+      it 'transfers program control to the new address' do
+        subject.jmp(:indirect, [0x6c, lsb(address), msb(address)])
+        expect(subject.pc).to eq(destination)
+      end
     end
   end
 

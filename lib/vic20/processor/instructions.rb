@@ -228,9 +228,15 @@ module Vic20
       end
 
       def jmp(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
-
-        self.pc = self.class.operand(bytes)
+        self.pc = case addressing_mode
+        when :absolute
+          self.class.operand(bytes)
+        when :indirect
+          address = self.class.operand(bytes)
+          @memory[address] | @memory[address + 1] << 8
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
       end
 
       def jsr(addressing_mode, bytes)
