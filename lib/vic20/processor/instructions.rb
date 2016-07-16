@@ -352,6 +352,12 @@ module Vic20
         affect_zero_flag(a)
       end
 
+      def plp(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p = pop
+      end
+
       def ror(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
 

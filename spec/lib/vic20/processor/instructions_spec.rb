@@ -2028,6 +2028,26 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#plp' do
+    let(:top) { 0x1ff }
+    let(:value) { 0xbd }
+
+    before do
+      subject.p = 0
+      subject.s = (top - 1) & 0xff
+      memory[top] = value
+    end
+
+    it 'pulls a byte off of the stack' do
+      expect { subject.plp(:implied, [0x28]) }.to change { subject.s }.by(1)
+    end
+
+    it 'sets the processor status to the value pulled off the stack' do
+      subject.plp(:implied, [0x28])
+      expect(subject.p).to eq(value)
+    end
+  end
+
   describe '#ror' do
     context 'with accumulator addressing mode' do
       let(:value) { 0b01010101 }
