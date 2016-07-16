@@ -56,6 +56,62 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#asl' do
+    context 'with accumulator addressing mode' do
+      let(:value) { 0b11101010 }
+      let(:flags) { 0 }
+
+      before do
+        subject.p = flags
+        subject.a = value
+      end
+
+      it 'shifts all bits left one position' do
+        subject.asl(:accumulator, [0x0a])
+        expect(subject.a).to eq(value << 1 & 0xff)
+      end
+
+      it 'shifts bit 7 into the carry flag' do
+        subject.asl(:accumulator, [0x0a])
+        expect(subject.c?).to be_truthy
+      end
+
+      it 'sets the sign flag' do
+        subject.asl(:accumulator, [0x0a])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag when the value is non-zero' do
+        subject.asl(:accumulator, [0x0a])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'with a value of zero' do
+        let(:value) { 0 }
+
+        it 'has a value of zero' do
+          subject.asl(:accumulator, [0x0a])
+          expect(subject.a).to eq(value)
+        end
+
+        it 'clears the carry flag' do
+          subject.asl(:accumulator, [0x0a])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.asl(:accumulator, [0x0a])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.asl(:accumulator, [0x0a])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe '#bcc' do
     let(:pc) { 0xfdde }
 

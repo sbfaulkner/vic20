@@ -40,6 +40,18 @@ module Vic20
         affect_zero_flag(a)
       end
 
+      def asl(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
+
+        shifted = a << 1
+
+        self.a = shifted & 0xff
+
+        affect_carry_flag(shifted & 0x100 == 0 ? -1 : 1)
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
+
       def bcc(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
