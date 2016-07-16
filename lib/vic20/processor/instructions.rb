@@ -433,6 +433,15 @@ module Vic20
 
         self.s = x
       end
+
+      def tya(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.a = y
+
+        affect_sign_flag(a)
+        affect_zero_flag(a)
+      end
     end
   end
 end

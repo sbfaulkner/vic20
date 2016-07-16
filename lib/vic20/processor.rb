@@ -142,7 +142,7 @@ module Vic20
       0x94 => { method: :sty, addressing_mode: :zero_page_x, cycles: 4 },
       0x95 => { method: :sta, addressing_mode: :zero_page_x, cycles: 4 },
       0x96 => { method: :stx, addressing_mode: :zero_page_y, cycles: 4 }, # TODO: implement STX (zero_page_y)
-      0x98 => { method: :tya, addressing_mode: :implied,     cycles: 2 }, # TODO: implement TYA (implied)
+      0x98 => { method: :tya, addressing_mode: :implied,     cycles: 2 },
       0x99 => { method: :sta, addressing_mode: :absolute_y,  cycles: 5 },
       0x9A => { method: :txs, addressing_mode: :implied,     cycles: 2 },
       0x9D => { method: :sta, addressing_mode: :absolute_x,  cycles: 5 },

@@ -2164,6 +2164,44 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#tya' do
+    let(:value) { 0xff }
+
+    before do
+      subject.y = value
+      subject.a = 0xdd
+    end
+
+    it 'transfers the y-index register to the accumulator' do
+      subject.tya(:implied, [0x98])
+      expect(subject.a).to eq(value)
+    end
+
+    it 'sets the sign flag' do
+      subject.tya(:implied, [0x98])
+      expect(subject.n?).to be_truthy
+    end
+
+    it 'clears the zero flag' do
+      subject.tya(:implied, [0x98])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'with a value of zero' do
+      let(:value) { 0 }
+
+      it 'clears the sign flag' do
+        subject.tya(:implied, [0x98])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.tya(:implied, [0x98])
+        expect(subject.z?).to be_truthy
+      end
+    end
+  end
+
   private
 
   def lsb(word)
