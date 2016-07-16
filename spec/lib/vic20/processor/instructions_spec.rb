@@ -405,6 +405,67 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#dey' do
+    let(:y) { 1 }
+
+    before do
+      subject.y = y
+    end
+
+    it 'decrements the y-index register' do
+      subject.dey(:implied, [0x88])
+      expect(subject.y).to eq(y - 1)
+    end
+
+    it 'clears the sign flag' do
+      subject.dey(:implied, [0x88])
+      expect(subject.n?).to be_falsey
+    end
+
+    it 'sets the zero flag' do
+      subject.dey(:implied, [0x88])
+      expect(subject.z?).to be_truthy
+    end
+
+    context 'when the initial value is 0xff' do
+      let(:y) { 0xff }
+
+      it 'decrements the y-index register' do
+        subject.dey(:implied, [0x88])
+        expect(subject.y).to eq(y - 1)
+      end
+
+      it 'sets the sign flag' do
+        subject.dey(:implied, [0x88])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.dey(:implied, [0x88])
+        expect(subject.z?).to be_falsey
+      end
+    end
+
+    context 'when the initial value is 0' do
+      let(:y) { 0 }
+
+      it 'rolls over to 0xff' do
+        subject.dey(:implied, [0x88])
+        expect(subject.y).to eq(0xff)
+      end
+
+      it 'sets the sign flag' do
+        subject.dey(:implied, [0x88])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.dey(:implied, [0x88])
+        expect(subject.z?).to be_falsey
+      end
+    end
+  end
+
   describe '#eor' do
     context 'with zero page,x addressing mode' do
       let(:address) { 0xc1 }
