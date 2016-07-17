@@ -2404,12 +2404,45 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#rti' do
+    let(:top) { 0x1ff }
+    let(:pc) { 0x0984 }
+    let(:p) { 0x02 | 0b00100000 | Vic20::Processor::B_FLAG }
+    let(:irq) { 0xdead }
+
+    before do
+      memory[top - 1, 2] = [lsb(pc), msb(pc)]
+      memory[top - 2] = subject.p = p
+      subject.pc = irq
+      subject.s = (top - 3) & 0xff
+    end
+
+    it 'pops 3 bytes off the stack' do
+      expect { subject.rti(:implied, [0x40]) }.to change { subject.s }.by(3)
+    end
+
+    it 'restores the processor status' do
+      subject.rti(:implied, [0x40])
+      expect(subject.p).to eq(p & ~Vic20::Processor::B_FLAG)
+    end
+
+    it 'clears breakpoint flag' do
+      subject.rti(:implied, [0x40])
+      expect(subject.b?).to be_falsey
+    end
+
+    it 'restores the program counter to the saved position' do
+      subject.rti(:implied, [0x40])
+      expect(subject.pc).to eq(pc)
+    end
+  end
+
   describe '#rts' do
     let(:top) { 0x1ff }
     let(:destination) { 0xfd30 }
 
     before do
-      subject.s = top & 0xff - 2
+      subject.s = (top - 2) & 0xff
       subject.pc = 0xfd4d
       memory[top - 1, 2] = [lsb(destination) - 1, msb(destination)]
     end
@@ -2834,7 +2867,7 @@ describe Vic20::Processor do
     let(:value) { 0xff }
 
     before do
-      subject.s = 0x00
+      subject.s = 0
       subject.x = value
     end
 

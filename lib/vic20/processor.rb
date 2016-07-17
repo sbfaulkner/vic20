@@ -99,7 +99,7 @@ module Vic20
       0x39 => { method: :and, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement AND (absolute_y)
       0x3D => { method: :and, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement AND (absolute_x)
       0x3E => { method: :rol, addressing_mode: :absolute_x,  cycles: 7 }, # TODO: implement ROL (absolute_x)
-      0x40 => { method: :rti, addressing_mode: :implied,     cycles: 6 }, # TODO: implement RTI (implied)
+      0x40 => { method: :rti, addressing_mode: :implied,     cycles: 6 },
       0x41 => { method: :eor, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement EOR (indirect_x)
       0x45 => { method: :eor, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement EOR (zero_page)
       0x46 => { method: :lsr, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement LSR (zero_page)

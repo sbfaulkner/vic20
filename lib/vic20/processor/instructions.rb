@@ -417,6 +417,13 @@ module Vic20
         affect_zero_flag(a)
       end
 
+      def rti(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p = pop & ~B_FLAG
+        self.pc = pop_word
+      end
+
       def rts(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
