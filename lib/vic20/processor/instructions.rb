@@ -126,6 +126,7 @@ module Vic20
         push_word pc
         self.p |= B_FLAG
         push p
+        self.p |= I_FLAG
         self.pc = @memory[IRQ_VECTOR] | @memory[IRQ_VECTOR + 1] << 8
       end
 

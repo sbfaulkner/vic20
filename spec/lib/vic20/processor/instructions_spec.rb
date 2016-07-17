@@ -441,7 +441,7 @@ describe Vic20::Processor do
 
   describe '#brk' do
     let(:pc) { 0x0982 }
-    let(:p) { 0x87 }
+    let(:p) { 0x02 }
     let(:top) { 0x1ff }
     let(:irq) { 0xdead }
 
@@ -479,6 +479,11 @@ describe Vic20::Processor do
     it 'sets the breakpoint flag' do
       subject.brk(:implied, [0x00])
       expect(subject.b?).to be_truthy
+    end
+
+    it 'sets the interrupt flag' do
+      subject.brk(:implied, [0x00])
+      expect(subject.i?).to be_truthy
     end
   end
 
