@@ -1,14 +1,31 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'pry'
 require 'vic20'
 
-firmware = ARGV[0]
-memory = firmware ? Vic20::Memory.new(0 => firmware) : Vic20::Memory.new
+require 'pry'
+
+require 'optparse'
+require 'scanf'
+
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: run [options] [firmware]'
+
+  opts.on('-p', '--pc address', 'specify initial program counter') do |pc|
+    options[:pc] = pc.scanf('%X').first
+  end
+
+  opts.on('-v', '--verbose', 'turn on verbose mode') do |v|
+    options[:verbose] = v
+  end
+end.parse!
+
+memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
-processor.reset
+processor.reset(options[:pc])
 
 commands = Pry::CommandSet.new do
   import_from Pry::Commands, 'help'
@@ -38,7 +55,7 @@ commands = Pry::CommandSet.new do
     description 'List memory contents'
 
     def process
-      address = processor.pc
+      address = args.first ? args.first.scanf('%X').first : processor.pc
 
       _pry_.pager.open do |output|
         memory[address..-1].each_slice(16) do |slice|
