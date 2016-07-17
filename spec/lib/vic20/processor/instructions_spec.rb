@@ -2527,6 +2527,17 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#sed' do
+    before do
+      subject.p = 0x00
+    end
+
+    it 'sets the binary-coded decimal flag' do
+      subject.sed(:implied, [0xf8])
+      expect(subject.d?).to be_truthy
+    end
+  end
+
   describe '#sei' do
     before do
       subject.p = 0x00

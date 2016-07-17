@@ -456,6 +456,12 @@ module Vic20
         self.p |= C_FLAG
       end
 
+      def sed(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p |= D_FLAG
+      end
+
       def sei(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
