@@ -8,7 +8,9 @@ require 'pry'
 require 'optparse'
 require 'scanf'
 
-$options = {}
+$options = {
+  breakpoints: [],
+}
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
@@ -35,8 +37,6 @@ commands = Pry::CommandSet.new do
     description 'Set breakpoint at specified address.'
 
     def process
-      $options[:breakpoints] ||= []
-
       $options[:breakpoints] << args.first.to_i(16) if args.first
 
       $options[:breakpoints].each_with_index do |address, index|
