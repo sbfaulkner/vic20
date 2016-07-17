@@ -1059,6 +1059,48 @@ describe Vic20::Processor do
   end
 
   describe '#eor' do
+    context 'with immediate addressing mode' do
+      let(:mask) { 0x3c }
+      let(:value) { 0x0f }
+
+      before do
+        subject.a = mask
+      end
+
+      it 'xors the accumulator with the value' do
+        subject.eor(:immediate, [0x49, value])
+        expect(subject.a).to eq(value ^ mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.eor(:immediate, [0x49, value])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.eor(:immediate, [0x49, value])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x80 }
+
+        it 'sets the sign flag' do
+          subject.eor(:immediate, [0x49, value])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:value) { 0x3c }
+
+        it 'sets the zero flag' do
+          subject.eor(:immediate, [0x49, value])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with zero page,x addressing mode' do
       let(:address) { 0xc1 }
       let(:mask) { 0x3c }
