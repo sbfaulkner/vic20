@@ -22,6 +22,13 @@ describe Vic20::Processor do
     end
 
     describe 'processor status flag bits' do
+      context 'when set to 0' do
+        it 'has bit 5 set' do
+          subject.p = 0
+          expect(subject.p[5]).to eq(1)
+        end
+      end
+
       it 'has a carry flag' do
         expect { subject.c? }.not_to raise_exception
       end

@@ -376,7 +376,7 @@ module Vic20
       def php(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
-        push p
+        push p | B_FLAG
       end
 
       def pla(addressing_mode, _bytes)

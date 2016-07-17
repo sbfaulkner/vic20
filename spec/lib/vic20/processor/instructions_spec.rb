@@ -2186,7 +2186,7 @@ describe Vic20::Processor do
 
   describe '#php' do
     let(:top) { 0x1ff }
-    let(:value) { 0xbd }
+    let(:value) { 0b11001111 }
 
     before do
       subject.p = value
@@ -2199,7 +2199,17 @@ describe Vic20::Processor do
 
     it 'pushes the current processor status onto the stack' do
       subject.php(:implied, [0x08])
-      expect(memory[top]).to eq(value)
+      expect(memory[top] & 0b11001111).to eq(value & 0b11001111)
+    end
+
+    it 'pushes the current processor status with the breakpoint flag set' do
+      subject.php(:implied, [0x08])
+      expect(memory[top] & Vic20::Processor::B_FLAG).to eq(Vic20::Processor::B_FLAG)
+    end
+
+    it 'pushes the current processor status with the 5th bit set' do
+      subject.php(:implied, [0x08])
+      expect(memory[top][5]).to eq(1)
     end
 
     it 'does not change the current processor status' do

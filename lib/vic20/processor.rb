@@ -21,8 +21,6 @@ module Vic20
       self.pc = 0
     end
 
-    attr_accessor :a, :x, :y, :p, :s, :pc
-
     C_FLAG = 0b00000001 # Carry
     Z_FLAG = 0b00000010 # Zero
     I_FLAG = 0b00000100 # Interrupt
@@ -30,6 +28,13 @@ module Vic20
     B_FLAG = 0b00010000 # Breakpoint
     V_FLAG = 0b01000000 # Overflow
     N_FLAG = 0b10000000 # Sign
+
+    attr_accessor :a, :x, :y, :s, :pc
+    attr_reader :p
+
+    def p=(value)
+      @p = value | 0b00100000 # 5th bit is always set
+    end
 
     %i(C Z I D B V N).each do |flag|
       class_eval <<-READER
