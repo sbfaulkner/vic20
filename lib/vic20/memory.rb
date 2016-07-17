@@ -2,27 +2,30 @@ module Vic20
   class Memory < SimpleDelegator
     FIRMWARE_DIR = File.expand_path('../../firmware', __dir__)
 
-    FIRMWARE = {
-      'basic'      => 0xC000, # C000-DFFF   49152-57343   8K Basic ROM
-      'characters' => 0x8000, # 8000-8FFF   32768-36863   4K Character generator ROM
-      'kernal'     => 0xE000, # E000-FFFF   57344-65535   8K KERNAL ROM
-    }.freeze
-
-    def initialize
-      super Array.new(64 * 1024) { |offset| offset >> 8 }
-      load_firmware
+    def self.find_firmware(name)
+      Dir[File.join(FIRMWARE_DIR, "#{name}.*.bin")].first
     end
 
-    def load_firmware
-      Dir[File.join(FIRMWARE_DIR, '*.bin')].each do |path|
-        firmware = File.basename(path, '.bin')
+    DEFAULT_FIRMWARE = {
+      0x8000 => find_firmware('characters'),  # 8000-8FFF   32768-36863   4K Character generator ROM
+      0xc000 => find_firmware('basic'),       # C000-DFFF   49152-57343   8K Basic ROM
+      0xe000 => find_firmware('kernal'),      # E000-FFFF   57344-65535   8K KERNAL ROM
+    }.freeze
 
-        if address = FIRMWARE[firmware.split('.').first]
-          data = File.read(path, mode: 'rb')
-          self[address, data.size] = data.bytes
-        else
-          STDERR.puts 'WARNING: Skipping unknown firmware (#{firmware}).'
-        end
+    def initialize(contents = DEFAULT_FIRMWARE)
+      super Array.new(64 * 1024) { |offset| offset >> 8 }
+
+      contents.each { |address, content| load(address, content) }
+    end
+
+    def load(address, content)
+      case content
+      when Array
+        self[address, content.size] = content
+      when String
+        load(address, File.read(content, mode: 'rb').bytes)
+      else
+        raise ArgumentError, "Unsupported content type: #{content.class.name}"
       end
     end
 

@@ -3,7 +3,9 @@
 require 'bundler/setup'
 require 'vic20'
 
-memory = Vic20::Memory.new
+verbose = (ARGV[0] == '-v' || ARGV[0] == '--verbose') && ARGV.shift
+firmware = ARGV[0]
+memory = firmware ? Vic20::Memory.new(0 => firmware) : Vic20::Memory.new
 processor = Vic20::Processor.new(memory)
 
 processor.reset
@@ -20,12 +22,8 @@ def format_instruction(address, method, addressing_mode, bytes)
   ].join('  ')
 end
 
-def verbose?
-  @verbose ||= ARGV.include?('-v') || ARGV.include?('--verbose')
-end
-
 processor.each do |address, method, addressing_mode, bytes|
-  if verbose?
+  if verbose
     STDERR.puts processor.current_state
     STDERR.puts format_instruction(address, method, addressing_mode, bytes)
   end
@@ -33,7 +31,7 @@ processor.each do |address, method, addressing_mode, bytes|
   begin
     processor.send(method, addressing_mode, bytes)
   rescue
-    unless verbose?
+    unless verbose
       STDERR.puts processor.current_state
       STDERR.puts format_instruction(address, method, addressing_mode, bytes)
     end
