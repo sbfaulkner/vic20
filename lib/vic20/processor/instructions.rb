@@ -142,22 +142,28 @@ module Vic20
         self.pc += self.class.relative_operand(bytes) if v?
       end
 
-      def cld(addressing_mode, _bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
-
-        self.p &= ~D_FLAG
-      end
-
       def clc(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
         self.p &= ~C_FLAG
       end
 
+      def cld(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p &= ~D_FLAG
+      end
+
       def cli(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
         self.p &= ~I_FLAG
+      end
+
+      def clv(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        self.p &= ~V_FLAG
       end
 
       def cmp(addressing_mode, bytes)

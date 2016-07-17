@@ -572,6 +572,17 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#clv' do
+    before do
+      subject.p = 0xff
+    end
+
+    it 'clears the overflow flag' do
+      subject.clv(:implied, [0xb8])
+      expect(subject.v?).to be_falsey
+    end
+  end
+
   describe '#cmp' do
     context 'with absolute addressing mode' do
       let(:address) { 0xa008 }
