@@ -126,6 +126,12 @@ module Vic20
         self.pc += self.class.relative_operand(bytes) unless v?
       end
 
+      def bvs(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
+
+        self.pc += self.class.relative_operand(bytes) if v?
+      end
+
       def cld(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 

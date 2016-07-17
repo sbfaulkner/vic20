@@ -120,7 +120,7 @@ module Vic20
       0x6C => { method: :jmp, addressing_mode: :indirect,    cycles: 5 },
       0x6D => { method: :adc, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement ADC (absolute)
       0x6E => { method: :ror, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement ROR (absolute)
-      0x70 => { method: :bvs, addressing_mode: :relative,    cycles: 2 }, # TODO: implement BVS (relative)
+      0x70 => { method: :bvs, addressing_mode: :relative,    cycles: 2 },
       0x71 => { method: :adc, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement ADC (indirect_y)
       0x75 => { method: :adc, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement ADC (zero_page_x)
       0x76 => { method: :ror, addressing_mode: :zero_page_x, cycles: 6 }, # TODO: implement ROR (zero_page_x)
