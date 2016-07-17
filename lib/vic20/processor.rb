@@ -263,8 +263,8 @@ module Vic20
       format '#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state
     end
 
-    def reset
-      self.pc = @memory.word_at(RESET_VECTOR)
+    def reset(address = nil)
+      self.pc = address || @memory.word_at(RESET_VECTOR)
     end
   end
 end

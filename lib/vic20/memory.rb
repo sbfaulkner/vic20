@@ -12,7 +12,10 @@ module Vic20
       0xe000 => find_firmware('kernal'),      # E000-FFFF   57344-65535   8K KERNAL ROM
     }.freeze
 
-    def initialize(contents = DEFAULT_FIRMWARE)
+    def initialize(contents = nil)
+      contents ||= DEFAULT_FIRMWARE
+      contents = { 0 => contents } if contents.is_a?(String)
+
       super Array.new(64 * 1024) { |offset| offset >> 8 }
 
       contents.each { |address, content| load(address, content) }

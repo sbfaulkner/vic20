@@ -3,12 +3,27 @@
 require 'bundler/setup'
 require 'vic20'
 
-verbose = (ARGV[0] == '-v' || ARGV[0] == '--verbose') && ARGV.shift
-firmware = ARGV[0]
-memory = firmware ? Vic20::Memory.new(0 => firmware) : Vic20::Memory.new
+require 'optparse'
+require 'scanf'
+
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: run [options] [firmware]'
+
+  opts.on('-p', '--pc address', 'specify initial program counter') do |pc|
+    options[:pc] = pc.scanf('%X').first
+  end
+
+  opts.on('-v', '--verbose', 'turn on verbose mode') do |v|
+    options[:verbose] = v
+  end
+end.parse!
+
+memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
-processor.reset
+processor.reset(options[:pc])
 
 def format_assembly(method, addressing_mode, bytes)
   "; #{method.upcase} #{Vic20::Processor.format_operand(addressing_mode, bytes)}"
@@ -23,7 +38,7 @@ def format_instruction(address, method, addressing_mode, bytes)
 end
 
 processor.each do |address, method, addressing_mode, bytes|
-  if verbose
+  if options[:verbose]
     STDERR.puts processor.current_state
     STDERR.puts format_instruction(address, method, addressing_mode, bytes)
   end
@@ -31,7 +46,7 @@ processor.each do |address, method, addressing_mode, bytes|
   begin
     processor.send(method, addressing_mode, bytes)
   rescue
-    unless verbose
+    unless options[:verbose]
       STDERR.puts processor.current_state
       STDERR.puts format_instruction(address, method, addressing_mode, bytes)
     end
