@@ -2277,7 +2277,12 @@ describe Vic20::Processor do
 
     it 'sets the processor status to the value pulled off the stack' do
       subject.plp(:implied, [0x28])
-      expect(subject.p).to eq(value)
+      expect(subject.p).to eq(value & ~Vic20::Processor::B_FLAG)
+    end
+
+    it 'discards the breakpoint flag when restoring the processor state' do
+      subject.plp(:implied, [0x28])
+      expect(subject.p & Vic20::Processor::B_FLAG).to eq(0)
     end
   end
 

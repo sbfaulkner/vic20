@@ -391,7 +391,7 @@ module Vic20
       def plp(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
-        self.p = pop
+        self.p = pop & ~B_FLAG
       end
 
       def ror(addressing_mode, _bytes)
