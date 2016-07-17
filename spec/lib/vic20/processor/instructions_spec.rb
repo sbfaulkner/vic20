@@ -439,6 +439,49 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#brk' do
+    let(:pc) { 0x0982 }
+    let(:p) { 0x87 }
+    let(:top) { 0x1ff }
+    let(:irq) { 0xdead }
+
+    before do
+      memory[0xfffe, 2] = [lsb(irq), msb(irq)]
+      subject.s = top & 0xff
+      subject.pc = pc
+      subject.p = p
+    end
+
+    it 'pushes 3 bytes onto the stack' do
+      expect { subject.brk(:implied, [0x00]) }.to change { subject.s }.by(-3)
+    end
+
+    it 'pushes the program counter onto the stack' do
+      subject.brk(:implied, [0x00])
+      expect(word_at(top - 1)).to eq(pc)
+    end
+
+    it 'pushes the processor status onto the stack' do
+      subject.brk(:implied, [0x00])
+      expect(memory[top - 2] & 0b11001111).to eq(p & 0b11001111)
+    end
+
+    it 'pushes the processor status with the breakpoint flag set onto the stack' do
+      subject.brk(:implied, [0x00])
+      expect(memory[top - 2] & Vic20::Processor::B_FLAG).to eq(Vic20::Processor::B_FLAG)
+    end
+
+    it 'loads the IRQ vector at $fffe into the program counter' do
+      subject.brk(:implied, [0x00])
+      expect(subject.pc).to eq(irq)
+    end
+
+    it 'sets the breakpoint flag' do
+      subject.brk(:implied, [0x00])
+      expect(subject.b?).to be_truthy
+    end
+  end
+
   describe '#bvc' do
     let(:pc) { 0xfd49 }
 

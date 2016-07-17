@@ -120,6 +120,15 @@ module Vic20
         self.pc += self.class.relative_operand(bytes) unless n?
       end
 
+      def brk(addressing_mode, bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
+
+        push_word pc
+        self.p |= B_FLAG
+        push p
+        self.pc = @memory[IRQ_VECTOR] | @memory[IRQ_VECTOR + 1] << 8
+      end
+
       def bvc(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
