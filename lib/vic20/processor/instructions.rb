@@ -123,7 +123,7 @@ module Vic20
       def brk(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 
-        push_word pc
+        push_word pc + 1
         self.p |= B_FLAG
         push p
         self.p |= I_FLAG

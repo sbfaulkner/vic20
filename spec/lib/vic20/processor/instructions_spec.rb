@@ -456,9 +456,9 @@ describe Vic20::Processor do
       expect { subject.brk(:implied, [0x00]) }.to change { subject.s }.by(-3)
     end
 
-    it 'pushes the program counter onto the stack' do
+    it 'pushes the program counter + 1 onto the stack' do
       subject.brk(:implied, [0x00])
-      expect(word_at(top - 1)).to eq(pc)
+      expect(word_at(top - 1)).to eq(pc + 1)
     end
 
     it 'pushes the processor status onto the stack' do
