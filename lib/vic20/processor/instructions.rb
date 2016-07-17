@@ -140,6 +140,8 @@ module Vic20
 
       def cmp(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :absolute_x
           @memory[self.class.operand(bytes) + x]
         when :immediate
