@@ -6,6 +6,8 @@ module Vic20
     include Instructions
     include Stack
 
+    class Trap < RuntimeError; end
+
     NMI_VECTOR    = 0xFFFA
     RESET_VECTOR  = 0xFFFC
     IRQ_VECTOR    = 0xFFFE

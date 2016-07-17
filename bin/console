@@ -8,27 +8,44 @@ require 'pry'
 require 'optparse'
 require 'scanf'
 
-options = {}
+$options = {}
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
-  opts.on('-p', '--pc address', 'specify initial program counter') do |pc|
-    options[:pc] = pc.scanf('%X').first
+  opts.on('-r', '--reset address', 'override reset vector') do |address, *|
+    $options[:reset] = address.to_i(16)
   end
 
   opts.on('-v', '--verbose', 'turn on verbose mode') do |v|
-    options[:verbose] = v
+    $options[:verbose] = v
   end
 end.parse!
 
 memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
-processor.reset(options[:pc])
+processor.reset($options[:reset])
 
 commands = Pry::CommandSet.new do
   import_from Pry::Commands, 'help'
+
+  create_command 'breakpoint' do
+    group 'Machine'
+    description 'Set breakpoint at specified address.'
+
+    def process
+      $options[:breakpoints] ||= []
+
+      $options[:breakpoints] << args.first.to_i(16) if args.first
+
+      $options[:breakpoints].each_with_index do |address, index|
+        output.puts "#{index + 1}: $#{address.to_s(16).rjust(4, '0')}"
+      end
+    end
+  end
+
+  alias_command 'b', 'breakpoint'
 
   create_command 'dasm' do
     group 'Machine'
@@ -50,12 +67,12 @@ commands = Pry::CommandSet.new do
 
   alias_command 'd', 'dasm'
 
-  create_command 'list' do |address|
+  create_command 'list' do
     group 'Machine'
     description 'List memory contents'
 
     def process
-      address = args.first ? args.first.scanf('%X').first : processor.pc
+      address = args.first ? args.first.to_i(16) : processor.pc
 
       _pry_.pager.open do |output|
         memory[address..-1].each_slice(16) do |slice|
@@ -76,11 +93,13 @@ commands = Pry::CommandSet.new do
       processor.each do |address, method, addressing_mode, bytes|
         begin
           processor.send(method, addressing_mode, bytes)
+          raise Vic20::Processor::Trap if processor.pc == address
         rescue
           STDERR.puts format_instruction(address, method, addressing_mode, bytes)
           processor.pc = address
           raise
         end
+        raise Vic20::Processor::Trap if $options[:breakpoints].include?(processor.pc)
       end
     end
   end

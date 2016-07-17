@@ -11,8 +11,8 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
-  opts.on('-p', '--pc address', 'specify initial program counter') do |pc|
-    options[:pc] = pc.scanf('%X').first
+  opts.on('-r', '--reset address', 'override reset vector') do |address, *|
+    options[:reset] = address.to_i(16)
   end
 
   opts.on('-v', '--verbose', 'turn on verbose mode') do |v|
@@ -23,7 +23,7 @@ end.parse!
 memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
-processor.reset(options[:pc])
+processor.reset(options[:reset])
 
 def format_assembly(method, addressing_mode, bytes)
   "; #{method.upcase} #{Vic20::Processor.format_operand(addressing_mode, bytes)}"
@@ -45,6 +45,7 @@ processor.each do |address, method, addressing_mode, bytes|
 
   begin
     processor.send(method, addressing_mode, bytes)
+    raise Vic20::Processor::Trap if processor.pc == address
   rescue
     unless options[:verbose]
       STDERR.puts processor.current_state
