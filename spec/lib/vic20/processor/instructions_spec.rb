@@ -2639,6 +2639,44 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#tsx' do
+    let(:value) { 0xff }
+
+    before do
+      subject.x = 0xdd
+      subject.s = value
+    end
+
+    it 'transfers the stack pointer to the x-index register' do
+      subject.tsx(:implied, [0xba])
+      expect(subject.x).to eq(value)
+    end
+
+    it 'sets the sign flag' do
+      subject.tsx(:implied, [0xba])
+      expect(subject.n?).to be_truthy
+    end
+
+    it 'clears the zero flag' do
+      subject.tsx(:implied, [0xba])
+      expect(subject.z?).to be_falsey
+    end
+
+    context 'with a value of zero' do
+      let(:value) { 0 }
+
+      it 'clears the sign flag' do
+        subject.tsx(:implied, [0xba])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.tsx(:implied, [0xba])
+        expect(subject.z?).to be_truthy
+      end
+    end
+  end
+
   describe '#txa' do
     let(:value) { 0xff }
 
