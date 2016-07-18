@@ -508,6 +508,8 @@ module Vic20
           self.class.operand(bytes)
         when :zero_page
           self.class.operand(bytes)
+        when :zero_page_y
+          self.class.operand(bytes) + y
         else
           raise UnsupportedAddressingMode, addressing_mode
         end

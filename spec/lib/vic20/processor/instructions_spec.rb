@@ -2835,6 +2835,20 @@ describe Vic20::Processor do
         expect(memory[address]).to eq(value)
       end
     end
+
+    context 'with zero page,y addressing mode' do
+      let(:address) { 0xb2 }
+      let(:offset) { 5 }
+
+      before do
+        subject.y = offset
+      end
+
+      it 'stores the x-index register value at the correct address' do
+        subject.stx(:zero_page_y, [0x96, address])
+        expect(memory[address + offset]).to eq(value)
+      end
+    end
   end
 
   describe '#sty' do
