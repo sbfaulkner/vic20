@@ -21,6 +21,17 @@ describe Vic20::Processor do
     it 'returns the byte' do
       expect(subject.pop).to eq(byte)
     end
+
+    context 'when stack pointer is at the top' do
+      before do
+        subject.s = top
+      end
+
+      it 'wraps around to the bottom' do
+        subject.pop
+        expect(subject.s).to eq(0)
+      end
+    end
   end
 
   describe '#pop_word' do
@@ -59,6 +70,17 @@ describe Vic20::Processor do
     it 'decrements the stack pointer' do
       subject.push byte
       expect(subject.s).to eq(top - 1)
+    end
+
+    context 'when stack pointer is at the bottom' do
+      before do
+        subject.s = 0
+      end
+
+      it 'wraps around to the top' do
+        subject.push byte
+        expect(subject.s).to eq(top)
+      end
     end
   end
 

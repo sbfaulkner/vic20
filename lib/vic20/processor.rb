@@ -15,12 +15,12 @@ module Vic20
     def initialize(memory)
       @memory = memory
 
+      self.pc = 0
       self.a = 0
       self.x = 0
       self.y = 0
       self.p = 0
       self.s = 0
-      self.pc = 0
     end
 
     C_FLAG = 0b00000001 # Carry

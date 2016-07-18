@@ -1,10 +1,10 @@
 module Vic20
   class Processor
     module Stack
-      STACK_PAGE    = 0x0100
+      STACK_PAGE = 0x0100
 
       def pop
-        self.s += 1
+        self.s = (s + 1) & 0xff
         @memory[STACK_PAGE + s]
       end
 
@@ -14,7 +14,7 @@ module Vic20
 
       def push(byte)
         @memory[STACK_PAGE + s] = byte
-        self.s -= 1
+        self.s = (s - 1) & 0xff
       end
 
       def push_word(word)
