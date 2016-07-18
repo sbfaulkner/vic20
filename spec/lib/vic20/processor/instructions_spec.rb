@@ -717,6 +717,73 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with absolute,y addressing mode' do
+      let(:address) { 0xa003 }
+
+      before do
+        subject.a = signature[4]
+        subject.y = 0x05
+        memory[address + 5] = value
+      end
+
+      context 'when the accumulator is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the accumulator is equal to the addressed value' do
+        let(:value) { subject.a }
+
+        it 'sets the carry flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the accumulator is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:absolute_y, [0xd9, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       before do
         subject.a = 0xc5
