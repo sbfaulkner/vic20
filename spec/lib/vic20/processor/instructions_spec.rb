@@ -1956,6 +1956,47 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with absolute,y addressing mode' do
+      let(:address) { 0x09a0 }
+      let(:offset) { 5 }
+      let(:value) { 0xc5 }
+
+      before do
+        memory[address + offset] = value
+        subject.x = 0x00
+        subject.y = offset
+      end
+
+      it 'sets the accumulator to the value' do
+        subject.ldx(:absolute_y, [0xbe, lsb(address), msb(address)])
+        expect(subject.x).to eq(value)
+      end
+
+      it 'sets the sign flag' do
+        subject.ldx(:absolute_y, [0xbe, lsb(address), msb(address)])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.ldx(:absolute_y, [0xbe, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the value is zero' do
+        let(:value) { 0 }
+
+        it 'clears the sign flag' do
+          subject.ldx(:absolute_y, [0xbe, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ldx(:absolute_y, [0xbe, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       let(:value) { 0xff }
 
