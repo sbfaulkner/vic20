@@ -233,7 +233,7 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address + offset] = value
+        memory[(address + offset) & 0xff] = value
         subject.x = offset
       end
 
@@ -278,6 +278,15 @@ describe Vic20::Processor do
         it 'sets the zero flag' do
           subject.asl(:zero_page_x, [0x16, address])
           expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.asl(:zero_page_x, [0x16, address])
+          expect(memory[address + offset - 0x100]).to eq(value << 1 & 0xff)
         end
       end
     end
@@ -1352,7 +1361,7 @@ describe Vic20::Processor do
       let(:offset) { 0x0e }
 
       before do
-        memory[address + offset] = value
+        memory[(address + offset) & 0xff] = value
         subject.a = mask
         subject.x = offset
       end
@@ -1387,6 +1396,15 @@ describe Vic20::Processor do
         it 'sets the zero flag' do
           subject.eor(:zero_page_x, [0x55, address])
           expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.eor(:zero_page_x, [0x55, address])
+          expect(subject.a).to eq(value ^ mask)
         end
       end
     end
@@ -1880,7 +1898,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[address + offset] = value
+        memory[(address + offset) & 0xff] = value
         subject.a = 0x00
         subject.x = offset
       end
@@ -1911,6 +1929,15 @@ describe Vic20::Processor do
         it 'sets the zero flag' do
           subject.lda(:zero_page_x, [0xb5, address])
           expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.lda(:zero_page_x, [0xb5, address])
+          expect(subject.a).to eq(value)
         end
       end
     end
@@ -2079,7 +2106,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[address + offset] = value
+        memory[(address + offset) & 0xff] = value
         subject.x = 0x00
         subject.y = offset
       end
@@ -2110,6 +2137,15 @@ describe Vic20::Processor do
         it 'sets the zero flag' do
           subject.ldx(:zero_page_y, [0xb6, address])
           expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.ldx(:zero_page_y, [0xb6, address])
+          expect(subject.x).to eq(value)
         end
       end
     end
@@ -2237,7 +2273,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[address + offset] = value
+        memory[(address + offset) & 0xff] = value
         subject.y = 0x00
         subject.x = offset
       end
@@ -2268,6 +2304,15 @@ describe Vic20::Processor do
         it 'sets the zero flag' do
           subject.ldy(:zero_page_x, [0xb4, address])
           expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.ldy(:zero_page_x, [0xb4, address])
+          expect(subject.y).to eq(value)
         end
       end
     end
@@ -2847,6 +2892,15 @@ describe Vic20::Processor do
       it 'stores the x-index register value at the correct address' do
         subject.stx(:zero_page_y, [0x96, address])
         expect(memory[address + offset]).to eq(value)
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.stx(:zero_page_y, [0x96, address])
+          expect(memory[address + offset - 0x100]).to eq(value)
+        end
       end
     end
   end

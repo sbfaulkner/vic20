@@ -64,7 +64,8 @@ module Vic20
         when :accumulator
           a
         when :zero_page_x
-          @memory[self.class.operand(bytes) + x]
+          address = (self.class.operand(bytes) + x) & 0xff
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -76,7 +77,8 @@ module Vic20
         when :accumulator
           self.a = value
         when :zero_page_x
-          @memory[self.class.operand(bytes) + x] = value
+          address = (self.class.operand(bytes) + x) & 0xff
+          @memory[address] = value
         end
 
         affect_carry_flag(shifted & 0x100 != 0)
@@ -248,7 +250,8 @@ module Vic20
         when :immediate
           self.class.operand(bytes)
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          address = (self.class.operand(bytes) + x) & 0xff
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -324,7 +327,8 @@ module Vic20
         when :zero_page
           @memory[self.class.operand(bytes)]
         when :zero_page_x
-          @memory[self.class.operand(bytes) + x]
+          address = (self.class.operand(bytes) + x) & 0xff
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -344,7 +348,8 @@ module Vic20
         when :zero_page
           @memory[self.class.operand(bytes)]
         when :zero_page_y
-          @memory[self.class.operand(bytes) + y]
+          address = (self.class.operand(bytes) + y) & 0xff
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -362,7 +367,8 @@ module Vic20
         when :zero_page
           @memory[self.class.operand(bytes)]
         when :zero_page_x
-          @memory[self.class.operand(bytes) + x]
+          address = (self.class.operand(bytes) + x) & 0xff
+          @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -509,7 +515,7 @@ module Vic20
         when :zero_page
           self.class.operand(bytes)
         when :zero_page_y
-          self.class.operand(bytes) + y
+          (self.class.operand(bytes) + y) & 0xff
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
