@@ -219,6 +219,8 @@ module Vic20
 
       def cpy(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :immediate
           self.class.operand(bytes)
         when :zero_page
