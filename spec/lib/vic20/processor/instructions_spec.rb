@@ -1072,6 +1072,72 @@ describe Vic20::Processor do
   end
 
   describe '#cpx' do
+    context 'with absolute addressing mode' do
+      let(:address) { 0xa008 }
+
+      before do
+        subject.x = signature[4]
+        memory[address] = value
+      end
+
+      context 'when the x-index register is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the x-index register is equal to the addressed value' do
+        let(:value) { subject.x }
+
+        it 'sets the carry flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the x-index register is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cpx(:absolute, [0xec, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       before do
         subject.x = 0xc5

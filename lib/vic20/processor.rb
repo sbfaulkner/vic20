@@ -203,7 +203,7 @@ module Vic20
       0xE8 => { method: :inx, addressing_mode: :implied,     cycles: 2 },
       0xE9 => { method: :sbc, addressing_mode: :immediate,   cycles: 2 },
       0xEA => { method: :nop, addressing_mode: :implied,     cycles: 2 },
-      0xEC => { method: :cpx, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement CPX (absolute)
+      0xEC => { method: :cpx, addressing_mode: :absolute,    cycles: 4 },
       0xED => { method: :sbc, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement SBC (absolute)
       0xEE => { method: :inc, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement INC (absolute)
       0xF0 => { method: :beq, addressing_mode: :relative,    cycles: 2 },
