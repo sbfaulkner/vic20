@@ -189,7 +189,7 @@ module Vic20
       0xCE => { method: :dec, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement DEC (absolute)
       0xD0 => { method: :bne, addressing_mode: :relative,    cycles: 2 },
       0xD1 => { method: :cmp, addressing_mode: :indirect_y,  cycles: 5 },
-      0xD5 => { method: :cmp, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement CMP (zero_page_x)
+      0xD5 => { method: :cmp, addressing_mode: :zero_page_x, cycles: 4 },
       0xD6 => { method: :dec, addressing_mode: :zero_page_x, cycles: 6 }, # TODO: implement DEC (zero_page_x)
       0xD8 => { method: :cld, addressing_mode: :implied,     cycles: 2 },
       0xD9 => { method: :cmp, addressing_mode: :absolute_y,  cycles: 4 },
