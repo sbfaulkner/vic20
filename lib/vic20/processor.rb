@@ -154,7 +154,7 @@ module Vic20
       0x9A => { method: :txs, addressing_mode: :implied,     cycles: 2 },
       0x9D => { method: :sta, addressing_mode: :absolute_x,  cycles: 5 },
       0xA0 => { method: :ldy, addressing_mode: :immediate,   cycles: 2 },
-      0xA1 => { method: :lda, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement LDA (indirect_x)
+      0xA1 => { method: :lda, addressing_mode: :indirect_x,  cycles: 6 },
       0xA2 => { method: :ldx, addressing_mode: :immediate,   cycles: 2 },
       0xA4 => { method: :ldy, addressing_mode: :zero_page,   cycles: 3 },
       0xA5 => { method: :lda, addressing_mode: :zero_page,   cycles: 3 },
