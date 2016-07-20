@@ -20,7 +20,7 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-Vic20::Processor.include Vic20::Processor::Halt
+Vic20::Processor.prepend Vic20::Processor::Halt
 
 if options[:verbose]
   Vic20::Processor.prepend Vic20::Processor::Trace
