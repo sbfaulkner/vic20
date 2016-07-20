@@ -24,6 +24,27 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+module Vic20
+  class Processor
+    module Breakpoints
+      def execute(address, method, addressing_mode, bytes)
+        super
+        raise Trap(pc) if $options[:breakpoints].include?(pc)
+      end
+    end
+  end
+end
+
+Vic20::Processor.include Vic20::Processor::Halt
+
+if $options[:verbose]
+  Vic20::Processor.prepend Vic20::Processor::Trace
+else
+  Vic20::Processor.prepend Vic20::Processor::Report
+end
+
+Vic20::Processor.prepend Vic20::Processor::Breakpoints
+
 memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
@@ -90,17 +111,7 @@ commands = Pry::CommandSet.new do
     description 'Run program from current program counter.'
 
     def process
-      processor.each do |address, method, addressing_mode, bytes|
-        begin
-          processor.send(method, addressing_mode, bytes)
-          raise Vic20::Processor::Trap if processor.pc == address
-        rescue
-          STDERR.puts format_instruction(address, method, addressing_mode, bytes)
-          processor.pc = address
-          raise
-        end
-        raise Vic20::Processor::Trap if $options[:breakpoints].include?(processor.pc)
-      end
+      processor.run
     end
   end
 

@@ -67,40 +67,48 @@ describe Vic20::Processor do
     end
   end
 
-  describe '#each' do
+  context 'with a program in memory' do
+    let(:program) do
+      [
+        [0x0600, :jsr, :absolute, [0x20, 0x09, 0x06]],  # JSR $0609
+        [0x0603, :jsr, :absolute, [0x20, 0x0c, 0x06]],  # JSR $060c
+        [0x0606, :jsr, :absolute, [0x20, 0x12, 0x06]],  # JSR $0612
+        [0x0609, :ldx, :immediate, [0xa2, 0x00]],       # LDX #$00
+        [0x060b, :rts, :implied, [0x60]],               # RTS
+        [0x060c, :inx, :implied, [0xe8]],               # INX
+        [0x060d, :cpx, :immediate, [0xe0, 0x05]],       # CPX #$05
+        [0x060f, :bne, :relative, [0xd0, 0xfb]],        # BNE $060c
+        [0x0611, :rts, :implied, [0x60]],               # RTS
+        [0x0612, :brk, :implied, [0x00]],               # BRK
+      ]
+    end
+
     before do
-      memory[0x0600, 3] = [0x20, 0x09, 0x06]  # JSR $0609
-      memory[0x0603, 3] = [0x20, 0x0c, 0x06]  # JSR $060c
-      memory[0x0606, 3] = [0x20, 0x12, 0x06]  # JSR $0612
-      memory[0x0609, 2] = [0xa2, 0x00]        # LDX #$00
-      memory[0x060b, 1] = [0x60]              # RTS
-      memory[0x060c, 1] = [0xe8]              # INX
-      memory[0x060d, 2] = [0xe0, 0x05]        # CPX #$05
-      memory[0x060f, 2] = [0xd0, 0xfb]        # BNE $060c
-      memory[0x0611, 1] = [0x60]              # RTS
-      memory[0x0612, 1] = [0x00]              # BRK
+      program.each do |address, _method, _addressing_mode, bytes|
+        memory[address, bytes.size] = bytes
+      end
+      subject.pc = 0x0600
     end
 
-    it 'yields the instructions' do
-      subject.pc = 0x0600
-      expect { |b| subject.each(&b) }.to yield_successive_args(
-        [0x0600, :jsr, :absolute, [0x20, 0x09, 0x06]],
-        [0x0603, :jsr, :absolute, [0x20, 0x0c, 0x06]],
-        [0x0606, :jsr, :absolute, [0x20, 0x12, 0x06]],
-        [0x0609, :ldx, :immediate, [0xa2, 0x00]],
-        [0x060b, :rts, :implied, [0x60]],
-        [0x060c, :inx, :implied, [0xe8]],
-        [0x060d, :cpx, :immediate, [0xe0, 0x05]],
-        [0x060f, :bne, :relative, [0xd0, 0xfb]],
-        [0x0611, :rts, :implied, [0x60]],
-        [0x0612, :brk, :implied, [0x00]]
-      )
+    describe '#each' do
+      it 'yields the instructions' do
+        expect { |b| subject.each(&b) }.to yield_successive_args(*program)
+      end
+
+      it 'advances the program counter' do
+        subject.each {}
+        expect(subject.pc).to eq(0x0613)
+      end
     end
 
-    it 'advances the program counter' do
-      subject.pc = 0x0600
-      subject.each {}
-      expect(subject.pc).to eq(0x0613)
+    describe '#run' do
+      it 'runs the program' do
+        program.each do |_address, method, addressing_mode, bytes|
+          expect(subject).to receive(method).with(addressing_mode, bytes)
+        end
+
+        subject.run
+      end
     end
   end
 end

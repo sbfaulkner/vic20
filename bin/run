@@ -20,37 +20,17 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+Vic20::Processor.include Vic20::Processor::Halt
+
+if options[:verbose]
+  Vic20::Processor.prepend Vic20::Processor::Trace
+else
+  Vic20::Processor.prepend Vic20::Processor::Report
+end
+
 memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
 processor.reset(options[:reset])
 
-def format_assembly(method, addressing_mode, bytes)
-  "; #{method.upcase} #{Vic20::Processor.format_operand(addressing_mode, bytes)}"
-end
-
-def format_instruction(address, method, addressing_mode, bytes)
-  [
-    format('%04X', address),
-    bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
-    format_assembly(method, addressing_mode, bytes),
-  ].join('  ')
-end
-
-processor.each do |address, method, addressing_mode, bytes|
-  if options[:verbose]
-    STDERR.puts processor.current_state
-    STDERR.puts format_instruction(address, method, addressing_mode, bytes)
-  end
-
-  begin
-    processor.send(method, addressing_mode, bytes)
-    raise Vic20::Processor::Trap if processor.pc == address
-  rescue
-    unless options[:verbose]
-      STDERR.puts processor.current_state
-      STDERR.puts format_instruction(address, method, addressing_mode, bytes)
-    end
-    raise
-  end
-end
+processor.run

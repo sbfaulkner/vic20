@@ -1,8 +1,13 @@
+require_relative 'processor/format'
+require_relative 'processor/halt'
 require_relative 'processor/instructions'
+require_relative 'processor/report'
 require_relative 'processor/stack'
+require_relative 'processor/trace'
 
 module Vic20
   class Processor
+    include Format
     include Instructions
     include Stack
 
@@ -267,12 +272,22 @@ module Vic20
       end
     end
 
+    def execute(_address, method, addressing_mode, bytes)
+      send(method, addressing_mode, bytes)
+    end
+
     def inspect
       format '#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state
     end
 
     def reset(address = nil)
       self.pc = address || @memory.word_at(RESET_VECTOR)
+    end
+
+    def run
+      each do |address, method, addressing_mode, bytes|
+        execute(address, method, addressing_mode, bytes)
+      end
     end
   end
 end
