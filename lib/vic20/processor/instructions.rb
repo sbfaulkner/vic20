@@ -25,12 +25,6 @@ module Vic20
         base.extend(ClassMethods)
       end
 
-      class UnsupportedAddressingMode < RuntimeError
-        def initialize(addressing_mode)
-          super "Unsupported addressing mode (#{addressing_mode})"
-        end
-      end
-
       def adc(addressing_mode, bytes)
         value = case addressing_mode
         when :immediate

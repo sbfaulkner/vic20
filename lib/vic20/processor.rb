@@ -11,7 +11,17 @@ module Vic20
     include Instructions
     include Stack
 
-    class Trap < RuntimeError; end
+    class Trap < RuntimeError
+      def initialize(pc)
+        super "Execution halted @ $#{pc.to_s(16).rjust(4, '0')}"
+      end
+    end
+
+    class UnsupportedAddressingMode < RuntimeError
+      def initialize(addressing_mode)
+        super "Unsupported addressing mode (#{addressing_mode})"
+      end
+    end
 
     NMI_VECTOR    = 0xFFFA
     RESET_VECTOR  = 0xFFFC

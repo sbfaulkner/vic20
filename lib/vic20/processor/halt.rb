@@ -3,7 +3,7 @@ module Vic20
     module Halt
       def execute(address, method, addressing_mode, bytes)
         super
-        raise Trap(pc) if pc == address
+        raise Trap, pc if pc == address
       end
     end
   end

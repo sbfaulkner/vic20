@@ -29,7 +29,7 @@ module Vic20
     module Breakpoints
       def execute(address, method, addressing_mode, bytes)
         super
-        raise Trap(pc) if $options[:breakpoints].include?(pc)
+        raise Trap, pc if $options[:breakpoints].include?(pc)
       end
     end
   end
