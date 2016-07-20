@@ -509,6 +509,9 @@ module Vic20
           self.class.operand(bytes) + x
         when :absolute_y
           self.class.operand(bytes) + y
+        when :indirect_x
+          source = (self.class.operand(bytes) + x) & 0xff
+          @memory[source] | @memory[source + 1] << 8
         when :indirect_y
           source = self.class.operand(bytes)
           (@memory[source] | @memory[source + 1] << 8) + y

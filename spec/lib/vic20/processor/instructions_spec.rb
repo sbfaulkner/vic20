@@ -3172,6 +3172,34 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with indirect,x addressing mode' do
+      let(:indirect_address) { 0x034a }
+      let(:address) { 0xc1 }
+      let(:offset) { 2 }
+      let(:value) { 0x55 }
+
+      before do
+        memory[indirect_address] = 0xff
+        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.x = offset
+        subject.a = value
+      end
+
+      it 'stores the accumulator value at the correct address' do
+        subject.sta(:indirect_x, [0x81, address])
+        expect(memory[indirect_address]).to eq(value)
+      end
+
+      context 'when the offset exceed page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.sta(:indirect_x, [0x81, address])
+          expect(memory[indirect_address]).to eq(value)
+        end
+      end
+    end
+
     context 'with indirect,y addressing mode' do
       let(:indirect_address) { 0x034a }
       let(:address) { 0xc1 }
