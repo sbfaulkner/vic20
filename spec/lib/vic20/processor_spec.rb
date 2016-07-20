@@ -113,11 +113,17 @@ describe Vic20::Processor do
   end
 
   context 'with the 6502 functional test suite' do
+    class FunctionalTestProcessor < Vic20::Processor
+      Vic20::Processor.prepend Vic20::Processor::Halt
+      Vic20::Processor.prepend Vic20::Processor::Report
+    end
+
     let(:firmware) { File.expand_path('../../../firmware/6502_functional_test.bin', __dir__) }
     let(:memory) { Vic20::Memory.new(firmware) }
 
+    subject { FunctionalTestProcessor.new(memory) }
+
     before do
-      Vic20::Processor.prepend Vic20::Processor::Halt
       subject.reset(0x0400)
     end
 
