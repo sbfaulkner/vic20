@@ -522,6 +522,8 @@ module Vic20
 
       def ror(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :accumulator
           a
         when :zero_page
@@ -536,6 +538,8 @@ module Vic20
         result |= 0x80 if c?
 
         case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)] = result
         when :accumulator
           self.a = result
         when :zero_page
