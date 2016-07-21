@@ -98,6 +98,23 @@ module Vic20
         self.pc += self.class.relative_operand(bytes) if z?
       end
 
+      def bit(addressing_mode, bytes)
+        value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        result = a & value
+
+        affect_overflow_flag(value)
+        affect_sign_flag(value)
+        affect_zero_flag(result)
+      end
+
       def bmi(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 

@@ -370,6 +370,100 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#bit' do
+    let(:mask) { 0x01 }
+    let(:value) { 0xc5 }
+
+    before do
+      subject.a = mask
+      memory[address] = value
+    end
+
+    context 'with absolute addressing mode' do
+      let(:address) { 0xa9a9 }
+
+      it 'sets the sign flag' do
+        subject.bit(:absolute, [0x2c, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'sets the overflow flag' do
+        subject.bit(:absolute, [0x2c, address])
+        expect(subject.v?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.bit(:absolute, [0x2c, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the 6th and 7th bits of the value are clear' do
+        let(:value) { 0x05 }
+
+        it 'clears the sign flag' do
+          subject.bit(:absolute, [0x2c, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the overflow flag' do
+          subject.bit(:absolute, [0x2c, address])
+          expect(subject.v?).to be_falsey
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:mask) { ~value & 0xff }
+
+        it 'sets the zero flag' do
+          subject.bit(:absolute, [0x2c, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0xa9 }
+
+      it 'sets the sign flag' do
+        subject.bit(:zero_page, [0x24, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'sets the overflow flag' do
+        subject.bit(:zero_page, [0x24, address])
+        expect(subject.v?).to be_truthy
+      end
+
+      it 'clears the zero flag' do
+        subject.bit(:zero_page, [0x24, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the 6th and 7th bits of the value are clear' do
+        let(:value) { 0x05 }
+
+        it 'clears the sign flag' do
+          subject.bit(:zero_page, [0x24, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the overflow flag' do
+          subject.bit(:zero_page, [0x24, address])
+          expect(subject.v?).to be_falsey
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:mask) { ~value & 0xff }
+
+        it 'sets the zero flag' do
+          subject.bit(:zero_page, [0x24, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe '#bmi' do
     let(:pc) { 0xfd49 }
 

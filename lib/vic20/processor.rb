@@ -97,13 +97,13 @@ module Vic20
       0x1E => { method: :asl, addressing_mode: :absolute_x,  cycles: 7 }, # TODO: implement ASL (absolute_x)
       0x20 => { method: :jsr, addressing_mode: :absolute,    cycles: 6 },
       0x21 => { method: :and, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement AND (indirect_x)
-      0x24 => { method: :bit, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement BIT (zero_page)
+      0x24 => { method: :bit, addressing_mode: :zero_page,   cycles: 3 },
       0x25 => { method: :and, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement AND (zero_page)
       0x26 => { method: :rol, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement ROL (zero_page)
       0x28 => { method: :plp, addressing_mode: :implied,     cycles: 4 },
       0x29 => { method: :and, addressing_mode: :immediate,   cycles: 2 },
       0x2A => { method: :rol, addressing_mode: :accumulator, cycles: 2 }, # TODO: implement ROL (accumulator)
-      0x2C => { method: :bit, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement BIT (absolute)
+      0x2C => { method: :bit, addressing_mode: :absolute,    cycles: 4 },
       0x2D => { method: :and, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement AND (absolute)
       0x2E => { method: :rol, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement ROL (absolute)
       0x30 => { method: :bmi, addressing_mode: :relative,    cycles: 2 },
@@ -237,6 +237,7 @@ module Vic20
       cycles: 0,
     }.freeze
 
+    # TODO: affect methods are not consistent... some check a bit, one takes a boolean, one tests for zero
     def affect_carry_flag(value)
       if value
         self.p |= C_FLAG
@@ -245,8 +246,16 @@ module Vic20
       end
     end
 
+    def affect_overflow_flag(value)
+      if (value & V_FLAG) == V_FLAG
+        self.p |= V_FLAG
+      else
+        self.p &= ~V_FLAG
+      end
+    end
+
     def affect_sign_flag(value)
-      if (value & 0x80) == 0x80
+      if (value & N_FLAG) == N_FLAG
         self.p |= N_FLAG
       else
         self.p &= ~N_FLAG
