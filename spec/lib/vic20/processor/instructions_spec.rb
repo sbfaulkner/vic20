@@ -950,6 +950,85 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with indirect,x addressing mode' do
+      let(:indirect_address) { 0x034a }
+      let(:address) { 0xc1 }
+      let(:offset) { 2 }
+
+      before do
+        subject.a = 0x80
+        memory[indirect_address] = value
+        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.x = offset
+      end
+
+      context 'when the accumulator is greater than the addressed value' do
+        let(:value) { 0x00 }
+
+        it 'sets the carry flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the accumulator is equal to the addressed value' do
+        let(:value) { subject.a }
+
+        it 'sets the carry flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.z?).to be_truthy
+        end
+
+        context 'when the offset exceeds page bounds' do
+          let(:offset) { 0xff }
+
+          it 'wraps around' do
+            subject.cmp(:indirect_x, [0xc1, address])
+            expect(subject.z?).to be_truthy
+          end
+        end
+      end
+
+      context 'when the accumulator is less than the addressed value' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'sets the sign flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.cmp(:indirect_x, [0xc1, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+
     context 'with indirect,y addressing mode' do
       let(:indirect_address) { 0x034a }
       let(:address) { 0xc1 }
