@@ -57,6 +57,8 @@ module Vic20
         value = case addressing_mode
         when :accumulator
           a
+        when :zero_page
+          @memory[self.class.operand(bytes)]
         when :zero_page_x
           address = (self.class.operand(bytes) + x) & 0xff
           @memory[address]
@@ -70,6 +72,8 @@ module Vic20
         case addressing_mode
         when :accumulator
           self.a = value
+        when :zero_page
+          @memory[self.class.operand(bytes)] = value
         when :zero_page_x
           address = (self.class.operand(bytes) + x) & 0xff
           @memory[address] = value
@@ -473,7 +477,7 @@ module Vic20
         self.a = shifted & 0xff
         self.a |= 0x01 if c?
 
-        affect_carry_flag(shifted >> 8 != 0)
+        affect_carry_flag(shifted & 0x100 != 0)
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
