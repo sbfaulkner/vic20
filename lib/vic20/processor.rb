@@ -86,7 +86,7 @@ module Vic20
       0x09 => { method: :ora, addressing_mode: :immediate,   cycles: 2 },
       0x0A => { method: :asl, addressing_mode: :accumulator, cycles: 2 },
       0x0D => { method: :ora, addressing_mode: :absolute,    cycles: 4 },
-      0x0E => { method: :asl, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement ASL (absolute)
+      0x0E => { method: :asl, addressing_mode: :absolute,    cycles: 6 },
       0x10 => { method: :bpl, addressing_mode: :relative,    cycles: 2 },
       0x11 => { method: :ora, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement ORA (indirect_y)
       0x15 => { method: :ora, addressing_mode: :zero_page_x, cycles: 4 }, # TODO: implement ORA (zero_page_x)

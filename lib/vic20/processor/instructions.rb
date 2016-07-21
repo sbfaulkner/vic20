@@ -55,6 +55,8 @@ module Vic20
 
       def asl(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :accumulator
           a
         when :zero_page
@@ -70,6 +72,8 @@ module Vic20
         value = shifted & 0xff
 
         case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)] = value
         when :accumulator
           self.a = value
         when :zero_page
