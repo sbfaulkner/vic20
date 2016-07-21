@@ -491,6 +491,8 @@ module Vic20
 
       def rol(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :accumulator
           a
         when :zero_page
@@ -505,6 +507,8 @@ module Vic20
         result |= 0x01 if c?
 
         case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)] = result
         when :accumulator
           self.a = result
         when :zero_page
