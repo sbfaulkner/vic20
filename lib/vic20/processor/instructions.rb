@@ -508,17 +508,31 @@ module Vic20
         affect_zero_flag(result)
       end
 
-      def ror(addressing_mode, _bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
+      def ror(addressing_mode, bytes)
+        value = case addressing_mode
+        when :accumulator
+          a
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
-        shifted = (a << 8) >> 1
+        shifted = (value << 8) >> 1
 
-        self.a = shifted >> 8
-        self.a |= 0x80 if c?
+        result = shifted >> 8
+        result |= 0x80 if c?
+
+        case addressing_mode
+        when :accumulator
+          self.a = result
+        when :zero_page
+          @memory[self.class.operand(bytes)] = result
+        end
 
         affect_carry_flag(shifted & 0x80 != 0)
-        affect_sign_flag(a)
-        affect_zero_flag(a)
+        affect_sign_flag(result)
+        affect_zero_flag(result)
       end
 
       def rti(addressing_mode, _bytes)

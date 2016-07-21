@@ -3443,6 +3443,75 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0x5a }
+      let(:value) { 0b01010101 }
+      let(:flags) { 0 }
+
+      before do
+        subject.p = flags
+        memory[address] = value
+      end
+
+      it 'shifts all bits right one position' do
+        subject.ror(:zero_page, [0x66, address])
+        expect(memory[address]).to eq(value >> 1)
+      end
+
+      it 'shifts bit 0 into the carry flag' do
+        subject.ror(:zero_page, [0x66, address])
+        expect(subject.c?).to be_truthy
+      end
+
+      it 'clears the sign flag' do
+        subject.ror(:zero_page, [0x66, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag when the value is non-zero' do
+        subject.ror(:zero_page, [0x66, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'with the carry flag set' do
+        let(:flags) { 0xff }
+
+        it 'shifts the carry flag into bit 7' do
+          subject.ror(:zero_page, [0x66, address])
+          expect(memory[address]).to eq(value >> 1 | 0x80)
+        end
+
+        it 'sets the sign flag' do
+          subject.ror(:zero_page, [0x66, address])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'with a value of zero' do
+        let(:value) { 0 }
+
+        it 'has a value of zero' do
+          subject.ror(:zero_page, [0x66, address])
+          expect(memory[address]).to eq(value)
+        end
+
+        it 'clears the carry flag' do
+          subject.ror(:zero_page, [0x66, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.ror(:zero_page, [0x66, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.ror(:zero_page, [0x66, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
   end
 
   describe '#rti' do
