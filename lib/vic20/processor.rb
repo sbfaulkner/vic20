@@ -99,7 +99,7 @@ module Vic20
       0x21 => { method: :and, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement AND (indirect_x)
       0x24 => { method: :bit, addressing_mode: :zero_page,   cycles: 3 },
       0x25 => { method: :and, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement AND (zero_page)
-      0x26 => { method: :rol, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement ROL (zero_page)
+      0x26 => { method: :rol, addressing_mode: :zero_page,   cycles: 5 },
       0x28 => { method: :plp, addressing_mode: :implied,     cycles: 4 },
       0x29 => { method: :and, addressing_mode: :immediate,   cycles: 2 },
       0x2A => { method: :rol, addressing_mode: :accumulator, cycles: 2 },

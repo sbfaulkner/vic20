@@ -481,17 +481,31 @@ module Vic20
         self.p = pop & ~B_FLAG
       end
 
-      def rol(addressing_mode, _bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
+      def rol(addressing_mode, bytes)
+        value = case addressing_mode
+        when :accumulator
+          a
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
-        shifted = a << 1
+        shifted = value << 1
 
-        self.a = shifted & 0xff
-        self.a |= 0x01 if c?
+        result = shifted & 0xff
+        result |= 0x01 if c?
+
+        case addressing_mode
+        when :accumulator
+          self.a = result
+        when :zero_page
+          @memory[self.class.operand(bytes)] = result
+        end
 
         affect_carry_flag(shifted & 0x100 != 0)
-        affect_sign_flag(a)
-        affect_zero_flag(a)
+        affect_sign_flag(result)
+        affect_zero_flag(result)
       end
 
       def ror(addressing_mode, _bytes)
