@@ -407,6 +407,19 @@ module Vic20
         affect_zero_flag(y)
       end
 
+      def lsr(addressing_mode, _bytes)
+        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :accumulator
+
+        value = a
+
+        affect_carry_flag(value & 0x01 != 0)
+
+        self.a = result = value >> 1
+
+        affect_sign_flag(result)
+        affect_zero_flag(result)
+      end
+
       def nop(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
       end

@@ -120,7 +120,7 @@ module Vic20
       0x46 => { method: :lsr, addressing_mode: :zero_page,   cycles: 5 }, # TODO: implement LSR (zero_page)
       0x48 => { method: :pha, addressing_mode: :implied,     cycles: 3 },
       0x49 => { method: :eor, addressing_mode: :immediate,   cycles: 2 },
-      0x4A => { method: :lsr, addressing_mode: :accumulator, cycles: 2 }, # TODO: implement LSR (accumulator)
+      0x4A => { method: :lsr, addressing_mode: :accumulator, cycles: 2 },
       0x4C => { method: :jmp, addressing_mode: :absolute,    cycles: 3 },
       0x4D => { method: :eor, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement EOR (absolute)
       0x4E => { method: :lsr, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement LSR (absolute)
