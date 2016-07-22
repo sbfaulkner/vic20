@@ -96,7 +96,7 @@ module Vic20
       0x1D => { method: :ora, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement ORA (absolute_x)
       0x1E => { method: :asl, addressing_mode: :absolute_x,  cycles: 7 },
       0x20 => { method: :jsr, addressing_mode: :absolute,    cycles: 6 },
-      0x21 => { method: :and, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement AND (indirect_x)
+      0x21 => { method: :and, addressing_mode: :indirect_x,  cycles: 6 },
       0x24 => { method: :bit, addressing_mode: :zero_page,   cycles: 3 },
       0x25 => { method: :and, addressing_mode: :zero_page,   cycles: 3 },
       0x26 => { method: :rol, addressing_mode: :zero_page,   cycles: 5 },
