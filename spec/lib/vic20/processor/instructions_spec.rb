@@ -256,6 +256,61 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page,x addressing mode' do
+      let(:address) { 0xad }
+      let(:offset) { 5 }
+      let(:mask) { 0xfc }
+      let(:value) { 0x0f }
+
+      before do
+        memory[(address + offset) & 0xff] = value
+        subject.a = mask
+        subject.x = offset
+      end
+
+      it 'ands the accumulator with the provided value' do
+        subject.and(:zero_page_x, [0x35, address])
+        expect(subject.a).to eq(value & mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.and(:zero_page_x, [0x35, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.and(:zero_page_x, [0x35, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x80 }
+
+        it 'sets the sign flag' do
+          subject.and(:zero_page_x, [0x35, address])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:value) { 0x01 }
+
+        it 'sets the zero flag' do
+          subject.and(:zero_page_x, [0x35, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.and(:zero_page_x, [0x35, address])
+          expect(subject.a).to eq(value & mask)
+        end
+      end
+    end
   end
 
   describe '#asl' do
