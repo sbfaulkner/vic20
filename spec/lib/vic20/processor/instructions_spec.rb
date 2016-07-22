@@ -127,6 +127,50 @@ describe Vic20::Processor do
   end
 
   describe '#and' do
+    context 'with absolute addressing mode' do
+      let(:address) { 0xbead }
+      let(:mask) { 0xfc }
+      let(:value) { 0x0f }
+
+      before do
+        memory[address] = value
+        subject.a = mask
+      end
+
+      it 'ands the accumulator with the provided value' do
+        subject.and(:absolute, [0x2d, address])
+        expect(subject.a).to eq(value & mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.and(:absolute, [0x2d, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.and(:absolute, [0x2d, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x80 }
+
+        it 'sets the sign flag' do
+          subject.and(:absolute, [0x2d, address])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:value) { 0x01 }
+
+        it 'sets the zero flag' do
+          subject.and(:absolute, [0x2d, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       let(:mask) { 0xfc }
       let(:value) { 0x0f }
