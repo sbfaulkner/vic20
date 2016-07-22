@@ -3133,6 +3133,72 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page,x addressing mode' do
+      let(:address) { 0xe4 }
+      let(:value) { 0b01110101 }
+      let(:flags) { 0 }
+      let(:offset) { 5 }
+
+      before do
+        subject.p = flags
+        memory[(address + offset) & 0xff] = value
+        subject.x = offset
+      end
+
+      it 'shifts all bits right one position' do
+        subject.lsr(:zero_page_x, [0x56, address])
+        expect(memory[(address + offset) & 0xff]).to eq(value >> 1 & 0xff)
+      end
+
+      it 'shifts bit 0 into the carry flag' do
+        subject.lsr(:zero_page_x, [0x56, address])
+        expect(subject.c?).to be_truthy
+      end
+
+      it 'clears the sign flag' do
+        subject.lsr(:zero_page_x, [0x56, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag when the value is non-zero' do
+        subject.lsr(:zero_page_x, [0x56, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'with a value of zero' do
+        let(:value) { 0 }
+
+        it 'has a value of zero' do
+          subject.lsr(:zero_page_x, [0x56, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value)
+        end
+
+        it 'clears the carry flag' do
+          subject.lsr(:zero_page_x, [0x56, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.lsr(:zero_page_x, [0x56, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.lsr(:zero_page_x, [0x56, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.lsr(:zero_page_x, [0x56, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value >> 1 & 0xff)
+        end
+      end
+    end
   end
 
   describe '#nop' do
