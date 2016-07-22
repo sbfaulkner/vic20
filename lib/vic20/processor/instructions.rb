@@ -263,6 +263,25 @@ module Vic20
         affect_zero_flag(result)
       end
 
+      def dec(addressing_mode, bytes)
+        value = case addressing_mode
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
+
+        value = (value - 1) & 0xff
+
+        case addressing_mode
+        when :zero_page
+          @memory[self.class.operand(bytes)] = value
+        end
+
+        affect_sign_flag(value)
+        affect_zero_flag(value)
+      end
+
       def dex(addressing_mode, _bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :implied
 

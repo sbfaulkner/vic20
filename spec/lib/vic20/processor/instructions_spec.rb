@@ -1805,6 +1805,71 @@ describe Vic20::Processor do
     end
   end
 
+  describe '#dec' do
+    let(:value) { 1 }
+
+    context 'with zero page addressing mode' do
+      let(:address) { 0x1a }
+
+      before do
+        memory[address] = value
+      end
+
+      it 'decrements the value' do
+        subject.dec(:zero_page, [0xc6, address])
+        expect(memory[address]).to eq(value - 1)
+      end
+
+      it 'clears the sign flag' do
+        subject.dec(:zero_page, [0xc6, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.dec(:zero_page, [0xc6, address])
+        expect(subject.z?).to be_truthy
+      end
+
+      context 'when the initial value is 0xff' do
+        let(:value) { 0xff }
+
+        it 'decrements the value' do
+          subject.dec(:zero_page, [0xc6, address])
+          expect(memory[address]).to eq(value - 1)
+        end
+
+        it 'sets the sign flag' do
+          subject.dec(:zero_page, [0xc6, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.dec(:zero_page, [0xc6, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the initial value is 0' do
+        let(:value) { 0 }
+
+        it 'rolls over to 0xff' do
+          subject.dec(:zero_page, [0xc6, address])
+          expect(memory[address]).to eq(0xff)
+        end
+
+        it 'sets the sign flag' do
+          subject.dec(:zero_page, [0xc6, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.dec(:zero_page, [0xc6, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+  end
+
   describe '#dex' do
     let(:x) { 1 }
 
