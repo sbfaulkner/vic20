@@ -265,6 +265,8 @@ module Vic20
 
       def dec(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :zero_page
           @memory[self.class.operand(bytes)]
         else
@@ -274,6 +276,8 @@ module Vic20
         value = (value - 1) & 0xff
 
         case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)] = value
         when :zero_page
           @memory[self.class.operand(bytes)] = value
         end

@@ -201,7 +201,7 @@ module Vic20
       0xCA => { method: :dex, addressing_mode: :implied,     cycles: 2 },
       0xCC => { method: :cpy, addressing_mode: :absolute,    cycles: 4 },
       0xCD => { method: :cmp, addressing_mode: :absolute,    cycles: 4 },
-      0xCE => { method: :dec, addressing_mode: :absolute,    cycles: 6 }, # TODO: implement DEC (absolute)
+      0xCE => { method: :dec, addressing_mode: :absolute,    cycles: 6 },
       0xD0 => { method: :bne, addressing_mode: :relative,    cycles: 2 },
       0xD1 => { method: :cmp, addressing_mode: :indirect_y,  cycles: 5 },
       0xD5 => { method: :cmp, addressing_mode: :zero_page_x, cycles: 4 },
