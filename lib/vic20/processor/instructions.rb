@@ -501,6 +501,8 @@ module Vic20
           a
         when :zero_page
           @memory[self.class.operand(bytes)]
+        when :zero_page_x
+          @memory[(self.class.operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -517,6 +519,8 @@ module Vic20
           self.a = result
         when :zero_page
           @memory[self.class.operand(bytes)] = result
+        when :zero_page_x
+          @memory[(self.class.operand(bytes) + x) & 0xff] = result
         end
 
         affect_carry_flag(shifted & 0x100 != 0)

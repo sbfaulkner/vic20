@@ -3613,6 +3613,81 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page,x addressing mode' do
+      let(:address) { 0x4e }
+      let(:value) { 0b11101010 }
+      let(:flags) { 0 }
+      let(:offset) { 1 }
+
+      before do
+        subject.p = flags
+        memory[(address + offset) & 0xff] = value
+        subject.x = offset
+      end
+
+      it 'shifts all bits left one position' do
+        subject.rol(:zero_page_x, [0x36, address])
+        expect(memory[(address + offset) & 0xff]).to eq(value << 1 & 0xff)
+      end
+
+      it 'shifts bit 7 into the carry flag' do
+        subject.rol(:zero_page_x, [0x36, address])
+        expect(subject.c?).to be_truthy
+      end
+
+      it 'sets the sign flag' do
+        subject.rol(:zero_page_x, [0x36, address])
+        expect(subject.n?).to be_truthy
+      end
+
+      it 'clears the zero flag when the value is non-zero' do
+        subject.rol(:zero_page_x, [0x36, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'with the carry flag set' do
+        let(:flags) { 0xff }
+
+        it 'shifts the carry flag into bit 0' do
+          subject.rol(:zero_page_x, [0x36, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value << 1 & 0xff | 0x01)
+        end
+      end
+
+      context 'with a value of zero' do
+        let(:value) { 0 }
+
+        it 'has a value of zero' do
+          subject.rol(:zero_page_x, [0x36, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value)
+        end
+
+        it 'clears the carry flag' do
+          subject.rol(:zero_page_x, [0x36, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.rol(:zero_page_x, [0x36, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.rol(:zero_page_x, [0x36, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.rol(:zero_page_x, [0x36, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value << 1 & 0xff)
+        end
+      end
+    end
   end
 
   describe '#ror' do
