@@ -1869,6 +1869,69 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with absolute,x addressing mode' do
+      let(:address) { 0xa11a }
+      let(:offset) { 0xee }
+
+      before do
+        memory[address + offset] = value
+        subject.x = offset
+      end
+
+      it 'decrements the value' do
+        subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+        expect(memory[address + offset]).to eq(value - 1)
+      end
+
+      it 'clears the sign flag' do
+        subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+        expect(subject.z?).to be_truthy
+      end
+
+      context 'when the initial value is 0xff' do
+        let(:value) { 0xff }
+
+        it 'decrements the value' do
+          subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+          expect(memory[address + offset]).to eq(value - 1)
+        end
+
+        it 'sets the sign flag' do
+          subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the initial value is 0' do
+        let(:value) { 0 }
+
+        it 'rolls over to 0xff' do
+          subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+          expect(memory[address + offset]).to eq(0xff)
+        end
+
+        it 'sets the sign flag' do
+          subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.dec(:absolute_x, [0xde, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+    end
+
     context 'with zero page addressing mode' do
       let(:address) { 0x1a }
 

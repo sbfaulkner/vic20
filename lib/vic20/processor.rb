@@ -209,7 +209,7 @@ module Vic20
       0xD8 => { method: :cld, addressing_mode: :implied,     cycles: 2 },
       0xD9 => { method: :cmp, addressing_mode: :absolute_y,  cycles: 4 },
       0xDD => { method: :cmp, addressing_mode: :absolute_x,  cycles: 4 },
-      0xDE => { method: :dec, addressing_mode: :absolute_x,  cycles: 7 }, # TODO: implement DEC (absolute_x)
+      0xDE => { method: :dec, addressing_mode: :absolute_x,  cycles: 7 },
       0xE0 => { method: :cpx, addressing_mode: :immediate,   cycles: 2 },
       0xE1 => { method: :sbc, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement SBC (indirect_x)
       0xE4 => { method: :cpx, addressing_mode: :zero_page,   cycles: 3 },
