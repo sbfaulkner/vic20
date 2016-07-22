@@ -116,7 +116,7 @@ module Vic20
       0x3E => { method: :rol, addressing_mode: :absolute_x,  cycles: 7 },
       0x40 => { method: :rti, addressing_mode: :implied,     cycles: 6 },
       0x41 => { method: :eor, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement EOR (indirect_x)
-      0x45 => { method: :eor, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement EOR (zero_page)
+      0x45 => { method: :eor, addressing_mode: :zero_page,   cycles: 3 },
       0x46 => { method: :lsr, addressing_mode: :zero_page,   cycles: 5 },
       0x48 => { method: :pha, addressing_mode: :implied,     cycles: 3 },
       0x49 => { method: :eor, addressing_mode: :immediate,   cycles: 2 },

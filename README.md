@@ -2,6 +2,13 @@
 
 A VIC-20 emulator built in ruby.
 
+## TODO
+
+This is very much a work in progress.
+
+1. Implementing the 6502 instruction set (VIC-20 is actually a 6510, but should be compatible).
+2. Refactoring to eliminate duplicate load and store operations, and clean up reading of operands.
+
 ## Installation
 
 Add this line to your application's Gemfile:

@@ -339,9 +339,10 @@ module Vic20
         value = case addressing_mode
         when :immediate
           self.class.operand(bytes)
+        when :zero_page
+          @memory[self.class.operand(bytes)]
         when :zero_page_x
-          address = (self.class.operand(bytes) + x) & 0xff
-          @memory[address]
+          @memory[(self.class.operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
