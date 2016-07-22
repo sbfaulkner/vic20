@@ -318,14 +318,26 @@ module Vic20
       end
 
       def inc(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :zero_page
+        value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode
+        end
 
-        address = self.class.operand(bytes)
+        value = (value + 1) & 0xff
 
-        result = @memory[address] = (@memory[address] + 1) & 0xff
+        case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)] = value
+        when :zero_page
+          @memory[self.class.operand(bytes)] = value
+        end
 
-        affect_sign_flag(result)
-        affect_zero_flag(result)
+        affect_sign_flag(value)
+        affect_zero_flag(value)
       end
 
       def inx(addressing_mode, _bytes)
