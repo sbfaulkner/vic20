@@ -57,6 +57,8 @@ module Vic20
         value = case addressing_mode
         when :absolute
           @memory[self.class.operand(bytes)]
+        when :absolute_x
+          @memory[self.class.operand(bytes) + x]
         when :accumulator
           a
         when :zero_page
@@ -74,6 +76,8 @@ module Vic20
         case addressing_mode
         when :absolute
           @memory[self.class.operand(bytes)] = value
+        when :absolute_x
+          @memory[self.class.operand(bytes) + x] = value
         when :accumulator
           self.a = value
         when :zero_page
