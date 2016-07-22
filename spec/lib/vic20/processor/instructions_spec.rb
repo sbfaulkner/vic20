@@ -2155,12 +2155,12 @@ describe Vic20::Processor do
   describe '#inc' do
     let(:value) { 0 }
 
-    before do
-      memory[address] = value
-    end
-
     context 'with absolute addressing mode' do
       let(:address) { 0xc105 }
+
+      before do
+        memory[address] = value
+      end
 
       it 'increments the value at the specified address' do
         subject.inc(:absolute, [0xee, lsb(address), msb(address)])
@@ -2180,7 +2180,7 @@ describe Vic20::Processor do
       context 'when the initial value is 0x7f' do
         let(:value) { 0x7f }
 
-        it 'increments the x-index register' do
+        it 'increments the value at the specified address' do
           subject.inc(:absolute, [0xee, lsb(address), msb(address)])
           expect(memory[address]).to eq(value + 1)
         end
@@ -2219,6 +2219,10 @@ describe Vic20::Processor do
     context 'with zero page addressing mode' do
       let(:address) { 0xc1 }
 
+      before do
+        memory[address] = value
+      end
+
       it 'increments the value at the specified address' do
         subject.inc(:zero_page, [0xe6, address])
         expect(memory[address]).to eq(value + 1)
@@ -2237,7 +2241,7 @@ describe Vic20::Processor do
       context 'when the initial value is 0x7f' do
         let(:value) { 0x7f }
 
-        it 'increments the x-index register' do
+        it 'increments the value at the specified address' do
           subject.inc(:zero_page, [0xe6, address])
           expect(memory[address]).to eq(value + 1)
         end
@@ -2269,6 +2273,78 @@ describe Vic20::Processor do
         it 'sets the zero flag' do
           subject.inc(:zero_page, [0xe6, address])
           expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
+    context 'with zero page,x addressing mode' do
+      let(:address) { 0xc1 }
+      let(:offset) { 0x18 }
+
+      before do
+        memory[(address + offset) & 0xff] = value
+        subject.x = offset
+      end
+
+      it 'increments the value at the specified address' do
+        subject.inc(:zero_page_x, [0xf6, address])
+        expect(memory[(address + offset) & 0xff]).to eq(value + 1)
+      end
+
+      it 'clears the sign flag' do
+        subject.inc(:zero_page_x, [0xf6, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.inc(:zero_page_x, [0xf6, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the initial value is 0x7f' do
+        let(:value) { 0x7f }
+
+        it 'increments the value at the specified address' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value + 1)
+        end
+
+        it 'sets the sign flag' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the initial value is 0xff' do
+        let(:value) { 0xff }
+
+        it 'rolls over to zero' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(memory[(address + offset) & 0xff]).to eq(0)
+        end
+
+        it 'clears the sign flag' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.inc(:zero_page_x, [0xf6, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value + 1)
         end
       end
     end
