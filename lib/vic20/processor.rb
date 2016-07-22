@@ -122,7 +122,7 @@ module Vic20
       0x49 => { method: :eor, addressing_mode: :immediate,   cycles: 2 },
       0x4A => { method: :lsr, addressing_mode: :accumulator, cycles: 2 },
       0x4C => { method: :jmp, addressing_mode: :absolute,    cycles: 3 },
-      0x4D => { method: :eor, addressing_mode: :absolute,    cycles: 4 }, # TODO: implement EOR (absolute)
+      0x4D => { method: :eor, addressing_mode: :absolute,    cycles: 4 },
       0x4E => { method: :lsr, addressing_mode: :absolute,    cycles: 6 },
       0x50 => { method: :bvc, addressing_mode: :relative,    cycles: 2 },
       0x51 => { method: :eor, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement EOR (indirect_y)

@@ -337,6 +337,8 @@ module Vic20
 
       def eor(addressing_mode, bytes)
         value = case addressing_mode
+        when :absolute
+          @memory[self.class.operand(bytes)]
         when :immediate
           self.class.operand(bytes)
         when :zero_page
