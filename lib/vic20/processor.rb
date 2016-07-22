@@ -131,7 +131,7 @@ module Vic20
       0x58 => { method: :cli, addressing_mode: :implied,     cycles: 2 },
       0x59 => { method: :eor, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement EOR (absolute_y)
       0x5D => { method: :eor, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement EOR (absolute_x)
-      0x5E => { method: :lsr, addressing_mode: :absolute_x,  cycles: 7 }, # TODO: implement LSR (absolute_x)
+      0x5E => { method: :lsr, addressing_mode: :absolute_x,  cycles: 7 },
       0x60 => { method: :rts, addressing_mode: :implied,     cycles: 6 },
       0x61 => { method: :adc, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement ADC (indirect_x)
       0x65 => { method: :adc, addressing_mode: :zero_page,   cycles: 3 },
