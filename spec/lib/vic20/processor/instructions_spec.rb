@@ -1929,6 +1929,78 @@ describe Vic20::Processor do
         end
       end
     end
+
+    context 'with zero page,x addressing mode' do
+      let(:address) { 0x1a }
+      let(:offset) { 0xa1 }
+
+      before do
+        memory[(address + offset) & 0xff] = value
+        subject.x = offset
+      end
+
+      it 'decrements the value' do
+        subject.dec(:zero_page_x, [0xd6, address])
+        expect(memory[(address + offset) & 0xff]).to eq(value - 1)
+      end
+
+      it 'clears the sign flag' do
+        subject.dec(:zero_page_x, [0xd6, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'sets the zero flag' do
+        subject.dec(:zero_page_x, [0xd6, address])
+        expect(subject.z?).to be_truthy
+      end
+
+      context 'when the initial value is 0xff' do
+        let(:value) { 0xff }
+
+        it 'decrements the value' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value - 1)
+        end
+
+        it 'sets the sign flag' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the initial value is 0' do
+        let(:value) { 0 }
+
+        it 'rolls over to 0xff' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(memory[(address + offset) & 0xff]).to eq(0xff)
+        end
+
+        it 'sets the sign flag' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the offset exceeds page bounds' do
+        let(:offset) { 0xff }
+
+        it 'wraps around' do
+          subject.dec(:zero_page_x, [0xd6, address])
+          expect(memory[(address + offset) & 0xff]).to eq(value - 1)
+        end
+      end
+    end
   end
 
   describe '#dex' do

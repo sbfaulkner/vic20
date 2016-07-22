@@ -269,6 +269,8 @@ module Vic20
           @memory[self.class.operand(bytes)]
         when :zero_page
           @memory[self.class.operand(bytes)]
+        when :zero_page_x
+          @memory[(self.class.operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -280,6 +282,8 @@ module Vic20
           @memory[self.class.operand(bytes)] = value
         when :zero_page
           @memory[self.class.operand(bytes)] = value
+        when :zero_page_x
+          @memory[(self.class.operand(bytes) + x) & 0xff] = value
         end
 
         affect_sign_flag(value)
