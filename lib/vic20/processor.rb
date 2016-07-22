@@ -228,7 +228,7 @@ module Vic20
       0xF8 => { method: :sed, addressing_mode: :implied,     cycles: 2 },
       0xF9 => { method: :sbc, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement SBC (absolute_y)
       0xFD => { method: :sbc, addressing_mode: :absolute_x,  cycles: 4 }, # TODO: implement SBC (absolute_x)
-      0xFE => { method: :inc, addressing_mode: :absolute_x,  cycles: 7 }, # TODO: implement INC (absolute_x)
+      0xFE => { method: :inc, addressing_mode: :absolute_x,  cycles: 7 },
     }.freeze
 
     UNKNOWN_INSTRUCTION = {

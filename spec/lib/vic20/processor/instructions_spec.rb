@@ -2288,6 +2288,69 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with absolute,x addressing mode' do
+      let(:address) { 0xc1d5 }
+      let(:offset) { 0xbb }
+
+      before do
+        memory[address + offset] = value
+        subject.x = offset
+      end
+
+      it 'increments the value at the specified address' do
+        subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+        expect(memory[address + offset]).to eq(value + 1)
+      end
+
+      it 'clears the sign flag' do
+        subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the initial value is 0x7f' do
+        let(:value) { 0x7f }
+
+        it 'increments the value at the specified address' do
+          subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+          expect(memory[address + offset]).to eq(value + 1)
+        end
+
+        it 'sets the sign flag' do
+          subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+
+        it 'clears the zero flag' do
+          subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+      end
+
+      context 'when the initial value is 0xff' do
+        let(:value) { 0xff }
+
+        it 'rolls over to zero' do
+          subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+          expect(memory[address + offset]).to eq(0)
+        end
+
+        it 'clears the sign flag' do
+          subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'sets the zero flag' do
+          subject.inc(:absolute_x, [0xfe, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with zero page addressing mode' do
       let(:address) { 0xc1 }
 
