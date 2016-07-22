@@ -45,9 +45,16 @@ module Vic20
       end
 
       def and(addressing_mode, bytes)
-        raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+        value = case addressing_mode
+        when :immediate
+          self.class.operand(bytes)
+        when :zero_page
+          @memory[self.class.operand(bytes)]
+        else
+          raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
+        end
 
-        self.a &= self.class.operand(bytes)
+        self.a &= value
 
         affect_sign_flag(a)
         affect_zero_flag(a)
