@@ -9,7 +9,8 @@ This is very much a work in progress.
 1. Implementing the 6502 instruction set (VIC-20 is actually a 6510, but should be compatible).
 2. Refactoring to eliminate duplicate load and store operations, and clean up reading of operands.
 3. Consider switching to array indexing of flag bits.
-4. DRY up SBC implementation since it's just ADC with ones-complement of (2nd) operand
+4. DRY up SBC implementation since it's just ADC with ones-complement of (2nd) operand.
+5. specs for ADC and SBC not complete/correct for carry & overflow.
 
 ## Installation
 
