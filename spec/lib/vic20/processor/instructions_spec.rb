@@ -21,6 +21,67 @@ describe Vic20::Processor do
       subject.p = 0x00
     end
 
+    context 'with absolute addressing mode' do
+      let(:address) { 0xe03f }
+
+      before do
+        memory[address] = value
+      end
+
+      it 'adds the addressed value to the accumulator' do
+        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+        expect(subject.a).to eq(a + value)
+      end
+
+      it 'clears the carry flag' do
+        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+        expect(subject.c?).to be_falsey
+      end
+
+      it 'clears the sign flag' do
+        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result is > 255' do
+        let(:a) { 0xfe }
+
+        it 'sets the carry flag' do
+          subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+          expect(subject.c?).to be_truthy
+        end
+      end
+
+      context 'when the result has incorrect sign' do
+        let(:value) { 0x7f }
+        let(:a) { 0x7f }
+
+        it 'sets the overflow flag' do
+          subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+          expect(subject.v?).to be_truthy
+        end
+
+        it 'sets the sign flag' do
+          subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is 0' do
+        let(:a) { 0xf1 }
+
+        it 'sets the zero flag' do
+          subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       it 'adds the specified value to the accumulator' do
         subject.adc(:immediate, [0x69, value])
@@ -117,8 +178,14 @@ describe Vic20::Processor do
         end
       end
 
-      context 'when the result has bit 7 set' do
-        let(:a) { 0x7e }
+      context 'when the result has incorrect sign' do
+        let(:value) { 0x7f }
+        let(:a) { 0x7f }
+
+        it 'sets the overflow flag' do
+          subject.adc(:zero_page, [0x65, address])
+          expect(subject.v?).to be_truthy
+        end
 
         it 'sets the sign flag' do
           subject.adc(:zero_page, [0x65, address])
