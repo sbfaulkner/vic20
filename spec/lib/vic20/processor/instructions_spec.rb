@@ -5735,6 +5735,61 @@ describe Vic20::Processor do
       subject.p = 0xff
     end
 
+    context 'with absolute addressing mode' do
+      let(:address) { 0x1dd1 }
+
+      before do
+        memory[address] = value
+      end
+
+      it 'subtracts the value from the accumulator' do
+        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+        expect(subject.a).to eq(a - value)
+      end
+
+      it 'sets the carry flag' do
+        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+        expect(subject.c?).to be_truthy
+      end
+
+      it 'clears the sign flag' do
+        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result < 0' do
+        let(:value) { 0xff }
+
+        it 'clears the carry flag' do
+          subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+          expect(subject.c?).to be_falsey
+        end
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x20 }
+
+        it 'sets the sign flag' do
+          subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is 0' do
+        let(:value) { subject.a }
+
+        it 'sets the zero flag' do
+          subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       it 'subtracts the value from the accumulator' do
         subject.sbc(:immediate, [0xe9, value])
