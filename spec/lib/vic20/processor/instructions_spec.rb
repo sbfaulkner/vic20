@@ -2586,17 +2586,17 @@ describe Vic20::Processor do
       end
 
       it 'xors the accumulator with the value at the specified address' do
-        subject.eor(:absolute_x, [0x5d, address])
+        subject.eor(:absolute_x, [0x5d, lsb(address), msb(address)])
         expect(subject.a).to eq(value ^ mask)
       end
 
       it 'clears the sign flag' do
-        subject.eor(:absolute_x, [0x5d, address])
+        subject.eor(:absolute_x, [0x5d, lsb(address), msb(address)])
         expect(subject.n?).to be_falsey
       end
 
       it 'clears the zero flag' do
-        subject.eor(:absolute_x, [0x5d, address])
+        subject.eor(:absolute_x, [0x5d, lsb(address), msb(address)])
         expect(subject.z?).to be_falsey
       end
 
@@ -2604,7 +2604,7 @@ describe Vic20::Processor do
         let(:value) { 0x80 }
 
         it 'sets the sign flag' do
-          subject.eor(:absolute_x, [0x5d, address])
+          subject.eor(:absolute_x, [0x5d, lsb(address), msb(address)])
           expect(subject.n?).to be_truthy
         end
       end
@@ -2613,17 +2613,54 @@ describe Vic20::Processor do
         let(:value) { 0x3c }
 
         it 'sets the zero flag' do
-          subject.eor(:absolute_x, [0x5d, address])
+          subject.eor(:absolute_x, [0x5d, lsb(address), msb(address)])
           expect(subject.z?).to be_truthy
         end
       end
+    end
 
-      context 'when the offset exceeds page bounds' do
-        let(:offset) { 0xff }
+    context 'with absolute,y addressing mode' do
+      let(:address) { 0xabc1 }
+      let(:mask) { 0x3c }
+      let(:value) { 0x0f }
+      let(:offset) { 0x2e }
 
-        it 'wraps around' do
-          subject.eor(:absolute_x, [0x5d, address])
-          expect(subject.a).to eq(value ^ mask)
+      before do
+        memory[address + offset] = value
+        subject.a = mask
+        subject.y = offset
+      end
+
+      it 'xors the accumulator with the value at the specified address' do
+        subject.eor(:absolute_y, [0x59, lsb(address), msb(address)])
+        expect(subject.a).to eq(value ^ mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.eor(:absolute_y, [0x59, lsb(address), msb(address)])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.eor(:absolute_y, [0x59, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x80 }
+
+        it 'sets the sign flag' do
+          subject.eor(:absolute_y, [0x59, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:value) { 0x3c }
+
+        it 'sets the zero flag' do
+          subject.eor(:absolute_y, [0x59, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
         end
       end
     end
