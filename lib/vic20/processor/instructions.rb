@@ -146,7 +146,7 @@ module Vic20
 
         result = a & value
 
-        assign_overflow_flag(value & 0x80 != 0)
+        assign_overflow_flag(value & 0x40 != 0)
         affect_sign_flag(value)
         affect_zero_flag(result)
       end
