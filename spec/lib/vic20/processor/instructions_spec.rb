@@ -4440,6 +4440,53 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with absolute,x addressing mode' do
+      let(:address) { 0x0288 }
+      let(:offset) { 0xff }
+      let(:mask) { 0x1c }
+      let(:value) { 0x45 }
+
+      before do
+        memory[address + offset] = value
+        subject.a = mask
+        subject.x = offset
+      end
+
+      it 'xors the accumulator with the value at the specified address' do
+        subject.ora(:absolute_x, [0x1d, lsb(address), msb(address)])
+        expect(subject.a).to eq(value | mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.ora(:absolute_x, [0x1d, lsb(address), msb(address)])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.ora(:absolute_x, [0x1d, lsb(address), msb(address)])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0xc5 }
+
+        it 'sets the sign flag' do
+          subject.ora(:absolute_x, [0x1d, lsb(address), msb(address)])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:mask) { 0 }
+        let(:value) { 0 }
+
+        it 'sets the zero flag' do
+          subject.ora(:absolute_x, [0x1d, lsb(address), msb(address)])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with immediate addressing mode' do
       let(:mask) { 0x1c }
       let(:value) { 0x45 }
