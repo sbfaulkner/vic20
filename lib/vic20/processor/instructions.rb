@@ -39,6 +39,7 @@ module Vic20
 
         self.a = result & 0xff
 
+        affect_overflow_flag(result >> 1)
         affect_carry_flag(result > 0xff)
         affect_sign_flag(a)
         affect_zero_flag(a)

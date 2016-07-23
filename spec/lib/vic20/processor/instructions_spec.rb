@@ -32,6 +32,11 @@ describe Vic20::Processor do
         expect(subject.c?).to be_falsey
       end
 
+      it 'clears the overflow flag' do
+        subject.adc(:immediate, [0x69, value])
+        expect(subject.v?).to be_falsey
+      end
+
       it 'clears the sign flag' do
         subject.adc(:immediate, [0x69, value])
         expect(subject.n?).to be_falsey
@@ -53,6 +58,11 @@ describe Vic20::Processor do
 
       context 'when the result has bit 7 set' do
         let(:a) { 0x7e }
+
+        it 'sets the overflow flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.v?).to be_truthy
+        end
 
         it 'sets the sign flag' do
           subject.adc(:immediate, [0x69, value])
