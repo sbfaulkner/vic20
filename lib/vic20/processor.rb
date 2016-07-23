@@ -237,8 +237,15 @@ module Vic20
       cycles: 0,
     }.freeze
 
-    # TODO: affect methods are not consistent... some check a bit, one takes a boolean, one tests for zero
-    def affect_carry_flag(value)
+    def affect_sign_flag(value)
+      assign_sign_flag(value & N_FLAG == N_FLAG)
+    end
+
+    def affect_zero_flag(value)
+      assign_zero_flag(value.zero?)
+    end
+
+    def assign_carry_flag(value)
       if value
         self.p |= C_FLAG
       else
@@ -246,24 +253,24 @@ module Vic20
       end
     end
 
-    def affect_overflow_flag(value)
-      if (value & V_FLAG) == V_FLAG
+    def assign_overflow_flag(value)
+      if value
         self.p |= V_FLAG
       else
         self.p &= ~V_FLAG
       end
     end
 
-    def affect_sign_flag(value)
-      if (value & N_FLAG) == N_FLAG
+    def assign_sign_flag(value)
+      if value
         self.p |= N_FLAG
       else
         self.p &= ~N_FLAG
       end
     end
 
-    def affect_zero_flag(value)
-      if value.zero?
+    def assign_zero_flag(value)
+      if value
         self.p |= Z_FLAG
       else
         self.p &= ~Z_FLAG

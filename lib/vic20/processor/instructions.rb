@@ -39,8 +39,8 @@ module Vic20
 
         self.a = result & 0xff
 
-        affect_overflow_flag(result >> 1)
-        affect_carry_flag(result > 0xff)
+        assign_overflow_flag(result & 0x80 != 0)
+        assign_carry_flag(result > 0xff)
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
@@ -111,7 +111,7 @@ module Vic20
           @memory[address] = value
         end
 
-        affect_carry_flag(shifted & 0x100 != 0)
+        assign_carry_flag(shifted & 0x100 != 0)
         affect_sign_flag(value)
         affect_zero_flag(value)
       end
@@ -146,7 +146,7 @@ module Vic20
 
         result = a & value
 
-        affect_overflow_flag(value)
+        assign_overflow_flag(value & 0x80 != 0)
         affect_sign_flag(value)
         affect_zero_flag(result)
       end
@@ -244,7 +244,7 @@ module Vic20
 
         result = a - value
 
-        affect_carry_flag(result >= 0)
+        assign_carry_flag(result >= 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -263,7 +263,7 @@ module Vic20
 
         result = x - value
 
-        affect_carry_flag(result >= 0)
+        assign_carry_flag(result >= 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -282,7 +282,7 @@ module Vic20
 
         result = y - value
 
-        affect_carry_flag(result >= 0)
+        assign_carry_flag(result >= 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -525,7 +525,7 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        affect_carry_flag(value & 0x01 != 0)
+        assign_carry_flag(value & 0x01 != 0)
 
         result = value >> 1
 
@@ -641,7 +641,7 @@ module Vic20
           @memory[(self.class.operand(bytes) + x) & 0xff] = result
         end
 
-        affect_carry_flag(shifted & 0x100 != 0)
+        assign_carry_flag(shifted & 0x100 != 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -680,7 +680,7 @@ module Vic20
           @memory[(self.class.operand(bytes) + x) & 0xff] = result
         end
 
-        affect_carry_flag(shifted & 0x80 != 0)
+        assign_carry_flag(shifted & 0x80 != 0)
         affect_sign_flag(result)
         affect_zero_flag(result)
       end
@@ -713,7 +713,7 @@ module Vic20
 
         self.a = result & 0xff
 
-        affect_carry_flag(result >= 0)
+        assign_carry_flag(result >= 0)
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
