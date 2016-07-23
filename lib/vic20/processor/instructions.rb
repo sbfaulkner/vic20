@@ -565,6 +565,8 @@ module Vic20
           @memory[address]
         when :zero_page
           @memory[self.class.operand(bytes)]
+        when :zero_page_x
+          @memory[(self.class.operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
