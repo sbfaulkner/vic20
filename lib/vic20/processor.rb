@@ -80,7 +80,7 @@ module Vic20
     INSTRUCTIONS = {
       0x00 => { method: :brk, addressing_mode: :implied,     cycles: 2 },
       0x01 => { method: :ora, addressing_mode: :indirect_x,  cycles: 2 }, # TODO: implement ORA (indirect_x)
-      0x05 => { method: :ora, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement ORA (zero_page)
+      0x05 => { method: :ora, addressing_mode: :zero_page,   cycles: 3 },
       0x06 => { method: :asl, addressing_mode: :zero_page,   cycles: 5 },
       0x08 => { method: :php, addressing_mode: :implied,     cycles: 2 },
       0x09 => { method: :ora, addressing_mode: :immediate,   cycles: 2 },
