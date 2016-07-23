@@ -147,7 +147,7 @@ module Vic20
       0x75 => { method: :adc, addressing_mode: :zero_page_x, cycles: 4 },
       0x76 => { method: :ror, addressing_mode: :zero_page_x, cycles: 6 },
       0x78 => { method: :sei, addressing_mode: :implied,     cycles: 2 },
-      0x79 => { method: :adc, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement ADC (absolute_y)
+      0x79 => { method: :adc, addressing_mode: :absolute_y,  cycles: 4 },
       0x7D => { method: :adc, addressing_mode: :absolute_x,  cycles: 4 },
       0x7E => { method: :ror, addressing_mode: :absolute_x,  cycles: 7 },
       0x81 => { method: :sta, addressing_mode: :indirect_x,  cycles: 6 },
