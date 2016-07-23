@@ -4483,6 +4483,55 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with indirect,x addressing mode' do
+      let(:indirect_address) { 0x0288 }
+      let(:address) { 0x28 }
+      let(:offset) { 0xff }
+      let(:mask) { 0x1c }
+      let(:value) { 0x45 }
+
+      before do
+        memory[indirect_address] = value
+        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.a = mask
+        subject.x = offset
+      end
+
+      it 'xors the accumulator with the value at the specified address' do
+        subject.ora(:indirect_x, [0x01, address])
+        expect(subject.a).to eq(value | mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.ora(:indirect_x, [0x01, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.ora(:indirect_x, [0x01, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0xc5 }
+
+        it 'sets the sign flag' do
+          subject.ora(:indirect_x, [0x01, address])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:mask) { 0 }
+        let(:value) { 0 }
+
+        it 'sets the zero flag' do
+          subject.ora(:indirect_x, [0x01, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with zero page addressing mode' do
       let(:address) { 0x88 }
       let(:mask) { 0x1c }
