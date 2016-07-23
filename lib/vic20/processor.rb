@@ -226,7 +226,7 @@ module Vic20
       0xF5 => { method: :sbc, addressing_mode: :zero_page_x, cycles: 4 },
       0xF6 => { method: :inc, addressing_mode: :zero_page_x, cycles: 6 },
       0xF8 => { method: :sed, addressing_mode: :implied,     cycles: 2 },
-      0xF9 => { method: :sbc, addressing_mode: :absolute_y,  cycles: 4 }, # TODO: implement SBC (absolute_y)
+      0xF9 => { method: :sbc, addressing_mode: :absolute_y,  cycles: 4 },
       0xFD => { method: :sbc, addressing_mode: :absolute_x,  cycles: 4 },
       0xFE => { method: :inc, addressing_mode: :absolute_x,  cycles: 7 },
     }.freeze

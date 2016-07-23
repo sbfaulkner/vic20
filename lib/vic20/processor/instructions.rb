@@ -713,6 +713,8 @@ module Vic20
           @memory[self.class.operand(bytes)]
         when :absolute_x
           @memory[self.class.operand(bytes) + x]
+        when :absolute_y
+          @memory[self.class.operand(bytes) + y]
         when :immediate
           self.class.operand(bytes)
         when :zero_page
