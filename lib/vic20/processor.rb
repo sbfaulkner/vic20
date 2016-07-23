@@ -115,7 +115,7 @@ module Vic20
       0x3D => { method: :and, addressing_mode: :absolute_x,  cycles: 4 },
       0x3E => { method: :rol, addressing_mode: :absolute_x,  cycles: 7 },
       0x40 => { method: :rti, addressing_mode: :implied,     cycles: 6 },
-      0x41 => { method: :eor, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement EOR (indirect_x)
+      0x41 => { method: :eor, addressing_mode: :indirect_x,  cycles: 6 },
       0x45 => { method: :eor, addressing_mode: :zero_page,   cycles: 3 },
       0x46 => { method: :lsr, addressing_mode: :zero_page,   cycles: 5 },
       0x48 => { method: :pha, addressing_mode: :implied,     cycles: 3 },
@@ -125,7 +125,7 @@ module Vic20
       0x4D => { method: :eor, addressing_mode: :absolute,    cycles: 4 },
       0x4E => { method: :lsr, addressing_mode: :absolute,    cycles: 6 },
       0x50 => { method: :bvc, addressing_mode: :relative,    cycles: 2 },
-      0x51 => { method: :eor, addressing_mode: :indirect_y,  cycles: 5 }, # TODO: implement EOR (indirect_y)
+      0x51 => { method: :eor, addressing_mode: :indirect_y,  cycles: 5 },
       0x55 => { method: :eor, addressing_mode: :zero_page_x, cycles: 4 },
       0x56 => { method: :lsr, addressing_mode: :zero_page_x, cycles: 6 },
       0x58 => { method: :cli, addressing_mode: :implied,     cycles: 2 },

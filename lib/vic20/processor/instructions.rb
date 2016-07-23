@@ -345,6 +345,14 @@ module Vic20
           @memory[self.class.operand(bytes) + y]
         when :immediate
           self.class.operand(bytes)
+        when :indirect_x
+          address = (self.class.operand(bytes) + x) & 0xff
+          address = @memory[address] | @memory[address + 1] << 8
+          @memory[address]
+        when :indirect_y
+          address = self.class.operand(bytes)
+          address = (@memory[address] | @memory[address + 1] << 8) + y
+          @memory[address]
         when :zero_page
           @memory[self.class.operand(bytes)]
         when :zero_page_x

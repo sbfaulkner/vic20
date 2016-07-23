@@ -2707,6 +2707,102 @@ describe Vic20::Processor do
       end
     end
 
+    context 'with indirect,x addressing mode' do
+      let(:indirect_address) { 0xabc1 }
+      let(:address) { 0x9e }
+      let(:mask) { 0x3c }
+      let(:value) { 0x0f }
+      let(:offset) { 0x2e }
+
+      before do
+        memory[indirect_address] = value
+        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.a = mask
+        subject.x = offset
+      end
+
+      it 'xors the accumulator with the value at the specified address' do
+        subject.eor(:indirect_x, [0x41, address])
+        expect(subject.a).to eq(value ^ mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.eor(:indirect_x, [0x41, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.eor(:indirect_x, [0x41, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x80 }
+
+        it 'sets the sign flag' do
+          subject.eor(:indirect_x, [0x41, address])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:value) { 0x3c }
+
+        it 'sets the zero flag' do
+          subject.eor(:indirect_x, [0x41, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
+    context 'with indirect,y addressing mode' do
+      let(:indirect_address) { 0xabc1 }
+      let(:address) { 0x9e }
+      let(:mask) { 0x3c }
+      let(:value) { 0x0f }
+      let(:offset) { 0x2e }
+
+      before do
+        memory[indirect_address + offset] = value
+        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        subject.a = mask
+        subject.y = offset
+      end
+
+      it 'xors the accumulator with the value at the specified address' do
+        subject.eor(:indirect_y, [0x51, address])
+        expect(subject.a).to eq(value ^ mask)
+      end
+
+      it 'clears the sign flag' do
+        subject.eor(:indirect_y, [0x51, address])
+        expect(subject.n?).to be_falsey
+      end
+
+      it 'clears the zero flag' do
+        subject.eor(:indirect_y, [0x51, address])
+        expect(subject.z?).to be_falsey
+      end
+
+      context 'when the result has bit 7 set' do
+        let(:value) { 0x80 }
+
+        it 'sets the sign flag' do
+          subject.eor(:indirect_y, [0x51, address])
+          expect(subject.n?).to be_truthy
+        end
+      end
+
+      context 'when the result is zero' do
+        let(:value) { 0x3c }
+
+        it 'sets the zero flag' do
+          subject.eor(:indirect_y, [0x51, address])
+          expect(subject.z?).to be_truthy
+        end
+      end
+    end
+
     context 'with zero page addressing mode' do
       let(:address) { 0xc1 }
       let(:mask) { 0x3c }
