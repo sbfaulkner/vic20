@@ -271,7 +271,7 @@ module Vic20
     end
 
     def current_flags
-      %w(C Z I D B V N).collect { |flag| send("#{flag.downcase}?") ? flag : '.' }.join
+      Array.new(8) { |i| p[7-i].zero? ? '-' : 'NV?BDIZC'[i] }.join
     end
 
     def current_state
