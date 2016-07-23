@@ -213,7 +213,7 @@ module Vic20
       0xE0 => { method: :cpx, addressing_mode: :immediate,   cycles: 2 },
       0xE1 => { method: :sbc, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement SBC (indirect_x)
       0xE4 => { method: :cpx, addressing_mode: :zero_page,   cycles: 3 },
-      0xE5 => { method: :sbc, addressing_mode: :zero_page,   cycles: 3 }, # TODO: implement SBC (zero_page)
+      0xE5 => { method: :sbc, addressing_mode: :zero_page,   cycles: 3 },
       0xE6 => { method: :inc, addressing_mode: :zero_page,   cycles: 5 },
       0xE8 => { method: :inx, addressing_mode: :implied,     cycles: 2 },
       0xE9 => { method: :sbc, addressing_mode: :immediate,   cycles: 2 },

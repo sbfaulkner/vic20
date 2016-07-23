@@ -35,11 +35,12 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        result = a + value
+        result = a + value + p[0]
+
+        assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
 
         self.a = result & 0xff
 
-        assign_overflow_flag(result & 0x80 != 0)
         assign_carry_flag(result > 0xff)
         affect_sign_flag(a)
         affect_zero_flag(a)
@@ -702,18 +703,19 @@ module Vic20
         value = case addressing_mode
         when :immediate
           self.class.operand(bytes)
+        when :zero_page
+          @memory[self.class.operand(bytes)]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        # TODO: verify that SBC is implemented correctly
-        borrow = c? ? 0 : 1
+        result = a + (0xff - value) + p[0]
 
-        result = a - value - borrow
+        assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
 
         self.a = result & 0xff
 
-        assign_carry_flag(result >= 0)
+        assign_carry_flag(result > 0xff)
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
