@@ -133,7 +133,7 @@ module Vic20
       0x5D => { method: :eor, addressing_mode: :absolute_x,  cycles: 4 },
       0x5E => { method: :lsr, addressing_mode: :absolute_x,  cycles: 7 },
       0x60 => { method: :rts, addressing_mode: :implied,     cycles: 6 },
-      0x61 => { method: :adc, addressing_mode: :indirect_x,  cycles: 6 }, # TODO: implement ADC (indirect_x)
+      0x61 => { method: :adc, addressing_mode: :indirect_x,  cycles: 6 },
       0x65 => { method: :adc, addressing_mode: :zero_page,   cycles: 3 },
       0x66 => { method: :ror, addressing_mode: :zero_page,   cycles: 5 },
       0x68 => { method: :pla, addressing_mode: :implied,     cycles: 4 },
