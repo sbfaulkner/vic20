@@ -266,6 +266,65 @@ describe Vic20::Processor do
           expect(subject.z?).to be_truthy
         end
       end
+
+      it 'handles all carry, sign, and overflow combinations' do
+        subject.p = 0x00
+        subject.a = 0x50
+        subject.adc(:immediate, [0x69, 0x10])
+        expect(subject.a).to eq(0x60)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_falsey
+        subject.p = 0x00
+        subject.a = 0x50
+        subject.adc(:immediate, [0x69, 0x50])
+        expect(subject.a).to eq(0xa0)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_truthy
+        subject.p = 0x00
+        subject.a = 0x50
+        subject.adc(:immediate, [0x69, 0x90])
+        expect(subject.a).to eq(0xe0)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_falsey
+        subject.p = 0x00
+        subject.a = 0x50
+        subject.adc(:immediate, [0x69, 0xd0])
+        expect(subject.a).to eq(0x20)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_falsey
+        subject.p = 0x00
+        subject.a = 0xd0
+        subject.adc(:immediate, [0x69, 0x10])
+        expect(subject.a).to eq(0xe0)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_falsey
+        subject.p = 0x00
+        subject.a = 0xd0
+        subject.adc(:immediate, [0x69, 0x50])
+        expect(subject.a).to eq(0x20)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_falsey
+        subject.p = 0x00
+        subject.a = 0xd0
+        subject.adc(:immediate, [0x69, 0x90])
+        expect(subject.a).to eq(0x60)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_truthy
+        subject.p = 0x00
+        subject.a = 0xd0
+        subject.adc(:immediate, [0x69, 0xd0])
+        expect(subject.a).to eq(0xa0)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_falsey
+      end
     end
 
     context 'with indirect,x addressing mode' do
@@ -6287,6 +6346,65 @@ describe Vic20::Processor do
           subject.sbc(:immediate, [0xe9, value])
           expect(subject.z?).to be_truthy
         end
+      end
+
+      it 'handles all carry, sign, and overflow combinations' do
+        subject.p = 0x01
+        subject.a = 0x50
+        subject.sbc(:immediate, [0xe9, 0xf0])
+        expect(subject.a).to eq(0x60)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_falsey
+        subject.p = 0x01
+        subject.a = 0x50
+        subject.sbc(:immediate, [0xe9, 0xb0])
+        expect(subject.a).to eq(0xa0)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_truthy
+        subject.p = 0x01
+        subject.a = 0x50
+        subject.sbc(:immediate, [0xe9, 0x70])
+        expect(subject.a).to eq(0xe0)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_falsey
+        subject.p = 0x01
+        subject.a = 0x50
+        subject.sbc(:immediate, [0xe9, 0x30])
+        expect(subject.a).to eq(0x20)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_falsey
+        subject.p = 0x01
+        subject.a = 0xd0
+        subject.sbc(:immediate, [0xe9, 0xf0])
+        expect(subject.a).to eq(0xe0)
+        expect(subject.c?).to be_falsey
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_falsey
+        subject.p = 0x01
+        subject.a = 0xd0
+        subject.sbc(:immediate, [0xe9, 0xb0])
+        expect(subject.a).to eq(0x20)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_falsey
+        subject.p = 0x01
+        subject.a = 0xd0
+        subject.sbc(:immediate, [0xe9, 0x70])
+        expect(subject.a).to eq(0x60)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_falsey
+        expect(subject.v?).to be_truthy
+        subject.p = 0x01
+        subject.a = 0xd0
+        subject.sbc(:immediate, [0xe9, 0x30])
+        expect(subject.a).to eq(0xa0)
+        expect(subject.c?).to be_truthy
+        expect(subject.n?).to be_truthy
+        expect(subject.v?).to be_falsey
       end
     end
 

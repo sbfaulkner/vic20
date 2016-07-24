@@ -741,7 +741,9 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        result = a + (0xff - value) + p[0]
+        value = 0xff - value
+
+        result = a + value + p[0]
 
         assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
 
