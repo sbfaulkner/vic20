@@ -51,13 +51,29 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        result = a + value + p[0]
+        if d?
+          lo = (a & 0x0f) + (value & 0x0f) + p[0]
+          lo += 6 if lo > 9
+          hi = (a & 0xf0) + (value & 0xf0) + (lo & 0xf0)
+          hi += 0x60 if hi > 0x90
 
-        assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
+          result = hi & 0xf0 | lo & 0x0f
 
-        self.a = result & 0xff
+          assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
 
-        assign_carry_flag(result > 0xff)
+          self.a = result
+
+          assign_carry_flag(hi > 0x90)
+        else
+          result = a + value + p[0]
+
+          assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
+
+          self.a = result & 0xff
+
+          assign_carry_flag(result > 0xff)
+        end
+
         affect_sign_flag(a)
         affect_zero_flag(a)
       end
@@ -741,15 +757,33 @@ module Vic20
           raise UnsupportedAddressingMode, addressing_mode
         end
 
-        value = 0xff - value
+        if d?
+          value = 0x99 - value + 1
 
-        result = a + value + p[0]
+          lo = (a & 0x0f) + (value & 0x0f) - (1 - p[0])
+          lo += 6 if lo > 9
+          hi = (a & 0xf0) + (value & 0xf0) + (lo & 0xf0)
+          hi += 0x60 if hi > 0x90
 
-        assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
+          result = hi & 0xf0 | lo & 0x0f
 
-        self.a = result & 0xff
+          assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
 
-        assign_carry_flag(result > 0xff)
+          self.a = result
+
+          assign_carry_flag(hi > 0x90)
+        else
+          value = 0xff - value
+
+          result = a + value + p[0]
+
+          assign_overflow_flag((a ^ result) & (value ^ result) & 0x80 != 0)
+
+          self.a = result & 0xff
+
+          assign_carry_flag(result > 0xff)
+        end
+
         affect_sign_flag(a)
         affect_zero_flag(a)
       end

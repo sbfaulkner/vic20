@@ -13,588 +13,658 @@ describe Vic20::Processor do
   end
 
   describe '#adc' do
-    let(:a) { 0x40 }
-    let(:value) { 0x0f }
-
-    before do
-      subject.a = a
-      subject.p = 0x00
-    end
-
-    context 'with absolute addressing mode' do
-      let(:address) { 0xe03f }
+    context 'in binary mode' do
+      let(:a) { 0x40 }
+      let(:value) { 0x0f }
 
       before do
-        memory[address] = value
+        subject.a = a
+        subject.p = 0x00
       end
 
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-        expect(subject.a).to eq(a + value)
-      end
+      context 'with absolute addressing mode' do
+        let(:address) { 0xe03f }
 
-      it 'clears the carry flag' do
-        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-        expect(subject.c?).to be_falsey
-      end
+        before do
+          memory[address] = value
+        end
 
-      it 'clears the sign flag' do
-        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-          expect(subject.c?).to be_truthy
+          expect(subject.a).to eq(a + value)
         end
-      end
 
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
-
-        it 'sets the overflow flag' do
+        it 'clears the carry flag' do
           subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-          expect(subject.v?).to be_truthy
+          expect(subject.c?).to be_falsey
         end
 
-        it 'sets the sign flag' do
+        it 'clears the sign flag' do
           subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-          expect(subject.n?).to be_truthy
+          expect(subject.n?).to be_falsey
         end
-      end
 
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
+        it 'clears the zero flag' do
           subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
-          expect(subject.z?).to be_truthy
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
+
+          it 'sets the carry flag' do
+            subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+            expect(subject.c?).to be_truthy
+          end
+        end
+
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
+
+          it 'sets the overflow flag' do
+            subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+            expect(subject.v?).to be_truthy
+          end
+
+          it 'sets the sign flag' do
+            subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
+
+          it 'sets the zero flag' do
+            subject.adc(:absolute, [0x6d, lsb(address), msb(address)])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
-    end
 
-    context 'with absolute,x addressing mode' do
-      let(:address) { 0x333f }
-      let(:offset) { 0xf5 }
+      context 'with absolute,x addressing mode' do
+        let(:address) { 0x333f }
+        let(:offset) { 0xf5 }
 
-      before do
-        memory[address + offset] = value
-        subject.x = offset
-      end
+        before do
+          memory[address + offset] = value
+          subject.x = offset
+        end
 
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-        expect(subject.a).to eq(a + value)
-      end
-
-      it 'clears the carry flag' do
-        subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-        expect(subject.c?).to be_falsey
-      end
-
-      it 'clears the sign flag' do
-        subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-          expect(subject.c?).to be_truthy
+          expect(subject.a).to eq(a + value)
         end
-      end
 
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
-
-        it 'sets the overflow flag' do
+        it 'clears the carry flag' do
           subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-          expect(subject.v?).to be_truthy
+          expect(subject.c?).to be_falsey
         end
 
-        it 'sets the sign flag' do
+        it 'clears the sign flag' do
           subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-          expect(subject.n?).to be_truthy
+          expect(subject.n?).to be_falsey
         end
-      end
 
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
+        it 'clears the zero flag' do
           subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
-          expect(subject.z?).to be_truthy
+          expect(subject.z?).to be_falsey
         end
-      end
-    end
 
-    context 'with absolute,y addressing mode' do
-      let(:address) { 0x333f }
-      let(:offset) { 0xf5 }
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
 
-      before do
-        memory[address + offset] = value
-        subject.y = offset
-      end
+          it 'sets the carry flag' do
+            subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
+            expect(subject.c?).to be_truthy
+          end
+        end
 
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-        expect(subject.a).to eq(a + value)
-      end
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
 
-      it 'clears the carry flag' do
-        subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-        expect(subject.c?).to be_falsey
-      end
+          it 'sets the overflow flag' do
+            subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
+            expect(subject.v?).to be_truthy
+          end
 
-      it 'clears the sign flag' do
-        subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-        expect(subject.n?).to be_falsey
-      end
+          it 'sets the sign flag' do
+            subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
+            expect(subject.n?).to be_truthy
+          end
+        end
 
-      it 'clears the zero flag' do
-        subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-        expect(subject.z?).to be_falsey
-      end
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
 
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
-          subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-          expect(subject.c?).to be_truthy
+          it 'sets the zero flag' do
+            subject.adc(:absolute_x, [0x7d, lsb(address), msb(address)])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
 
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
+      context 'with absolute,y addressing mode' do
+        let(:address) { 0x333f }
+        let(:offset) { 0xf5 }
 
-        it 'sets the overflow flag' do
-          subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-          expect(subject.v?).to be_truthy
+        before do
+          memory[address + offset] = value
+          subject.y = offset
         end
 
-        it 'sets the sign flag' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+          expect(subject.a).to eq(a + value)
+        end
+
+        it 'clears the carry flag' do
+          subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
+
+          it 'sets the carry flag' do
+            subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+            expect(subject.c?).to be_truthy
+          end
+        end
+
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
+
+          it 'sets the overflow flag' do
+            subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+            expect(subject.v?).to be_truthy
+          end
+
+          it 'sets the sign flag' do
+            subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
+
+          it 'sets the zero flag' do
+            subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
+            expect(subject.z?).to be_truthy
+          end
+        end
+      end
+
+      context 'with immediate addressing mode' do
+        it 'adds the specified value to the accumulator' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.a).to eq(a + value)
+        end
+
+        it 'clears the carry flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the overflow flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.v?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
+
+          it 'sets the carry flag' do
+            subject.adc(:immediate, [0x69, value])
+            expect(subject.c?).to be_truthy
+          end
+        end
+
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
+
+          it 'sets the overflow flag' do
+            subject.adc(:immediate, [0x69, value])
+            expect(subject.v?).to be_truthy
+          end
+
+          it 'sets the sign flag' do
+            subject.adc(:immediate, [0x69, value])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
+
+          it 'sets the zero flag' do
+            subject.adc(:immediate, [0x69, value])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        it 'handles all carry, sign, and overflow combinations' do
+          subject.p = 0x00
+          subject.a = 0x50
+          subject.adc(:immediate, [0x69, 0x10])
+          expect(subject.a).to eq(0x60)
+          expect(subject.c?).to be_falsey
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_falsey
+          subject.p = 0x00
+          subject.a = 0x50
+          subject.adc(:immediate, [0x69, 0x50])
+          expect(subject.a).to eq(0xa0)
+          expect(subject.c?).to be_falsey
           expect(subject.n?).to be_truthy
-        end
-      end
-
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
-          subject.adc(:absolute_y, [0x79, lsb(address), msb(address)])
-          expect(subject.z?).to be_truthy
-        end
-      end
-    end
-
-    context 'with immediate addressing mode' do
-      it 'adds the specified value to the accumulator' do
-        subject.adc(:immediate, [0x69, value])
-        expect(subject.a).to eq(a + value)
-      end
-
-      it 'clears the carry flag' do
-        subject.adc(:immediate, [0x69, value])
-        expect(subject.c?).to be_falsey
-      end
-
-      it 'clears the overflow flag' do
-        subject.adc(:immediate, [0x69, value])
-        expect(subject.v?).to be_falsey
-      end
-
-      it 'clears the sign flag' do
-        subject.adc(:immediate, [0x69, value])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.adc(:immediate, [0x69, value])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
-          subject.adc(:immediate, [0x69, value])
-          expect(subject.c?).to be_truthy
-        end
-      end
-
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
-
-        it 'sets the overflow flag' do
-          subject.adc(:immediate, [0x69, value])
           expect(subject.v?).to be_truthy
-        end
-
-        it 'sets the sign flag' do
-          subject.adc(:immediate, [0x69, value])
+          subject.p = 0x00
+          subject.a = 0x50
+          subject.adc(:immediate, [0x69, 0x90])
+          expect(subject.a).to eq(0xe0)
+          expect(subject.c?).to be_falsey
           expect(subject.n?).to be_truthy
-        end
-      end
-
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
-          subject.adc(:immediate, [0x69, value])
-          expect(subject.z?).to be_truthy
-        end
-      end
-
-      it 'handles all carry, sign, and overflow combinations' do
-        subject.p = 0x00
-        subject.a = 0x50
-        subject.adc(:immediate, [0x69, 0x10])
-        expect(subject.a).to eq(0x60)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_falsey
-        subject.p = 0x00
-        subject.a = 0x50
-        subject.adc(:immediate, [0x69, 0x50])
-        expect(subject.a).to eq(0xa0)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_truthy
-        subject.p = 0x00
-        subject.a = 0x50
-        subject.adc(:immediate, [0x69, 0x90])
-        expect(subject.a).to eq(0xe0)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_falsey
-        subject.p = 0x00
-        subject.a = 0x50
-        subject.adc(:immediate, [0x69, 0xd0])
-        expect(subject.a).to eq(0x20)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_falsey
-        subject.p = 0x00
-        subject.a = 0xd0
-        subject.adc(:immediate, [0x69, 0x10])
-        expect(subject.a).to eq(0xe0)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_falsey
-        subject.p = 0x00
-        subject.a = 0xd0
-        subject.adc(:immediate, [0x69, 0x50])
-        expect(subject.a).to eq(0x20)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_falsey
-        subject.p = 0x00
-        subject.a = 0xd0
-        subject.adc(:immediate, [0x69, 0x90])
-        expect(subject.a).to eq(0x60)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_truthy
-        subject.p = 0x00
-        subject.a = 0xd0
-        subject.adc(:immediate, [0x69, 0xd0])
-        expect(subject.a).to eq(0xa0)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_falsey
-      end
-    end
-
-    context 'with indirect,x addressing mode' do
-      let(:indirect_address) { 0x333f }
-      let(:address) { 0x3f }
-      let(:offset) { 5 }
-
-      before do
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
-        subject.x = offset
-      end
-
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:indirect_x, [0x61, address])
-        expect(subject.a).to eq(a + value)
-      end
-
-      it 'clears the carry flag' do
-        subject.adc(:indirect_x, [0x61, address])
-        expect(subject.c?).to be_falsey
-      end
-
-      it 'clears the sign flag' do
-        subject.adc(:indirect_x, [0x61, address])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.adc(:indirect_x, [0x61, address])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
-          subject.adc(:indirect_x, [0x61, address])
+          expect(subject.v?).to be_falsey
+          subject.p = 0x00
+          subject.a = 0x50
+          subject.adc(:immediate, [0x69, 0xd0])
+          expect(subject.a).to eq(0x20)
           expect(subject.c?).to be_truthy
-        end
-      end
-
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
-
-        it 'sets the overflow flag' do
-          subject.adc(:indirect_x, [0x61, address])
-          expect(subject.v?).to be_truthy
-        end
-
-        it 'sets the sign flag' do
-          subject.adc(:indirect_x, [0x61, address])
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_falsey
+          subject.p = 0x00
+          subject.a = 0xd0
+          subject.adc(:immediate, [0x69, 0x10])
+          expect(subject.a).to eq(0xe0)
+          expect(subject.c?).to be_falsey
           expect(subject.n?).to be_truthy
+          expect(subject.v?).to be_falsey
+          subject.p = 0x00
+          subject.a = 0xd0
+          subject.adc(:immediate, [0x69, 0x50])
+          expect(subject.a).to eq(0x20)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_falsey
+          subject.p = 0x00
+          subject.a = 0xd0
+          subject.adc(:immediate, [0x69, 0x90])
+          expect(subject.a).to eq(0x60)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_truthy
+          subject.p = 0x00
+          subject.a = 0xd0
+          subject.adc(:immediate, [0x69, 0xd0])
+          expect(subject.a).to eq(0xa0)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_truthy
+          expect(subject.v?).to be_falsey
         end
       end
 
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
+      context 'with indirect,x addressing mode' do
+        let(:indirect_address) { 0x333f }
+        let(:address) { 0x3f }
+        let(:offset) { 5 }
 
-        it 'sets the zero flag' do
-          subject.adc(:indirect_x, [0x61, address])
-          expect(subject.z?).to be_truthy
+        before do
+          memory[indirect_address] = value
+          memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+          subject.x = offset
         end
-      end
 
-      context 'when the offset exceeds page bounds' do
-        let(:offset) { 0xff }
-
-        it 'wraps around' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:indirect_x, [0x61, address])
           expect(subject.a).to eq(a + value)
         end
+
+        it 'clears the carry flag' do
+          subject.adc(:indirect_x, [0x61, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.adc(:indirect_x, [0x61, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.adc(:indirect_x, [0x61, address])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
+
+          it 'sets the carry flag' do
+            subject.adc(:indirect_x, [0x61, address])
+            expect(subject.c?).to be_truthy
+          end
+        end
+
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
+
+          it 'sets the overflow flag' do
+            subject.adc(:indirect_x, [0x61, address])
+            expect(subject.v?).to be_truthy
+          end
+
+          it 'sets the sign flag' do
+            subject.adc(:indirect_x, [0x61, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
+
+          it 'sets the zero flag' do
+            subject.adc(:indirect_x, [0x61, address])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        context 'when the offset exceeds page bounds' do
+          let(:offset) { 0xff }
+
+          it 'wraps around' do
+            subject.adc(:indirect_x, [0x61, address])
+            expect(subject.a).to eq(a + value)
+          end
+        end
       end
-    end
 
-    context 'with indirect,y addressing mode' do
-      let(:indirect_address) { 0x333f }
-      let(:address) { 0x3f }
-      let(:offset) { 5 }
+      context 'with indirect,y addressing mode' do
+        let(:indirect_address) { 0x333f }
+        let(:address) { 0x3f }
+        let(:offset) { 5 }
 
-      before do
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
-        subject.y = offset
-      end
+        before do
+          memory[indirect_address + offset] = value
+          memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+          subject.y = offset
+        end
 
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:indirect_y, [0x71, address])
-        expect(subject.a).to eq(a + value)
-      end
-
-      it 'clears the carry flag' do
-        subject.adc(:indirect_y, [0x71, address])
-        expect(subject.c?).to be_falsey
-      end
-
-      it 'clears the sign flag' do
-        subject.adc(:indirect_y, [0x71, address])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.adc(:indirect_y, [0x71, address])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:indirect_y, [0x71, address])
-          expect(subject.c?).to be_truthy
+          expect(subject.a).to eq(a + value)
         end
-      end
 
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
-
-        it 'sets the overflow flag' do
+        it 'clears the carry flag' do
           subject.adc(:indirect_y, [0x71, address])
-          expect(subject.v?).to be_truthy
+          expect(subject.c?).to be_falsey
         end
 
-        it 'sets the sign flag' do
+        it 'clears the sign flag' do
           subject.adc(:indirect_y, [0x71, address])
-          expect(subject.n?).to be_truthy
+          expect(subject.n?).to be_falsey
         end
-      end
 
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
+        it 'clears the zero flag' do
           subject.adc(:indirect_y, [0x71, address])
-          expect(subject.z?).to be_truthy
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
+
+          it 'sets the carry flag' do
+            subject.adc(:indirect_y, [0x71, address])
+            expect(subject.c?).to be_truthy
+          end
+        end
+
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
+
+          it 'sets the overflow flag' do
+            subject.adc(:indirect_y, [0x71, address])
+            expect(subject.v?).to be_truthy
+          end
+
+          it 'sets the sign flag' do
+            subject.adc(:indirect_y, [0x71, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
+
+          it 'sets the zero flag' do
+            subject.adc(:indirect_y, [0x71, address])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
-    end
 
-    context 'with zero page addressing mode' do
-      let(:address) { 0x3f }
+      context 'with zero page addressing mode' do
+        let(:address) { 0x3f }
 
-      before do
-        memory[address] = value
-      end
+        before do
+          memory[address] = value
+        end
 
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:zero_page, [0x65, address])
-        expect(subject.a).to eq(a + value)
-      end
-
-      it 'clears the carry flag' do
-        subject.adc(:zero_page, [0x65, address])
-        expect(subject.c?).to be_falsey
-      end
-
-      it 'clears the sign flag' do
-        subject.adc(:zero_page, [0x65, address])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.adc(:zero_page, [0x65, address])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:zero_page, [0x65, address])
-          expect(subject.c?).to be_truthy
+          expect(subject.a).to eq(a + value)
         end
-      end
 
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
-
-        it 'sets the overflow flag' do
+        it 'clears the carry flag' do
           subject.adc(:zero_page, [0x65, address])
-          expect(subject.v?).to be_truthy
+          expect(subject.c?).to be_falsey
         end
 
-        it 'sets the sign flag' do
+        it 'clears the sign flag' do
           subject.adc(:zero_page, [0x65, address])
-          expect(subject.n?).to be_truthy
+          expect(subject.n?).to be_falsey
         end
-      end
 
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
+        it 'clears the zero flag' do
           subject.adc(:zero_page, [0x65, address])
-          expect(subject.z?).to be_truthy
+          expect(subject.z?).to be_falsey
         end
-      end
-    end
 
-    context 'with zero page,x addressing mode' do
-      let(:address) { 0x3f }
-      let(:offset) { 5 }
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
 
-      before do
-        memory[(address + offset) & 0xff] = value
-        subject.x = offset
-      end
+          it 'sets the carry flag' do
+            subject.adc(:zero_page, [0x65, address])
+            expect(subject.c?).to be_truthy
+          end
+        end
 
-      it 'adds the addressed value to the accumulator' do
-        subject.adc(:zero_page_x, [0x75, address])
-        expect(subject.a).to eq(a + value)
-      end
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
 
-      it 'clears the carry flag' do
-        subject.adc(:zero_page_x, [0x75, address])
-        expect(subject.c?).to be_falsey
-      end
+          it 'sets the overflow flag' do
+            subject.adc(:zero_page, [0x65, address])
+            expect(subject.v?).to be_truthy
+          end
 
-      it 'clears the sign flag' do
-        subject.adc(:zero_page_x, [0x75, address])
-        expect(subject.n?).to be_falsey
-      end
+          it 'sets the sign flag' do
+            subject.adc(:zero_page, [0x65, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
 
-      it 'clears the zero flag' do
-        subject.adc(:zero_page_x, [0x75, address])
-        expect(subject.z?).to be_falsey
-      end
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
 
-      context 'when the result is > 255' do
-        let(:a) { 0xfe }
-
-        it 'sets the carry flag' do
-          subject.adc(:zero_page_x, [0x75, address])
-          expect(subject.c?).to be_truthy
+          it 'sets the zero flag' do
+            subject.adc(:zero_page, [0x65, address])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
 
-      context 'when the result has incorrect sign' do
-        let(:value) { 0x7f }
-        let(:a) { 0x7f }
+      context 'with zero page,x addressing mode' do
+        let(:address) { 0x3f }
+        let(:offset) { 5 }
 
-        it 'sets the overflow flag' do
-          subject.adc(:zero_page_x, [0x75, address])
-          expect(subject.v?).to be_truthy
+        before do
+          memory[(address + offset) & 0xff] = value
+          subject.x = offset
         end
 
-        it 'sets the sign flag' do
-          subject.adc(:zero_page_x, [0x75, address])
-          expect(subject.n?).to be_truthy
-        end
-      end
-
-      context 'when the result is 0' do
-        let(:a) { 0xf1 }
-
-        it 'sets the zero flag' do
-          subject.adc(:zero_page_x, [0x75, address])
-          expect(subject.z?).to be_truthy
-        end
-      end
-
-      context 'when the offset exceeds page bounds' do
-        let(:offset) { 0xff }
-
-        it 'wraps around' do
+        it 'adds the addressed value to the accumulator' do
           subject.adc(:zero_page_x, [0x75, address])
           expect(subject.a).to eq(a + value)
+        end
+
+        it 'clears the carry flag' do
+          subject.adc(:zero_page_x, [0x75, address])
+          expect(subject.c?).to be_falsey
+        end
+
+        it 'clears the sign flag' do
+          subject.adc(:zero_page_x, [0x75, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.adc(:zero_page_x, [0x75, address])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result is > 255' do
+          let(:a) { 0xfe }
+
+          it 'sets the carry flag' do
+            subject.adc(:zero_page_x, [0x75, address])
+            expect(subject.c?).to be_truthy
+          end
+        end
+
+        context 'when the result has incorrect sign' do
+          let(:value) { 0x7f }
+          let(:a) { 0x7f }
+
+          it 'sets the overflow flag' do
+            subject.adc(:zero_page_x, [0x75, address])
+            expect(subject.v?).to be_truthy
+          end
+
+          it 'sets the sign flag' do
+            subject.adc(:zero_page_x, [0x75, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:a) { 0xf1 }
+
+          it 'sets the zero flag' do
+            subject.adc(:zero_page_x, [0x75, address])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        context 'when the offset exceeds page bounds' do
+          let(:offset) { 0xff }
+
+          it 'wraps around' do
+            subject.adc(:zero_page_x, [0x75, address])
+            expect(subject.a).to eq(a + value)
+          end
+        end
+      end
+    end
+
+    context 'in decimal mode' do
+      before do
+        subject.p = Vic20::Processor::D_FLAG
+        subject.a = a
+      end
+
+      context 'with the carry flag clear' do
+        let(:a) { 0x12 }
+        let(:value) { 0x34 }
+
+        # SED      ; Decimal mode (BCD addition: 12 + 34 = 46)
+        # CLC
+        # LDA #$12
+        # ADC #$34 ; After this instruction, C = 0, A = $46
+        it 'adds the value to the accumulator' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.a).to eq(0x46)
+        end
+
+        it 'clears the carry flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.c?).to be_falsey
+        end
+
+        context 'when the result is > 99' do
+          let(:a) { 0x81 }
+          let(:value) { 0x92 }
+
+          # SED      ; Decimal mode (BCD addition: 81 + 92 = 173)
+          # CLC
+          # LDA #$81
+          # ADC #$92 ; After this instruction, C = 1, A = $73
+          it 'adds the value to the accumulator' do
+            subject.adc(:immediate, [0x69, value])
+            expect(subject.a).to eq(0x73)
+          end
+
+          it 'sets the carry flag' do
+            subject.adc(:immediate, [0x69, value])
+            expect(subject.c?).to be_truthy
+          end
+        end
+      end
+
+      context 'with the carry flag set' do
+        let(:a) { 0x58 }
+        let(:value) { 0x46 }
+
+        before do
+          subject.p |= Vic20::Processor::C_FLAG
+        end
+
+        # SED      ; Decimal mode (BCD addition: 58 + 46 + 1 = 105)
+        # SEC      ; Note: carry is set, not clear!
+        # LDA #$58
+        # ADC #$46 ; After this instruction, C = 1, A = $05
+        it 'adds the value and the carry to the accumulator' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.a).to eq(0x05)
+        end
+
+        it 'sets the carry flag' do
+          subject.adc(:immediate, [0x69, value])
+          expect(subject.c?).to be_truthy
         end
       end
     end
@@ -6123,544 +6193,618 @@ describe Vic20::Processor do
   end
 
   describe '#sbc' do
-    let(:a) { 0x19 }
-    let(:value) { 0x03 }
-
-    before do
-      subject.a = a
-      subject.p = 0xff
-    end
-
-    context 'with absolute addressing mode' do
-      let(:address) { 0x1dd1 }
+    context 'in binary mode' do
+      let(:a) { 0x19 }
+      let(:value) { 0x03 }
 
       before do
-        memory[address] = value
+        subject.a = a
+        subject.p = Vic20::Processor::C_FLAG # no borrow
       end
 
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-        expect(subject.a).to eq(a - value)
-      end
+      context 'with absolute addressing mode' do
+        let(:address) { 0x1dd1 }
 
-      it 'sets the carry flag' do
-        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-        expect(subject.c?).to be_truthy
-      end
+        before do
+          memory[address] = value
+        end
 
-      it 'clears the sign flag' do
-        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-          expect(subject.c?).to be_falsey
+          expect(subject.a).to eq(a - value)
         end
-      end
 
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
-
-        it 'sets the sign flag' do
+        it 'sets the carry flag' do
           subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-          expect(subject.n?).to be_truthy
+          expect(subject.c?).to be_truthy
         end
-      end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
+        it 'clears the sign flag' do
           subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
-          expect(subject.z?).to be_truthy
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result < 0' do
+          let(:value) { 0xff }
+
+          it 'clears the carry flag' do
+            subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+            expect(subject.c?).to be_falsey
+          end
+        end
+
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
+
+          it 'sets the sign flag' do
+            subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:absolute, [0xed, lsb(address), msb(address)])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
-    end
 
-    context 'with absolute,x addressing mode' do
-      let(:address) { 0x1dd1 }
-      let(:offset) { 0xd5 }
+      context 'with absolute,x addressing mode' do
+        let(:address) { 0x1dd1 }
+        let(:offset) { 0xd5 }
 
-      before do
-        memory[address + offset] = value
-        subject.x = offset
-      end
+        before do
+          memory[address + offset] = value
+          subject.x = offset
+        end
 
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-        expect(subject.a).to eq(a - value)
-      end
-
-      it 'sets the carry flag' do
-        subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-        expect(subject.c?).to be_truthy
-      end
-
-      it 'clears the sign flag' do
-        subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-          expect(subject.c?).to be_falsey
+          expect(subject.a).to eq(a - value)
         end
-      end
 
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
-
-        it 'sets the sign flag' do
+        it 'sets the carry flag' do
           subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-          expect(subject.n?).to be_truthy
+          expect(subject.c?).to be_truthy
         end
-      end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
+        it 'clears the sign flag' do
           subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
-          expect(subject.z?).to be_truthy
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result < 0' do
+          let(:value) { 0xff }
+
+          it 'clears the carry flag' do
+            subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
+            expect(subject.c?).to be_falsey
+          end
+        end
+
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
+
+          it 'sets the sign flag' do
+            subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:absolute_x, [0xfd, lsb(address), msb(address)])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
-    end
 
-    context 'with absolute,y addressing mode' do
-      let(:address) { 0x1dd1 }
-      let(:offset) { 0xd5 }
+      context 'with absolute,y addressing mode' do
+        let(:address) { 0x1dd1 }
+        let(:offset) { 0xd5 }
 
-      before do
-        memory[address + offset] = value
-        subject.y = offset
-      end
+        before do
+          memory[address + offset] = value
+          subject.y = offset
+        end
 
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-        expect(subject.a).to eq(a - value)
-      end
-
-      it 'sets the carry flag' do
-        subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-        expect(subject.c?).to be_truthy
-      end
-
-      it 'clears the sign flag' do
-        subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-          expect(subject.c?).to be_falsey
+          expect(subject.a).to eq(a - value)
         end
-      end
 
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
-
-        it 'sets the sign flag' do
+        it 'sets the carry flag' do
           subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-          expect(subject.n?).to be_truthy
+          expect(subject.c?).to be_truthy
         end
-      end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
+        it 'clears the sign flag' do
           subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
-          expect(subject.z?).to be_truthy
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result < 0' do
+          let(:value) { 0xff }
+
+          it 'clears the carry flag' do
+            subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
+            expect(subject.c?).to be_falsey
+          end
+        end
+
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
+
+          it 'sets the sign flag' do
+            subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:absolute_y, [0xf9, lsb(address), msb(address)])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
-    end
 
-    context 'with immediate addressing mode' do
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:immediate, [0xe9, value])
-        expect(subject.a).to eq(a - value)
-      end
-
-      it 'sets the carry flag' do
-        subject.sbc(:immediate, [0xe9, value])
-        expect(subject.c?).to be_truthy
-      end
-
-      it 'clears the sign flag' do
-        subject.sbc(:immediate, [0xe9, value])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.sbc(:immediate, [0xe9, value])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
+      context 'with immediate addressing mode' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:immediate, [0xe9, value])
+          expect(subject.a).to eq(a - value)
+        end
+
+        it 'sets the carry flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result < 0' do
+          let(:value) { 0xff }
+
+          it 'clears the carry flag' do
+            subject.sbc(:immediate, [0xe9, value])
+            expect(subject.c?).to be_falsey
+          end
+        end
+
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
+
+          it 'sets the sign flag' do
+            subject.sbc(:immediate, [0xe9, value])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:immediate, [0xe9, value])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        it 'handles all carry, sign, and overflow combinations' do
+          subject.p = 0x01
+          subject.a = 0x50
+          subject.sbc(:immediate, [0xe9, 0xf0])
+          expect(subject.a).to eq(0x60)
           expect(subject.c?).to be_falsey
-        end
-      end
-
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
-
-        it 'sets the sign flag' do
-          subject.sbc(:immediate, [0xe9, value])
-          expect(subject.n?).to be_truthy
-        end
-      end
-
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
-          subject.sbc(:immediate, [0xe9, value])
-          expect(subject.z?).to be_truthy
-        end
-      end
-
-      it 'handles all carry, sign, and overflow combinations' do
-        subject.p = 0x01
-        subject.a = 0x50
-        subject.sbc(:immediate, [0xe9, 0xf0])
-        expect(subject.a).to eq(0x60)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_falsey
-        subject.p = 0x01
-        subject.a = 0x50
-        subject.sbc(:immediate, [0xe9, 0xb0])
-        expect(subject.a).to eq(0xa0)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_truthy
-        subject.p = 0x01
-        subject.a = 0x50
-        subject.sbc(:immediate, [0xe9, 0x70])
-        expect(subject.a).to eq(0xe0)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_falsey
-        subject.p = 0x01
-        subject.a = 0x50
-        subject.sbc(:immediate, [0xe9, 0x30])
-        expect(subject.a).to eq(0x20)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_falsey
-        subject.p = 0x01
-        subject.a = 0xd0
-        subject.sbc(:immediate, [0xe9, 0xf0])
-        expect(subject.a).to eq(0xe0)
-        expect(subject.c?).to be_falsey
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_falsey
-        subject.p = 0x01
-        subject.a = 0xd0
-        subject.sbc(:immediate, [0xe9, 0xb0])
-        expect(subject.a).to eq(0x20)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_falsey
-        subject.p = 0x01
-        subject.a = 0xd0
-        subject.sbc(:immediate, [0xe9, 0x70])
-        expect(subject.a).to eq(0x60)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_falsey
-        expect(subject.v?).to be_truthy
-        subject.p = 0x01
-        subject.a = 0xd0
-        subject.sbc(:immediate, [0xe9, 0x30])
-        expect(subject.a).to eq(0xa0)
-        expect(subject.c?).to be_truthy
-        expect(subject.n?).to be_truthy
-        expect(subject.v?).to be_falsey
-      end
-    end
-
-    context 'with indirect,x addressing mode' do
-      let(:indirect_address) { 0x1dd1 }
-      let(:address) { 0xd1 }
-      let(:offset) { 5 }
-
-      before do
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
-        subject.x = offset
-      end
-
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:indirect_x, [0xe1, address])
-        expect(subject.a).to eq(a - value)
-      end
-
-      it 'sets the carry flag' do
-        subject.sbc(:indirect_x, [0xe1, address])
-        expect(subject.c?).to be_truthy
-      end
-
-      it 'clears the sign flag' do
-        subject.sbc(:indirect_x, [0xe1, address])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.sbc(:indirect_x, [0xe1, address])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
-          subject.sbc(:indirect_x, [0xe1, address])
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_falsey
+          subject.p = 0x01
+          subject.a = 0x50
+          subject.sbc(:immediate, [0xe9, 0xb0])
+          expect(subject.a).to eq(0xa0)
           expect(subject.c?).to be_falsey
-        end
-      end
-
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
-
-        it 'sets the sign flag' do
-          subject.sbc(:indirect_x, [0xe1, address])
           expect(subject.n?).to be_truthy
+          expect(subject.v?).to be_truthy
+          subject.p = 0x01
+          subject.a = 0x50
+          subject.sbc(:immediate, [0xe9, 0x70])
+          expect(subject.a).to eq(0xe0)
+          expect(subject.c?).to be_falsey
+          expect(subject.n?).to be_truthy
+          expect(subject.v?).to be_falsey
+          subject.p = 0x01
+          subject.a = 0x50
+          subject.sbc(:immediate, [0xe9, 0x30])
+          expect(subject.a).to eq(0x20)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_falsey
+          subject.p = 0x01
+          subject.a = 0xd0
+          subject.sbc(:immediate, [0xe9, 0xf0])
+          expect(subject.a).to eq(0xe0)
+          expect(subject.c?).to be_falsey
+          expect(subject.n?).to be_truthy
+          expect(subject.v?).to be_falsey
+          subject.p = 0x01
+          subject.a = 0xd0
+          subject.sbc(:immediate, [0xe9, 0xb0])
+          expect(subject.a).to eq(0x20)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_falsey
+          subject.p = 0x01
+          subject.a = 0xd0
+          subject.sbc(:immediate, [0xe9, 0x70])
+          expect(subject.a).to eq(0x60)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_falsey
+          expect(subject.v?).to be_truthy
+          subject.p = 0x01
+          subject.a = 0xd0
+          subject.sbc(:immediate, [0xe9, 0x30])
+          expect(subject.a).to eq(0xa0)
+          expect(subject.c?).to be_truthy
+          expect(subject.n?).to be_truthy
+          expect(subject.v?).to be_falsey
         end
       end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
+      context 'with indirect,x addressing mode' do
+        let(:indirect_address) { 0x1dd1 }
+        let(:address) { 0xd1 }
+        let(:offset) { 5 }
 
-        it 'sets the zero flag' do
-          subject.sbc(:indirect_x, [0xe1, address])
-          expect(subject.z?).to be_truthy
+        before do
+          memory[indirect_address] = value
+          memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+          subject.x = offset
         end
-      end
 
-      context 'when the offset exceeds page bounds' do
-        let(:offset) { 0xff }
-
-        it 'wraps around' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:indirect_x, [0xe1, address])
           expect(subject.a).to eq(a - value)
         end
-      end
-    end
 
-    context 'with indirect,y addressing mode' do
-      let(:indirect_address) { 0x1dd1 }
-      let(:address) { 0xd1 }
-      let(:offset) { 5 }
+        it 'sets the carry flag' do
+          subject.sbc(:indirect_x, [0xe1, address])
+          expect(subject.c?).to be_truthy
+        end
 
-      before do
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
-        subject.y = offset
-      end
+        it 'clears the sign flag' do
+          subject.sbc(:indirect_x, [0xe1, address])
+          expect(subject.n?).to be_falsey
+        end
 
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:indirect_y, [0xf1, address])
-        expect(subject.a).to eq(a - value)
-      end
+        it 'clears the zero flag' do
+          subject.sbc(:indirect_x, [0xe1, address])
+          expect(subject.z?).to be_falsey
+        end
 
-      it 'sets the carry flag' do
-        subject.sbc(:indirect_y, [0xf1, address])
-        expect(subject.c?).to be_truthy
-      end
+        context 'when the result < 0' do
+          let(:value) { 0xff }
 
-      it 'clears the sign flag' do
-        subject.sbc(:indirect_y, [0xf1, address])
-        expect(subject.n?).to be_falsey
-      end
+          it 'clears the carry flag' do
+            subject.sbc(:indirect_x, [0xe1, address])
+            expect(subject.c?).to be_falsey
+          end
+        end
 
-      it 'clears the zero flag' do
-        subject.sbc(:indirect_y, [0xf1, address])
-        expect(subject.z?).to be_falsey
-      end
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
 
-      context 'when the result < 0' do
-        let(:value) { 0xff }
+          it 'sets the sign flag' do
+            subject.sbc(:indirect_x, [0xe1, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
 
-        it 'clears the carry flag' do
-          subject.sbc(:indirect_y, [0xf1, address])
-          expect(subject.c?).to be_falsey
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:indirect_x, [0xe1, address])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        context 'when the offset exceeds page bounds' do
+          let(:offset) { 0xff }
+
+          it 'wraps around' do
+            subject.sbc(:indirect_x, [0xe1, address])
+            expect(subject.a).to eq(a - value)
+          end
         end
       end
 
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
+      context 'with indirect,y addressing mode' do
+        let(:indirect_address) { 0x1dd1 }
+        let(:address) { 0xd1 }
+        let(:offset) { 5 }
 
-        it 'sets the sign flag' do
-          subject.sbc(:indirect_y, [0xf1, address])
-          expect(subject.n?).to be_truthy
+        before do
+          memory[indirect_address + offset] = value
+          memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+          subject.y = offset
         end
-      end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
-          subject.sbc(:indirect_y, [0xf1, address])
-          expect(subject.z?).to be_truthy
-        end
-      end
-
-      context 'when the offset exceeds page bounds' do
-        let(:offset) { 0xff }
-
-        it 'wraps around' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:indirect_y, [0xf1, address])
           expect(subject.a).to eq(a - value)
         end
+
+        it 'sets the carry flag' do
+          subject.sbc(:indirect_y, [0xf1, address])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.sbc(:indirect_y, [0xf1, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.sbc(:indirect_y, [0xf1, address])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result < 0' do
+          let(:value) { 0xff }
+
+          it 'clears the carry flag' do
+            subject.sbc(:indirect_y, [0xf1, address])
+            expect(subject.c?).to be_falsey
+          end
+        end
+
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
+
+          it 'sets the sign flag' do
+            subject.sbc(:indirect_y, [0xf1, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:indirect_y, [0xf1, address])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        context 'when the offset exceeds page bounds' do
+          let(:offset) { 0xff }
+
+          it 'wraps around' do
+            subject.sbc(:indirect_y, [0xf1, address])
+            expect(subject.a).to eq(a - value)
+          end
+        end
       end
-    end
 
-    context 'with zero page addressing mode' do
-      let(:address) { 0xd1 }
+      context 'with zero page addressing mode' do
+        let(:address) { 0xd1 }
 
-      before do
-        memory[address] = value
-      end
+        before do
+          memory[address] = value
+        end
 
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:zero_page, [0xe5, address])
-        expect(subject.a).to eq(a - value)
-      end
-
-      it 'sets the carry flag' do
-        subject.sbc(:zero_page, [0xe5, address])
-        expect(subject.c?).to be_truthy
-      end
-
-      it 'clears the sign flag' do
-        subject.sbc(:zero_page, [0xe5, address])
-        expect(subject.n?).to be_falsey
-      end
-
-      it 'clears the zero flag' do
-        subject.sbc(:zero_page, [0xe5, address])
-        expect(subject.z?).to be_falsey
-      end
-
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:zero_page, [0xe5, address])
-          expect(subject.c?).to be_falsey
+          expect(subject.a).to eq(a - value)
         end
-      end
 
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
-
-        it 'sets the sign flag' do
+        it 'sets the carry flag' do
           subject.sbc(:zero_page, [0xe5, address])
-          expect(subject.n?).to be_truthy
+          expect(subject.c?).to be_truthy
         end
-      end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
+        it 'clears the sign flag' do
           subject.sbc(:zero_page, [0xe5, address])
-          expect(subject.z?).to be_truthy
+          expect(subject.n?).to be_falsey
         end
-      end
-    end
 
-    context 'with zero page,x addressing mode' do
-      let(:address) { 0xd1 }
-      let(:offset) { 5 }
+        it 'clears the zero flag' do
+          subject.sbc(:zero_page, [0xe5, address])
+          expect(subject.z?).to be_falsey
+        end
 
-      before do
-        memory[(address + offset) & 0xff] = value
-        subject.x = offset
-      end
+        context 'when the result < 0' do
+          let(:value) { 0xff }
 
-      it 'subtracts the value from the accumulator' do
-        subject.sbc(:zero_page_x, [0xf5, address])
-        expect(subject.a).to eq(a - value)
-      end
+          it 'clears the carry flag' do
+            subject.sbc(:zero_page, [0xe5, address])
+            expect(subject.c?).to be_falsey
+          end
+        end
 
-      it 'sets the carry flag' do
-        subject.sbc(:zero_page_x, [0xf5, address])
-        expect(subject.c?).to be_truthy
-      end
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
 
-      it 'clears the sign flag' do
-        subject.sbc(:zero_page_x, [0xf5, address])
-        expect(subject.n?).to be_falsey
-      end
+          it 'sets the sign flag' do
+            subject.sbc(:zero_page, [0xe5, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
 
-      it 'clears the zero flag' do
-        subject.sbc(:zero_page_x, [0xf5, address])
-        expect(subject.z?).to be_falsey
-      end
+        context 'when the result is 0' do
+          let(:value) { subject.a }
 
-      context 'when the result < 0' do
-        let(:value) { 0xff }
-
-        it 'clears the carry flag' do
-          subject.sbc(:zero_page_x, [0xf5, address])
-          expect(subject.c?).to be_falsey
+          it 'sets the zero flag' do
+            subject.sbc(:zero_page, [0xe5, address])
+            expect(subject.z?).to be_truthy
+          end
         end
       end
 
-      context 'when the result has bit 7 set' do
-        let(:value) { 0x20 }
+      context 'with zero page,x addressing mode' do
+        let(:address) { 0xd1 }
+        let(:offset) { 5 }
 
-        it 'sets the sign flag' do
-          subject.sbc(:zero_page_x, [0xf5, address])
-          expect(subject.n?).to be_truthy
+        before do
+          memory[(address + offset) & 0xff] = value
+          subject.x = offset
         end
-      end
 
-      context 'when the result is 0' do
-        let(:value) { subject.a }
-
-        it 'sets the zero flag' do
-          subject.sbc(:zero_page_x, [0xf5, address])
-          expect(subject.z?).to be_truthy
-        end
-      end
-
-      context 'when the offset exceeds page bounds' do
-        let(:offset) { 0xff }
-
-        it 'wraps around' do
+        it 'subtracts the value from the accumulator' do
           subject.sbc(:zero_page_x, [0xf5, address])
           expect(subject.a).to eq(a - value)
+        end
+
+        it 'sets the carry flag' do
+          subject.sbc(:zero_page_x, [0xf5, address])
+          expect(subject.c?).to be_truthy
+        end
+
+        it 'clears the sign flag' do
+          subject.sbc(:zero_page_x, [0xf5, address])
+          expect(subject.n?).to be_falsey
+        end
+
+        it 'clears the zero flag' do
+          subject.sbc(:zero_page_x, [0xf5, address])
+          expect(subject.z?).to be_falsey
+        end
+
+        context 'when the result < 0' do
+          let(:value) { 0xff }
+
+          it 'clears the carry flag' do
+            subject.sbc(:zero_page_x, [0xf5, address])
+            expect(subject.c?).to be_falsey
+          end
+        end
+
+        context 'when the result has bit 7 set' do
+          let(:value) { 0x20 }
+
+          it 'sets the sign flag' do
+            subject.sbc(:zero_page_x, [0xf5, address])
+            expect(subject.n?).to be_truthy
+          end
+        end
+
+        context 'when the result is 0' do
+          let(:value) { subject.a }
+
+          it 'sets the zero flag' do
+            subject.sbc(:zero_page_x, [0xf5, address])
+            expect(subject.z?).to be_truthy
+          end
+        end
+
+        context 'when the offset exceeds page bounds' do
+          let(:offset) { 0xff }
+
+          it 'wraps around' do
+            subject.sbc(:zero_page_x, [0xf5, address])
+            expect(subject.a).to eq(a - value)
+          end
+        end
+      end
+    end
+
+    context 'in decimal mode' do
+      before do
+        subject.p = Vic20::Processor::D_FLAG
+        subject.a = a
+      end
+
+      context 'with the carry flag set' do
+        let(:a) { 0x46 }
+        let(:value) { 0x12 }
+
+        before do
+          subject.p |= Vic20::Processor::C_FLAG # no borrow
+        end
+
+        # SED      ; Decimal mode (BCD subtraction: 46 - 12 = 34)
+        # SEC
+        # LDA #$46
+        # SBC #$12 ; After this instruction, C = 1, A = $34)
+        it 'subtracts the value from the accumulator' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.a).to eq(0x34)
+        end
+
+        it 'sets the carry flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.c?).to be_truthy
+        end
+
+        context 'when the result is < 0' do
+          let(:a) { 0x21 }
+          let(:value) { 0x34 }
+
+          # SED      ; Decimal mode (BCD subtraction: 21 - 34)
+          # SEC
+          # LDA #$21
+          # SBC #$34 ; After this instruction, C = 0, A = $87)
+          it 'subtracts the value from the accumulator' do
+            subject.sbc(:immediate, [0xe9, value])
+            expect(subject.a).to eq(0x87)
+          end
+
+          it 'clears the carry flag' do
+            subject.sbc(:immediate, [0xe9, value])
+            expect(subject.c?).to be_falsey
+          end
+        end
+      end
+
+      context 'with the carry flag clear' do
+        let(:a) { 0x32 }
+        let(:value) { 0x02 }
+
+        before do
+          subject.p &= ~Vic20::Processor::C_FLAG # borrow
+        end
+
+        # SED      ; Decimal mode (BCD subtraction: 32 - 2 - 1 = 29)
+        # CLC      ; Note: carry is clear, not set!
+        # LDA #$32
+        # SBC #$02 ; After this instruction, C = 1, A = $29)
+        it 'subtracts the value and the borrow from the accumulator' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.a).to eq(0x29)
+        end
+
+        it 'sets the carry flag' do
+          subject.sbc(:immediate, [0xe9, value])
+          expect(subject.c?).to be_truthy
         end
       end
     end
