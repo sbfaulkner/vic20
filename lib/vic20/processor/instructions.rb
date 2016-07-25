@@ -2,10 +2,6 @@ module Vic20
   class Processor
     module Instructions
       module ClassMethods
-        def format_operand(addressing_mode, bytes)
-          format Vic20::Processor::ADDRESSING_MODES[addressing_mode][:format], operand(bytes)
-        end
-
         def operand(bytes)
           case bytes.size
           when 3
