@@ -1,48 +1,42 @@
 module Vic20
   class Processor
     module Instructions
-      module ClassMethods
-        def operand(bytes)
-          case bytes.size
-          when 3
-            bytes[1] | bytes[2] << 8
-          when 2
-            bytes[1]
-          end
-        end
-
-        def relative_operand(bytes)
-          value = operand(bytes)
-          value > 0x7F ? value - 0x100 : value
+      def operand(bytes)
+        case bytes.size
+        when 3
+          bytes[1] | bytes[2] << 8
+        when 2
+          bytes[1]
         end
       end
 
-      def self.included(base)
-        base.extend(ClassMethods)
+      def relative_operand(bytes)
+        value = operand(bytes)
+        value > 0x7F ? value - 0x100 : value
       end
 
       def adc(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -77,25 +71,25 @@ module Vic20
       def and(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :immediate
         end
@@ -109,15 +103,15 @@ module Vic20
       def asl(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :accumulator
           a
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
@@ -128,15 +122,15 @@ module Vic20
 
         case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)] = value
+          @memory[operand(bytes)] = value
         when :absolute_x
-          @memory[self.class.operand(bytes) + x] = value
+          @memory[operand(bytes) + x] = value
         when :accumulator
           self.a = value
         when :zero_page
-          @memory[self.class.operand(bytes)] = value
+          @memory[operand(bytes)] = value
         when :zero_page_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           @memory[address] = value
         end
 
@@ -148,27 +142,27 @@ module Vic20
       def bcc(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) unless c?
+        self.pc += relative_operand(bytes) unless c?
       end
 
       def bcs(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) if c?
+        self.pc += relative_operand(bytes) if c?
       end
 
       def beq(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) if z?
+        self.pc += relative_operand(bytes) if z?
       end
 
       def bit(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -183,19 +177,19 @@ module Vic20
       def bmi(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) if n?
+        self.pc += relative_operand(bytes) if n?
       end
 
       def bne(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) unless z?
+        self.pc += relative_operand(bytes) unless z?
       end
 
       def bpl(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) unless n?
+        self.pc += relative_operand(bytes) unless n?
       end
 
       def brk(addressing_mode, bytes)
@@ -211,13 +205,13 @@ module Vic20
       def bvc(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) unless v?
+        self.pc += relative_operand(bytes) unless v?
       end
 
       def bvs(addressing_mode, bytes)
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :relative
 
-        self.pc += self.class.relative_operand(bytes) if v?
+        self.pc += relative_operand(bytes) if v?
       end
 
       def clc(addressing_mode, _bytes)
@@ -247,25 +241,25 @@ module Vic20
       def cmp(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
@@ -281,11 +275,11 @@ module Vic20
       def cpx(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -300,11 +294,11 @@ module Vic20
       def cpy(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -319,13 +313,13 @@ module Vic20
       def dec(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -334,13 +328,13 @@ module Vic20
 
         case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)] = value
+          @memory[operand(bytes)] = value
         when :absolute_x
-          @memory[self.class.operand(bytes) + x] = value
+          @memory[operand(bytes) + x] = value
         when :zero_page
-          @memory[self.class.operand(bytes)] = value
+          @memory[operand(bytes)] = value
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff] = value
+          @memory[(operand(bytes) + x) & 0xff] = value
         end
 
         affect_sign_flag(value)
@@ -368,25 +362,25 @@ module Vic20
       def eor(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -400,13 +394,13 @@ module Vic20
       def inc(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -415,13 +409,13 @@ module Vic20
 
         case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)] = value
+          @memory[operand(bytes)] = value
         when :absolute_x
-          @memory[self.class.operand(bytes) + x] = value
+          @memory[operand(bytes) + x] = value
         when :zero_page
-          @memory[self.class.operand(bytes)] = value
+          @memory[operand(bytes)] = value
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff] = value
+          @memory[(operand(bytes) + x) & 0xff] = value
         end
 
         affect_sign_flag(value)
@@ -449,9 +443,9 @@ module Vic20
       def jmp(addressing_mode, bytes)
         self.pc = case addressing_mode
         when :absolute
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           @memory[address] | @memory[address + 1] << 8
         else
           raise UnsupportedAddressingMode, addressing_mode
@@ -462,31 +456,31 @@ module Vic20
         raise UnsupportedAddressingMode, addressing_mode unless addressing_mode == :absolute
 
         push_word pc - 1
-        self.pc = self.class.operand(bytes)
+        self.pc = operand(bytes)
       end
 
       def lda(addressing_mode, bytes)
         self.a = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
@@ -499,15 +493,15 @@ module Vic20
       def ldx(addressing_mode, bytes)
         self.x = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_y
-          address = (self.class.operand(bytes) + y) & 0xff
+          address = (operand(bytes) + y) & 0xff
           @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
@@ -520,15 +514,15 @@ module Vic20
       def ldy(addressing_mode, bytes)
         self.y = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           @memory[address]
         else
           raise UnsupportedAddressingMode, addressing_mode
@@ -541,15 +535,15 @@ module Vic20
       def lsr(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :accumulator
           a
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -560,15 +554,15 @@ module Vic20
 
         case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)] = result
+          @memory[operand(bytes)] = result
         when :absolute_x
-          @memory[self.class.operand(bytes) + x] = result
+          @memory[operand(bytes) + x] = result
         when :accumulator
           self.a = result
         when :zero_page
-          @memory[self.class.operand(bytes)] = result
+          @memory[operand(bytes)] = result
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff] = result
+          @memory[(operand(bytes) + x) & 0xff] = result
         end
 
         affect_sign_flag(result)
@@ -582,25 +576,25 @@ module Vic20
       def ora(addressing_mode, bytes)
         self.a |= case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -639,15 +633,15 @@ module Vic20
       def rol(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :accumulator
           a
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -659,15 +653,15 @@ module Vic20
 
         case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)] = result
+          @memory[operand(bytes)] = result
         when :absolute_x
-          @memory[self.class.operand(bytes) + x] = result
+          @memory[operand(bytes) + x] = result
         when :accumulator
           self.a = result
         when :zero_page
-          @memory[self.class.operand(bytes)] = result
+          @memory[operand(bytes)] = result
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff] = result
+          @memory[(operand(bytes) + x) & 0xff] = result
         end
 
         assign_carry_flag(shifted & 0x100 != 0)
@@ -678,15 +672,15 @@ module Vic20
       def ror(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :accumulator
           a
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -698,15 +692,15 @@ module Vic20
 
         case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)] = result
+          @memory[operand(bytes)] = result
         when :absolute_x
-          @memory[self.class.operand(bytes) + x] = result
+          @memory[operand(bytes) + x] = result
         when :accumulator
           self.a = result
         when :zero_page
-          @memory[self.class.operand(bytes)] = result
+          @memory[operand(bytes)] = result
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff] = result
+          @memory[(operand(bytes) + x) & 0xff] = result
         end
 
         assign_carry_flag(shifted & 0x80 != 0)
@@ -730,25 +724,25 @@ module Vic20
       def sbc(addressing_mode, bytes)
         value = case addressing_mode
         when :absolute
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :absolute_x
-          @memory[self.class.operand(bytes) + x]
+          @memory[operand(bytes) + x]
         when :absolute_y
-          @memory[self.class.operand(bytes) + y]
+          @memory[operand(bytes) + y]
         when :immediate
-          self.class.operand(bytes)
+          operand(bytes)
         when :indirect_x
-          address = (self.class.operand(bytes) + x) & 0xff
+          address = (operand(bytes) + x) & 0xff
           address = @memory[address] | @memory[address + 1] << 8
           @memory[address]
         when :indirect_y
-          address = self.class.operand(bytes)
+          address = operand(bytes)
           address = (@memory[address] | @memory[address + 1] << 8) + y
           @memory[address]
         when :zero_page
-          @memory[self.class.operand(bytes)]
+          @memory[operand(bytes)]
         when :zero_page_x
-          @memory[(self.class.operand(bytes) + x) & 0xff]
+          @memory[(operand(bytes) + x) & 0xff]
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -805,21 +799,21 @@ module Vic20
       def sta(addressing_mode, bytes)
         address = case addressing_mode
         when :absolute
-          self.class.operand(bytes)
+          operand(bytes)
         when :absolute_x
-          self.class.operand(bytes) + x
+          operand(bytes) + x
         when :absolute_y
-          self.class.operand(bytes) + y
+          operand(bytes) + y
         when :indirect_x
-          source = (self.class.operand(bytes) + x) & 0xff
+          source = (operand(bytes) + x) & 0xff
           @memory[source] | @memory[source + 1] << 8
         when :indirect_y
-          source = self.class.operand(bytes)
+          source = operand(bytes)
           (@memory[source] | @memory[source + 1] << 8) + y
         when :zero_page
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page_x
-          (self.class.operand(bytes) + x) & 0xff
+          (operand(bytes) + x) & 0xff
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -830,11 +824,11 @@ module Vic20
       def stx(addressing_mode, bytes)
         address = case addressing_mode
         when :absolute
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page_y
-          (self.class.operand(bytes) + y) & 0xff
+          (operand(bytes) + y) & 0xff
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
@@ -845,11 +839,11 @@ module Vic20
       def sty(addressing_mode, bytes)
         address = case addressing_mode
         when :absolute
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page
-          self.class.operand(bytes)
+          operand(bytes)
         when :zero_page_x
-          (self.class.operand(bytes) + x) & 0xff
+          (operand(bytes) + x) & 0xff
         else
           raise UnsupportedAddressingMode, addressing_mode
         end
