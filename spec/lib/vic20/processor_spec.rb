@@ -70,29 +70,30 @@ describe Vic20::Processor do
   context 'with a program in memory' do
     let(:program) do
       [
-        [0x0600, :jsr, :absolute, [0x20, 0x09, 0x06]],  # JSR $0609
-        [0x0603, :jsr, :absolute, [0x20, 0x0c, 0x06]],  # JSR $060c
-        [0x0606, :jsr, :absolute, [0x20, 0x12, 0x06]],  # JSR $0612
-        [0x0609, :ldx, :immediate, [0xa2, 0x00]],       # LDX #$00
-        [0x060b, :rts, :implied, [0x60]],               # RTS
-        [0x060c, :inx, :implied, [0xe8]],               # INX
-        [0x060d, :cpx, :immediate, [0xe0, 0x05]],       # CPX #$05
-        [0x060f, :bne, :relative, [0xd0, 0xfb]],        # BNE $060c
-        [0x0611, :rts, :implied, [0x60]],               # RTS
-        [0x0612, :brk, :implied, [0x00]],               # BRK
+        [0x0600, [0x20, 0x09, 0x06]], # JSR $0609
+        [0x0603, [0x20, 0x0c, 0x06]], # JSR $060c
+        [0x0606, [0x20, 0x12, 0x06]], # JSR $0612
+        [0x0609, [0xa2, 0x00]],       # LDX #$00
+        [0x060b, [0x60]],             # RTS
+        [0x060c, [0xe8]],             # INX
+        [0x060d, [0xe0, 0x05]],       # CPX #$05
+        [0x060f, [0xd0, 0xfb]],       # BNE $060c
+        [0x0611, [0x60]],             # RTS
+        [0x0612, [0x00]],             # BRK
       ]
     end
 
     before do
-      program.each do |address, _method, _addressing_mode, bytes|
-        memory[address, bytes.size] = bytes
+      program.each do |a, b|
+        memory[a, b.size] = b
       end
       subject.pc = 0x0600
     end
 
     describe '#each' do
       it 'yields the instructions' do
-        expect { |b| subject.each(&b) }.to yield_successive_args(*program)
+        # TODO: this is very coupled to implementation
+        expect { |b| subject.each(&b) }.to yield_successive_args(*program.map { |a, b| [a, described_class.instructions[b.first]] })
       end
 
       it 'advances the program counter' do
@@ -103,8 +104,9 @@ describe Vic20::Processor do
 
     describe '#run' do
       it 'runs the program' do
-        program.each do |_address, method, addressing_mode, bytes|
-          expect(subject).to receive(method).with(addressing_mode, bytes)
+        program.each do |_address, bytes|
+          instruction = described_class.instructions[bytes.first]
+          expect(subject).to receive(instruction[:method]).with(instruction[:addressing_mode], bytes)
         end
 
         subject.run

@@ -7,9 +7,9 @@ require_relative 'processor/trace'
 
 module Vic20
   class Processor
-    include Format
-    include Instructions
     include Stack
+    include Instructions
+    include Format
 
     class Trap < RuntimeError
       def initialize(pc)
@@ -113,16 +113,17 @@ module Vic20
       return enum_for(:each) unless block_given?
 
       while opcode = @memory[pc]
-        instruction = INSTRUCTIONS[opcode] || UNKNOWN_INSTRUCTION
-        addressing_mode = instruction[:addressing_mode]
-        count = ADDRESSING_MODES[addressing_mode][:bytes]
         address = pc
-        self.pc += count
-        yield address, instruction[:method], addressing_mode, @memory[address, count]
+        instruction = self.class.instructions[opcode]
+        self.pc += instruction[:bytes]
+        yield address, instruction
       end
     end
 
-    def execute(_address, method, addressing_mode, bytes)
+    def execute(address, instruction)
+      method = instruction[:method]
+      addressing_mode = instruction[:addressing_mode]
+      bytes = @memory[address, instruction[:bytes]]
       send(method, addressing_mode, bytes)
     end
 
@@ -135,8 +136,8 @@ module Vic20
     end
 
     def run
-      each do |address, method, addressing_mode, bytes|
-        execute(address, method, addressing_mode, bytes)
+      each do |address, instruction|
+        execute(address, instruction)
       end
     end
   end

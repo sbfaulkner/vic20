@@ -1,9 +1,9 @@
 module Vic20
   class Processor
     module Trace
-      def execute(address, method, addressing_mode, bytes)
+      def execute(address, instruction)
         STDERR.puts current_state
-        STDERR.puts format_instruction(address, method, addressing_mode, bytes)
+        STDERR.puts format_instruction(address, instruction)
         super
       end
     end
