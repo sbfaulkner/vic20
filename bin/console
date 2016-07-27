@@ -126,7 +126,7 @@ commands = Pry::CommandSet.new do
 
       address, method, addressing_mode, bytes = processor.each.next
       output.puts processor.format_instruction(address, method, addressing_mode, bytes)
-      processor.send(method, addressing_mode, bytes)
+      processor.execute(address, method, addressing_mode, bytes)
 
     rescue
       processor.pc = initial_pc
