@@ -180,13 +180,11 @@ module Vic20
         when :immediate
           @operand
         when :indirect
-          @memory[@operand] | @memory[@operand + 1] << 8
+          @memory.word_at(@operand)
         when :indirect_x
-          address = (@operand + @x) & 0xff
-          @memory[@memory[address] | @memory[address + 1] << 8]
+          @memory[@memory.word_at((@operand + @x) & 0xff)]
         when :indirect_y
-          address = @memory[@operand] | @memory[@operand + 1] << 8
-          @memory[address + @y]
+          @memory[@memory.word_at(@operand) + @y]
         when :relative
           @operand > 0x7f ? @operand - 0x100 : @operand
         when :zero_page
@@ -209,11 +207,9 @@ module Vic20
         when :accumulator
           @a = value
         when :indirect_x
-          address = (@operand + @x) & 0xff
-          @memory[@memory[address] | @memory[address + 1] << 8] = value
+          @memory[@memory.word_at((@operand + @x) & 0xff)] = value
         when :indirect_y
-          address = @memory[@operand] | @memory[@operand + 1] << 8
-          @memory[address + @y] = value
+          @memory[@memory.word_at(@operand) + @y] = value
         when :zero_page
           @memory[@operand] = value
         when :zero_page_x
@@ -312,7 +308,7 @@ module Vic20
         @p |= B_FLAG
         push @p | 0b00100000
         @p |= I_FLAG
-        @pc = @memory[IRQ_VECTOR] | @memory[IRQ_VECTOR + 1] << 8
+        @pc = @memory.word_at(IRQ_VECTOR)
       end
 
       def bvc
@@ -425,7 +421,7 @@ module Vic20
         when :absolute
           @operand
         when :indirect
-          @memory[@operand] | @memory[@operand + 1] << 8
+          @memory.word_at(@operand)
         end
       end
 

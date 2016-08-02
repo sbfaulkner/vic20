@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Vic20::Processor do
-  let(:memory) { [] }
+  let(:memory) { Vic20::Memory.new([]) }
+
   subject { described_class.new(memory) }
 
   describe 'registers' do

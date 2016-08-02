@@ -26,12 +26,12 @@ module Vic20
 
       @memory = memory
 
-      self.pc = 0
-      self.a = 0
-      self.x = 0
-      self.y = 0
-      self.p = 0
-      self.s = 0
+      @pc = 0
+      @a = 0
+      @x = 0
+      @y = 0
+      @p = 0
+      @s = 0
     end
 
     C_FLAG = 0b00000001 # Carry
@@ -52,7 +52,7 @@ module Vic20
     %i(C Z I D B V N).each do |flag|
       class_eval <<-READER
         def #{flag.downcase}?
-          p & #{flag}_FLAG == #{flag}_FLAG
+          @p & #{flag}_FLAG == #{flag}_FLAG
         end
       READER
     end
@@ -67,49 +67,49 @@ module Vic20
 
     def assign_carry_flag(value)
       if value
-        self.p |= C_FLAG
+        @p |= C_FLAG
       else
-        self.p &= ~C_FLAG
+        @p &= ~C_FLAG
       end
     end
 
     def assign_overflow_flag(value)
       if value
-        self.p |= V_FLAG
+        @p |= V_FLAG
       else
-        self.p &= ~V_FLAG
+        @p &= ~V_FLAG
       end
     end
 
     def assign_sign_flag(value)
       if value
-        self.p |= N_FLAG
+        @p |= N_FLAG
       else
-        self.p &= ~N_FLAG
+        @p &= ~N_FLAG
       end
     end
 
     def assign_zero_flag(value)
       if value
-        self.p |= Z_FLAG
+        @p |= Z_FLAG
       else
-        self.p &= ~Z_FLAG
+        @p &= ~Z_FLAG
       end
     end
 
     def current_flags
-      Array.new(8) { |i| p[7-i].zero? ? '-' : 'NV?BDIZC'[i] }.join
+      Array.new(8) { |i| @p[7-i] == 1 ? 'NV?BDIZC'[i] : '-' }.join
     end
 
     def current_state
-      format('A=%02X X=%02X Y=%02X P=%s S=%02X PC=%04X', a, x, y, current_flags, s, pc)
+      format('A=%02X X=%02X Y=%02X P=%s S=%02X PC=%04X', @a, @x, @y, current_flags, @s, @pc)
     end
 
     def each
       return enum_for(:each) unless block_given?
 
       loop do
-        yield pc, fetch_instruction
+        yield @pc, fetch_instruction
       end
     end
 
@@ -130,8 +130,8 @@ module Vic20
     end
 
     def fetch_byte
-      byte = @memory[pc]
-      self.pc += 1
+      byte = @memory[@pc]
+      @pc += 1
       byte
     end
 
@@ -140,8 +140,14 @@ module Vic20
       when :immediate, :indirect_x, :indirect_y, :relative, :zero_page, :zero_page_x, :zero_page_y
         fetch_byte
       when :absolute, :absolute_x, :absolute_y, :indirect
-        fetch_byte | fetch_byte << 8
+        fetch_word
       end
+    end
+
+    def fetch_word
+      word = @memory.word_at(@pc)
+      @pc += 2
+      word
     end
 
     def inspect
@@ -149,7 +155,7 @@ module Vic20
     end
 
     def reset(address = nil)
-      self.pc = address || @memory.word_at(RESET_VECTOR)
+      @pc = address || @memory.word_at(RESET_VECTOR)
     end
 
     def run

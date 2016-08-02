@@ -7,7 +7,7 @@ describe Vic20::Processor do
   # TODO: refactor signature out into tests that need it
   let(:signature_address) { 0xfd4d }
   let(:signature) { ['A'.ord, '0'.ord, 0xc3, 0xc2, 0xcd] }
-  let(:memory) { [] }
+  let(:memory) { Vic20::Memory.new([]) }
 
   subject { described_class.new(memory) }
 
@@ -1710,7 +1710,7 @@ describe Vic20::Processor do
 
     it 'pushes the program counter + 1 onto the stack' do
       subject.brk
-      expect(word_at(top - 1)).to eq(pc + 1)
+      expect(memory.word_at(top - 1)).to eq(pc + 1)
     end
 
     it 'pushes the processor status onto the stack' do
@@ -4057,7 +4057,7 @@ describe Vic20::Processor do
 
     it 'pushes address-1 to the stack' do
       subject.jsr
-      expect(word_at(top - 1)).to eq(pc - 1)
+      expect(memory.word_at(top - 1)).to eq(pc - 1)
     end
 
     it 'transfers program control to the new address' do
@@ -7598,9 +7598,5 @@ describe Vic20::Processor do
 
   def msb(word)
     word >> 8
-  end
-
-  def word_at(address)
-    memory[address] | memory[address + 1] << 8
   end
 end

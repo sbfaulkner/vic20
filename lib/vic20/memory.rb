@@ -1,5 +1,9 @@
 module Vic20
-  class Memory < SimpleDelegator
+  class Memory
+    extend Forwardable
+
+    def_delegators :@array, :[], :[]=
+
     FIRMWARE_DIR = File.expand_path('../../firmware', __dir__)
 
     def self.find_firmware(name)
@@ -16,7 +20,7 @@ module Vic20
       contents ||= DEFAULT_FIRMWARE
       contents = { 0 => contents } if contents.is_a?(String)
 
-      super Array.new(64 * 1024) { |offset| offset >> 8 }
+      @array = Array.new(64 * 1024) { |offset| offset >> 8 }
 
       contents.each { |address, content| load(address, content) }
     end
