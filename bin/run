@@ -11,12 +11,16 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
+  opts.on('-p', '--profile', 'profile execution') do |profile|
+    options[:profile] = profile
+  end
+
   opts.on('-r', '--reset address', 'override reset vector') do |address, *|
     options[:reset] = address.to_i(16)
   end
 
-  opts.on('-v', '--verbose', 'turn on verbose mode') do |v|
-    options[:verbose] = v
+  opts.on('-v', '--verbose', 'turn on verbose mode') do |verbose|
+    options[:verbose] = verbose
   end
 end.parse!
 
@@ -33,4 +37,17 @@ processor = Vic20::Processor.new(memory)
 
 processor.reset(options[:reset])
 
-processor.run
+if options[:profile]
+  require 'ruby-prof'
+
+  # profile the code
+  result = RubyProf.profile do
+    processor.run
+  end
+
+  # print a graph profile to text
+  printer = RubyProf::GraphPrinter.new(result)
+  printer.print(STDOUT, {})
+else
+  processor.run
+end
