@@ -70,54 +70,76 @@ describe Vic20::Processor do
   context 'with a program in memory' do
     let(:program) do
       [
-        [0x0600, [0x20, 0x09, 0x06]], # JSR $0609
-        [0x0603, [0x20, 0x0c, 0x06]], # JSR $060c
-        [0x0606, [0x20, 0x12, 0x06]], # JSR $0612
-        [0x0609, [0xa2, 0x00]],       # LDX #$00
-        [0x060b, [0x60]],             # RTS
-        [0x060c, [0xe8]],             # INX
-        [0x060d, [0xe0, 0x05]],       # CPX #$05
-        [0x060f, [0xd0, 0xfb]],       # BNE $060c
-        [0x0611, [0x60]],             # RTS
-        [0x0612, [0x00]],             # BRK
+        [0x0600, :jsr, [0x20, 0x09, 0x06]], # JSR $0609
+        [0x0603, :jsr, [0x20, 0x0c, 0x06]], # JSR $060c
+        [0x0606, :jsr, [0x20, 0x12, 0x06]], # JSR $0612
+        [0x0609, :ldx, [0xa2, 0x00]],       # LDX #$00
+        [0x060b, :rts, [0x60]],             # RTS
+        [0x060c, :inx, [0xe8]],             # INX
+        [0x060d, :cpx, [0xe0, 0x05]],       # CPX #$05
+        [0x060f, :bne, [0xd0, 0xfb]],       # BNE $060c
+        [0x0611, :rts, [0x60]],             # RTS
+        [0x0612, :jmp, [0x4c, 0x12, 0x06]], # JMP $0612
       ]
     end
 
     before do
-      program.each do |a, b|
+      program.each do |a, _m, b|
         memory[a, b.size] = b
       end
       subject.pc = 0x0600
     end
 
     describe '#each' do
+      it 'yields the addresses' do
+        addresses = []
+
+        subject.each do |address, _instruction|
+          addresses << address
+          break if address == 0x0612
+        end
+
+        expect(addresses).to eq program.map { |a, _m, _b| a }
+      end
+
       it 'yields the instructions' do
-        # TODO: this is very coupled to implementation
-        expect { |b| subject.each(&b) }.to yield_successive_args(*program.map { |a, b| [a, described_class.instructions[b.first]] })
+        instructions = []
+
+        subject.each do |address, instruction|
+          method = instruction[:method]
+          instructions << method
+          break if address == 0x0612
+        end
+
+        expect(instructions).to eq program.map { |_a, m, _b| m }
       end
 
       it 'advances the program counter' do
-        subject.each {}
-        expect(subject.pc).to eq(0x0613)
+        subject.each do |address, instruction|
+          break if address == 0x0612
+        end
+        expect(subject.pc).to eq(0x0615)
       end
     end
 
     describe '#run' do
-      it 'runs the program' do
-        program.each do |_address, bytes|
-          instruction = described_class.instructions[bytes.first]
-          expect(subject).to receive(instruction[:method]).with(instruction[:addressing_mode], bytes)
-        end
+      class Runner < Vic20::Processor
+        prepend Vic20::Processor::Halt
+      end
 
-        subject.run
+      subject { Runner.new(memory) }
+
+      it 'runs the program' do
+        expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$0612/)
+        expect(subject.x).to eq 5
       end
     end
   end
 
   context 'with the 6502 functional test suite', slow: true do
     class FunctionalTestProcessor < Vic20::Processor
-      Vic20::Processor.prepend Vic20::Processor::Halt
-      Vic20::Processor.prepend Vic20::Processor::Report
+      prepend Vic20::Processor::Halt
+      prepend Vic20::Processor::Report
     end
 
     let(:firmware) { File.expand_path('../../../firmware/6502_functional_test.bin', __dir__) }

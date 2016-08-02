@@ -17,17 +17,13 @@ module Vic20
       end
     end
 
-    class UnsupportedAddressingMode < RuntimeError
-      def initialize(addressing_mode)
-        super "Unsupported addressing mode (#{addressing_mode})"
-      end
-    end
-
     NMI_VECTOR    = 0xFFFA
     RESET_VECTOR  = 0xFFFC
     IRQ_VECTOR    = 0xFFFE
 
     def initialize(memory)
+      initialize_instructions
+
       @memory = memory
 
       self.pc = 0
@@ -112,19 +108,40 @@ module Vic20
     def each
       return enum_for(:each) unless block_given?
 
-      while opcode = @memory[pc]
-        address = pc
-        instruction = self.class.instructions[opcode]
-        self.pc += instruction[:bytes]
-        yield address, instruction
+      loop do
+        yield pc, fetch_instruction
       end
     end
 
-    def execute(address, instruction)
-      method = instruction[:method]
-      addressing_mode = instruction[:addressing_mode]
-      bytes = @memory[address, instruction[:bytes]]
-      send(method, addressing_mode, bytes)
+    def execute(_address, instruction)
+      instruction[:instruction_method].call
+    end
+
+    def fetch_instruction
+      @opcode = fetch_byte
+
+      instruction = @instructions[@opcode]
+
+      @addressing_mode = instruction[:addressing_mode]
+
+      @operand = fetch_operand
+
+      instruction
+    end
+
+    def fetch_byte
+      byte = @memory[pc]
+      self.pc += 1
+      byte
+    end
+
+    def fetch_operand
+      case @addressing_mode
+      when :immediate, :indirect_x, :indirect_y, :relative, :zero_page, :zero_page_x, :zero_page_y
+        fetch_byte
+      when :absolute, :absolute_x, :absolute_y, :indirect
+        fetch_byte | fetch_byte << 8
+      end
     end
 
     def inspect
