@@ -45,9 +45,8 @@ if options[:profile]
     processor.run
   end
 
-  # print a graph profile to text
-  printer = RubyProf::GraphPrinter.new(result)
-  printer.print(STDOUT, {})
+  printer = RubyProf::MultiPrinter.new(result)
+  printer.print(path: '.', profile: 'profile')
 else
   processor.run
 end
