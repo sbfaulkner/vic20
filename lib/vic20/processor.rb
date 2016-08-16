@@ -1,6 +1,7 @@
 require_relative 'processor/format'
 require_relative 'processor/halt'
 require_relative 'processor/instructions'
+require_relative 'processor/profile'
 require_relative 'processor/report'
 require_relative 'processor/stack'
 require_relative 'processor/trace'

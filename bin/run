@@ -32,21 +32,13 @@ else
   Vic20::Processor.prepend Vic20::Processor::Report
 end
 
+if options[:profile]
+  Vic20::Processor.prepend Vic20::Processor::Profile
+end
+
 memory = Vic20::Memory.new(ARGV[0])
 processor = Vic20::Processor.new(memory)
 
 processor.reset(options[:reset])
 
-if options[:profile]
-  require 'ruby-prof'
-
-  # profile the code
-  result = RubyProf.profile do
-    processor.run
-  end
-
-  printer = RubyProf::MultiPrinter.new(result)
-  printer.print(path: '.', profile: 'profile')
-else
-  processor.run
-end
+processor.run
