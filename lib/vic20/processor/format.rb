@@ -20,7 +20,7 @@ module Vic20
       # TODO: fix this... it's ugly
       def format_instruction(address, instruction)
         addressing_mode = ADDRESSING_MODES[instruction[:addressing_mode]]
-        bytes = @memory[address, addressing_mode[:bytes]]
+        bytes = @memory.get_bytes(address, addressing_mode[:bytes])
 
         [
           format('%04X', address),

@@ -12,7 +12,7 @@ describe Vic20::Processor do
   subject { described_class.new(memory) }
 
   before do
-    memory[signature_address, 5] = signature
+    memory.set_bytes(signature_address, 5, signature)
     subject.instance_variable_set :@addressing_mode, addressing_mode
     subject.instance_variable_set :@operand, operand
   end
@@ -33,7 +33,7 @@ describe Vic20::Processor do
         let(:address) { 0xe03f }
 
         before do
-          memory[address] = value
+          memory.set_byte(address, value)
         end
 
         it 'adds the addressed value to the accumulator' do
@@ -97,7 +97,7 @@ describe Vic20::Processor do
         let(:offset) { 0xf5 }
 
         before do
-          memory[address + offset] = value
+          memory.set_byte(address + offset, value)
           subject.x = offset
         end
 
@@ -162,7 +162,7 @@ describe Vic20::Processor do
         let(:offset) { 0xf5 }
 
         before do
-          memory[address + offset] = value
+          memory.set_byte(address + offset, value)
           subject.y = offset
         end
 
@@ -352,8 +352,8 @@ describe Vic20::Processor do
         let(:offset) { 5 }
 
         before do
-          memory[indirect_address] = value
-          memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+          memory.set_byte(indirect_address, value)
+          memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
           subject.x = offset
         end
 
@@ -428,8 +428,8 @@ describe Vic20::Processor do
         let(:offset) { 5 }
 
         before do
-          memory[indirect_address + offset] = value
-          memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+          memory.set_byte(indirect_address + offset, value)
+          memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
           subject.y = offset
         end
 
@@ -493,7 +493,7 @@ describe Vic20::Processor do
         let(:address) { 0x3f }
 
         before do
-          memory[address] = value
+          memory.set_byte(address, value)
         end
 
         it 'adds the addressed value to the accumulator' do
@@ -557,7 +557,7 @@ describe Vic20::Processor do
         let(:offset) { 5 }
 
         before do
-          memory[(address + offset) & 0xff] = value
+          memory.set_byte((address + offset) & 0xff, value)
           subject.x = offset
         end
 
@@ -706,7 +706,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = mask
       end
 
@@ -753,7 +753,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.a = mask
         subject.x = offset
       end
@@ -801,7 +801,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.a = mask
         subject.y = offset
       end
@@ -894,8 +894,8 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address, value)
+        memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.x = offset
         subject.a = mask
       end
@@ -953,8 +953,8 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address + offset, value)
+        memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.y = offset
         subject.a = mask
       end
@@ -1001,7 +1001,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = mask
       end
 
@@ -1048,7 +1048,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.a = mask
         subject.x = offset
       end
@@ -1107,12 +1107,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits left one position' do
         subject.asl
-        expect(memory[address]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -1135,7 +1135,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.asl
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -1165,13 +1165,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = offset
       end
 
       it 'shifts all bits left one position' do
         subject.asl
-        expect(memory[address + offset]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address + offset)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -1194,7 +1194,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.asl
-          expect(memory[address + offset]).to eq(value)
+          expect(memory.get_byte(address + offset)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -1278,12 +1278,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits left one position' do
         subject.asl
-        expect(memory[address]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -1306,7 +1306,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.asl
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -1336,13 +1336,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = offset
       end
 
       it 'shifts all bits left one position' do
         subject.asl
-        expect(memory[address + offset]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address + offset)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -1365,7 +1365,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.asl
-          expect(memory[address + offset]).to eq(value)
+          expect(memory.get_byte(address + offset)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -1389,7 +1389,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.asl
-          expect(memory[address + offset - 0x100]).to eq(value << 1 & 0xff)
+          expect(memory.get_byte(address + offset - 0x100)).to eq(value << 1 & 0xff)
         end
       end
     end
@@ -1500,7 +1500,7 @@ describe Vic20::Processor do
 
     before do
       subject.a = mask
-      memory[address] = value
+      memory.set_byte(address, value)
     end
 
     context 'with absolute addressing mode' do
@@ -1698,7 +1698,7 @@ describe Vic20::Processor do
     let(:irq) { 0xdead }
 
     before do
-      memory[0xfffe, 2] = [lsb(irq), msb(irq)]
+      memory.set_bytes(0xfffe, 2, [lsb(irq), msb(irq)])
       subject.s = top & 0xff
       subject.pc = pc
       subject.p = p
@@ -1710,17 +1710,17 @@ describe Vic20::Processor do
 
     it 'pushes the program counter + 1 onto the stack' do
       subject.brk
-      expect(memory.word_at(top - 1)).to eq(pc + 1)
+      expect(memory.get_word(top - 1)).to eq(pc + 1)
     end
 
     it 'pushes the processor status onto the stack' do
       subject.brk
-      expect(memory[top - 2] & 0b11001111).to eq(p & 0b11001111)
+      expect(memory.get_byte(top - 2) & 0b11001111).to eq(p & 0b11001111)
     end
 
     it 'pushes the processor status with the breakpoint flag set onto the stack' do
       subject.brk
-      expect(memory[top - 2] & Vic20::Processor::B_FLAG).to eq(Vic20::Processor::B_FLAG)
+      expect(memory.get_byte(top - 2) & Vic20::Processor::B_FLAG).to eq(Vic20::Processor::B_FLAG)
     end
 
     it 'loads the IRQ vector at $fffe into the program counter' do
@@ -1857,7 +1857,7 @@ describe Vic20::Processor do
 
       before do
         subject.a = signature[4]
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       context 'when the accumulator is greater than the addressed value' do
@@ -1926,7 +1926,7 @@ describe Vic20::Processor do
       before do
         subject.a = signature[4]
         subject.x = 0x05
-        memory[address + 5] = value
+        memory.set_byte(address + 5, value)
       end
 
       context 'when the accumulator is greater than the addressed value' do
@@ -1995,7 +1995,7 @@ describe Vic20::Processor do
       before do
         subject.a = signature[4]
         subject.y = 0x05
-        memory[address + 5] = value
+        memory.set_byte(address + 5, value)
       end
 
       context 'when the accumulator is greater than the addressed value' do
@@ -2131,8 +2131,8 @@ describe Vic20::Processor do
 
       before do
         subject.a = 0x80
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address, value)
+        memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.x = offset
       end
 
@@ -2212,8 +2212,8 @@ describe Vic20::Processor do
 
       before do
         subject.a = 0x80
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address + offset, value)
+        memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.y = offset
       end
 
@@ -2282,7 +2282,7 @@ describe Vic20::Processor do
 
       before do
         subject.a = 0xc5
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       context 'when the accumulator is greater than the addressed value' do
@@ -2352,7 +2352,7 @@ describe Vic20::Processor do
       before do
         subject.a = 0xc5
         subject.x = offset
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
       end
 
       context 'when the accumulator is greater than the addressed value' do
@@ -2432,7 +2432,7 @@ describe Vic20::Processor do
 
       before do
         subject.x = signature[4]
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       context 'when the x-index register is greater than the addressed value' do
@@ -2566,7 +2566,7 @@ describe Vic20::Processor do
 
       before do
         subject.x = 0xc5
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       context 'when the x-index register is greater than the addressed value' do
@@ -2636,7 +2636,7 @@ describe Vic20::Processor do
 
       before do
         subject.y = signature[4]
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       context 'when the y-index register is greater than the addressed value' do
@@ -2770,7 +2770,7 @@ describe Vic20::Processor do
 
       before do
         subject.y = 0xc5
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       context 'when the y-index register is greater than the addressed value' do
@@ -2841,12 +2841,12 @@ describe Vic20::Processor do
       let(:address) { 0xa11a }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'decrements the value' do
         subject.dec
-        expect(memory[address]).to eq(value - 1)
+        expect(memory.get_byte(address)).to eq(value - 1)
       end
 
       it 'clears the sign flag' do
@@ -2864,7 +2864,7 @@ describe Vic20::Processor do
 
         it 'decrements the value' do
           subject.dec
-          expect(memory[address]).to eq(value - 1)
+          expect(memory.get_byte(address)).to eq(value - 1)
         end
 
         it 'sets the sign flag' do
@@ -2883,7 +2883,7 @@ describe Vic20::Processor do
 
         it 'rolls over to 0xff' do
           subject.dec
-          expect(memory[address]).to eq(0xff)
+          expect(memory.get_byte(address)).to eq(0xff)
         end
 
         it 'sets the sign flag' do
@@ -2905,13 +2905,13 @@ describe Vic20::Processor do
       let(:offset) { 0xee }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = offset
       end
 
       it 'decrements the value' do
         subject.dec
-        expect(memory[address + offset]).to eq(value - 1)
+        expect(memory.get_byte(address + offset)).to eq(value - 1)
       end
 
       it 'clears the sign flag' do
@@ -2929,7 +2929,7 @@ describe Vic20::Processor do
 
         it 'decrements the value' do
           subject.dec
-          expect(memory[address + offset]).to eq(value - 1)
+          expect(memory.get_byte(address + offset)).to eq(value - 1)
         end
 
         it 'sets the sign flag' do
@@ -2948,7 +2948,7 @@ describe Vic20::Processor do
 
         it 'rolls over to 0xff' do
           subject.dec
-          expect(memory[address + offset]).to eq(0xff)
+          expect(memory.get_byte(address + offset)).to eq(0xff)
         end
 
         it 'sets the sign flag' do
@@ -2969,12 +2969,12 @@ describe Vic20::Processor do
       let(:address) { 0x1a }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'decrements the value' do
         subject.dec
-        expect(memory[address]).to eq(value - 1)
+        expect(memory.get_byte(address)).to eq(value - 1)
       end
 
       it 'clears the sign flag' do
@@ -2992,7 +2992,7 @@ describe Vic20::Processor do
 
         it 'decrements the value' do
           subject.dec
-          expect(memory[address]).to eq(value - 1)
+          expect(memory.get_byte(address)).to eq(value - 1)
         end
 
         it 'sets the sign flag' do
@@ -3011,7 +3011,7 @@ describe Vic20::Processor do
 
         it 'rolls over to 0xff' do
           subject.dec
-          expect(memory[address]).to eq(0xff)
+          expect(memory.get_byte(address)).to eq(0xff)
         end
 
         it 'sets the sign flag' do
@@ -3033,13 +3033,13 @@ describe Vic20::Processor do
       let(:offset) { 0xa1 }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = offset
       end
 
       it 'decrements the value' do
         subject.dec
-        expect(memory[(address + offset) & 0xff]).to eq(value - 1)
+        expect(memory.get_byte((address + offset) & 0xff)).to eq(value - 1)
       end
 
       it 'clears the sign flag' do
@@ -3057,7 +3057,7 @@ describe Vic20::Processor do
 
         it 'decrements the value' do
           subject.dec
-          expect(memory[(address + offset) & 0xff]).to eq(value - 1)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value - 1)
         end
 
         it 'sets the sign flag' do
@@ -3076,7 +3076,7 @@ describe Vic20::Processor do
 
         it 'rolls over to 0xff' do
           subject.dec
-          expect(memory[(address + offset) & 0xff]).to eq(0xff)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(0xff)
         end
 
         it 'sets the sign flag' do
@@ -3095,7 +3095,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.dec
-          expect(memory[(address + offset) & 0xff]).to eq(value - 1)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value - 1)
         end
       end
     end
@@ -3232,7 +3232,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = mask
       end
 
@@ -3279,7 +3279,7 @@ describe Vic20::Processor do
       let(:offset) { 0x2e }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.a = mask
         subject.x = offset
       end
@@ -3327,7 +3327,7 @@ describe Vic20::Processor do
       let(:offset) { 0x2e }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.a = mask
         subject.y = offset
       end
@@ -3420,8 +3420,8 @@ describe Vic20::Processor do
       let(:offset) { 0x2e }
 
       before do
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address, value)
+        memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.a = mask
         subject.x = offset
       end
@@ -3470,8 +3470,8 @@ describe Vic20::Processor do
       let(:offset) { 0x2e }
 
       before do
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address + offset, value)
+        memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.a = mask
         subject.y = offset
       end
@@ -3518,7 +3518,7 @@ describe Vic20::Processor do
       let(:value) { 0x0f }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = mask
       end
 
@@ -3565,7 +3565,7 @@ describe Vic20::Processor do
       let(:offset) { 0x0e }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.a = mask
         subject.x = offset
       end
@@ -3623,12 +3623,12 @@ describe Vic20::Processor do
       let(:address) { 0xc105 }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'increments the value at the specified address' do
         subject.inc
-        expect(memory[address]).to eq(value + 1)
+        expect(memory.get_byte(address)).to eq(value + 1)
       end
 
       it 'clears the sign flag' do
@@ -3646,7 +3646,7 @@ describe Vic20::Processor do
 
         it 'increments the value at the specified address' do
           subject.inc
-          expect(memory[address]).to eq(value + 1)
+          expect(memory.get_byte(address)).to eq(value + 1)
         end
 
         it 'sets the sign flag' do
@@ -3665,7 +3665,7 @@ describe Vic20::Processor do
 
         it 'rolls over to zero' do
           subject.inc
-          expect(memory[address]).to eq(0)
+          expect(memory.get_byte(address)).to eq(0)
         end
 
         it 'clears the sign flag' do
@@ -3687,13 +3687,13 @@ describe Vic20::Processor do
       let(:offset) { 0xbb }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = offset
       end
 
       it 'increments the value at the specified address' do
         subject.inc
-        expect(memory[address + offset]).to eq(value + 1)
+        expect(memory.get_byte(address + offset)).to eq(value + 1)
       end
 
       it 'clears the sign flag' do
@@ -3711,7 +3711,7 @@ describe Vic20::Processor do
 
         it 'increments the value at the specified address' do
           subject.inc
-          expect(memory[address + offset]).to eq(value + 1)
+          expect(memory.get_byte(address + offset)).to eq(value + 1)
         end
 
         it 'sets the sign flag' do
@@ -3730,7 +3730,7 @@ describe Vic20::Processor do
 
         it 'rolls over to zero' do
           subject.inc
-          expect(memory[address + offset]).to eq(0)
+          expect(memory.get_byte(address + offset)).to eq(0)
         end
 
         it 'clears the sign flag' do
@@ -3751,12 +3751,12 @@ describe Vic20::Processor do
       let(:address) { 0xc1 }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'increments the value at the specified address' do
         subject.inc
-        expect(memory[address]).to eq(value + 1)
+        expect(memory.get_byte(address)).to eq(value + 1)
       end
 
       it 'clears the sign flag' do
@@ -3774,7 +3774,7 @@ describe Vic20::Processor do
 
         it 'increments the value at the specified address' do
           subject.inc
-          expect(memory[address]).to eq(value + 1)
+          expect(memory.get_byte(address)).to eq(value + 1)
         end
 
         it 'sets the sign flag' do
@@ -3793,7 +3793,7 @@ describe Vic20::Processor do
 
         it 'rolls over to zero' do
           subject.inc
-          expect(memory[address]).to eq(0)
+          expect(memory.get_byte(address)).to eq(0)
         end
 
         it 'clears the sign flag' do
@@ -3815,13 +3815,13 @@ describe Vic20::Processor do
       let(:offset) { 0x18 }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = offset
       end
 
       it 'increments the value at the specified address' do
         subject.inc
-        expect(memory[(address + offset) & 0xff]).to eq(value + 1)
+        expect(memory.get_byte((address + offset) & 0xff)).to eq(value + 1)
       end
 
       it 'clears the sign flag' do
@@ -3839,7 +3839,7 @@ describe Vic20::Processor do
 
         it 'increments the value at the specified address' do
           subject.inc
-          expect(memory[(address + offset) & 0xff]).to eq(value + 1)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value + 1)
         end
 
         it 'sets the sign flag' do
@@ -3858,7 +3858,7 @@ describe Vic20::Processor do
 
         it 'rolls over to zero' do
           subject.inc
-          expect(memory[(address + offset) & 0xff]).to eq(0)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(0)
         end
 
         it 'clears the sign flag' do
@@ -3877,7 +3877,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.inc
-          expect(memory[(address + offset) & 0xff]).to eq(value + 1)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value + 1)
         end
       end
     end
@@ -4029,7 +4029,7 @@ describe Vic20::Processor do
       let(:address) { 0xc000 }
 
       before do
-        memory[address, 2] = [lsb(destination), msb(destination)]
+        memory.set_bytes(address, 2, [lsb(destination), msb(destination)])
       end
 
       it 'transfers program control to the new address' do
@@ -4057,7 +4057,7 @@ describe Vic20::Processor do
 
     it 'pushes address-1 to the stack' do
       subject.jsr
-      expect(memory.word_at(top - 1)).to eq(pc - 1)
+      expect(memory.get_word(top - 1)).to eq(pc - 1)
     end
 
     it 'transfers program control to the new address' do
@@ -4094,7 +4094,7 @@ describe Vic20::Processor do
 
       context 'when the value is zero' do
         before do
-          memory[address] = 0
+          memory.set_byte(address, 0)
         end
 
         it 'clears the sign flag' do
@@ -4137,7 +4137,7 @@ describe Vic20::Processor do
 
       context 'when the value is zero' do
         before do
-          memory[address + 5] = 0
+          memory.set_byte(address + 5, 0)
         end
 
         it 'clears the sign flag' do
@@ -4180,7 +4180,7 @@ describe Vic20::Processor do
 
       context 'when the value is zero' do
         before do
-          memory[address + 5] = 0
+          memory.set_byte(address + 5, 0)
         end
 
         it 'clears the sign flag' do
@@ -4243,8 +4243,8 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address, value)
+        memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.x = offset
       end
 
@@ -4296,8 +4296,8 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address + offset, value)
+        memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.y = offset
       end
 
@@ -4338,7 +4338,7 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = 0x00
       end
 
@@ -4380,7 +4380,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.a = 0x00
         subject.x = offset
       end
@@ -4433,7 +4433,7 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.x = 0x00
       end
 
@@ -4475,7 +4475,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = 0x00
         subject.y = offset
       end
@@ -4556,7 +4556,7 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.x = 0x00
       end
 
@@ -4598,7 +4598,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = 0x00
         subject.y = offset
       end
@@ -4651,7 +4651,7 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.y = 0x00
       end
 
@@ -4693,7 +4693,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.y = 0x00
         subject.x = offset
       end
@@ -4774,7 +4774,7 @@ describe Vic20::Processor do
       let(:value) { 0xff }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.y = 0x00
       end
 
@@ -4816,7 +4816,7 @@ describe Vic20::Processor do
       let(:value) { 0xc5 }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.y = 0x00
         subject.x = offset
       end
@@ -4871,12 +4871,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits right one position' do
         subject.lsr
-        expect(memory[address]).to eq(value >> 1 & 0xff)
+        expect(memory.get_byte(address)).to eq(value >> 1 & 0xff)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -4899,7 +4899,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.lsr
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -4929,13 +4929,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = offset
       end
 
       it 'shifts all bits right one position' do
         subject.lsr
-        expect(memory[address + offset]).to eq(value >> 1 & 0xff)
+        expect(memory.get_byte(address + offset)).to eq(value >> 1 & 0xff)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -4958,7 +4958,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.lsr
-          expect(memory[address + offset]).to eq(value)
+          expect(memory.get_byte(address + offset)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -5042,12 +5042,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits right one position' do
         subject.lsr
-        expect(memory[address]).to eq(value >> 1 & 0xff)
+        expect(memory.get_byte(address)).to eq(value >> 1 & 0xff)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -5070,7 +5070,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.lsr
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -5100,13 +5100,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = offset
       end
 
       it 'shifts all bits right one position' do
         subject.lsr
-        expect(memory[(address + offset) & 0xff]).to eq(value >> 1 & 0xff)
+        expect(memory.get_byte((address + offset) & 0xff)).to eq(value >> 1 & 0xff)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -5129,7 +5129,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.lsr
-          expect(memory[(address + offset) & 0xff]).to eq(value)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -5153,7 +5153,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.lsr
-          expect(memory[(address + offset) & 0xff]).to eq(value >> 1 & 0xff)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value >> 1 & 0xff)
         end
       end
     end
@@ -5174,7 +5174,7 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = mask
       end
 
@@ -5222,7 +5222,7 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.a = mask
         subject.x = offset
       end
@@ -5271,7 +5271,7 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.a = mask
         subject.y = offset
       end
@@ -5366,8 +5366,8 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[indirect_address] = value
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address, value)
+        memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.a = mask
         subject.x = offset
       end
@@ -5417,8 +5417,8 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[indirect_address + offset] = value
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address + offset, value)
+        memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.a = mask
         subject.y = offset
       end
@@ -5466,7 +5466,7 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[address] = value
+        memory.set_byte(address, value)
         subject.a = mask
       end
 
@@ -5514,7 +5514,7 @@ describe Vic20::Processor do
       let(:value) { 0x45 }
 
       before do
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.a = mask
         subject.x = offset
       end
@@ -5579,7 +5579,7 @@ describe Vic20::Processor do
 
     it 'pushes the current accumulator onto the stack' do
       subject.pha
-      expect(memory[top]).to eq(value)
+      expect(memory.get_byte(top)).to eq(value)
     end
 
     it 'does not change the current accumulator' do
@@ -5602,17 +5602,17 @@ describe Vic20::Processor do
 
     it 'pushes the current processor status onto the stack' do
       subject.php
-      expect(memory[top] & 0b11001111).to eq(value & 0b11001111)
+      expect(memory.get_byte(top) & 0b11001111).to eq(value & 0b11001111)
     end
 
     it 'pushes the current processor status with the breakpoint flag set' do
       subject.php
-      expect(memory[top] & Vic20::Processor::B_FLAG).to eq(Vic20::Processor::B_FLAG)
+      expect(memory.get_byte(top) & Vic20::Processor::B_FLAG).to eq(Vic20::Processor::B_FLAG)
     end
 
     it 'pushes the current processor status with the 5th bit set' do
       subject.php
-      expect(memory[top][5]).to eq(1)
+      expect(memory.get_byte(top)[5]).to eq(1)
     end
 
     it 'does not change the current processor status' do
@@ -5627,7 +5627,7 @@ describe Vic20::Processor do
     before do
       subject.a = 0
       subject.s = (top - 1) & 0xff
-      memory[top] = value
+      memory.set_byte(top, value)
     end
 
     it 'pulls a byte off of the stack' do
@@ -5671,7 +5671,7 @@ describe Vic20::Processor do
     before do
       subject.p = 0
       subject.s = (top - 1) & 0xff
-      memory[top] = value
+      memory.set_byte(top, value)
     end
 
     it 'pulls a byte off of the stack' do
@@ -5699,12 +5699,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits left one position' do
         subject.rol
-        expect(memory[address]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -5727,7 +5727,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 0' do
           subject.rol
-          expect(memory[address]).to eq(value << 1 & 0xff | 0x01)
+          expect(memory.get_byte(address)).to eq(value << 1 & 0xff | 0x01)
         end
       end
 
@@ -5736,7 +5736,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.rol
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -5766,13 +5766,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = offset
       end
 
       it 'shifts all bits left one position' do
         subject.rol
-        expect(memory[address + offset]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address + offset)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -5795,7 +5795,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 0' do
           subject.rol
-          expect(memory[address + offset]).to eq(value << 1 & 0xff | 0x01)
+          expect(memory.get_byte(address + offset)).to eq(value << 1 & 0xff | 0x01)
         end
       end
 
@@ -5804,7 +5804,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.rol
-          expect(memory[address + offset]).to eq(value)
+          expect(memory.get_byte(address + offset)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -5897,12 +5897,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits left one position' do
         subject.rol
-        expect(memory[address]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte(address)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -5925,7 +5925,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 0' do
           subject.rol
-          expect(memory[address]).to eq(value << 1 & 0xff | 0x01)
+          expect(memory.get_byte(address)).to eq(value << 1 & 0xff | 0x01)
         end
       end
 
@@ -5934,7 +5934,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.rol
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -5964,13 +5964,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = offset
       end
 
       it 'shifts all bits left one position' do
         subject.rol
-        expect(memory[(address + offset) & 0xff]).to eq(value << 1 & 0xff)
+        expect(memory.get_byte((address + offset) & 0xff)).to eq(value << 1 & 0xff)
       end
 
       it 'shifts bit 7 into the carry flag' do
@@ -5993,7 +5993,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 0' do
           subject.rol
-          expect(memory[(address + offset) & 0xff]).to eq(value << 1 & 0xff | 0x01)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value << 1 & 0xff | 0x01)
         end
       end
 
@@ -6002,7 +6002,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.rol
-          expect(memory[(address + offset) & 0xff]).to eq(value)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -6026,7 +6026,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.rol
-          expect(memory[(address + offset) & 0xff]).to eq(value << 1 & 0xff)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value << 1 & 0xff)
         end
       end
     end
@@ -6042,12 +6042,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits right one position' do
         subject.ror
-        expect(memory[address]).to eq(value >> 1)
+        expect(memory.get_byte(address)).to eq(value >> 1)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -6070,7 +6070,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 7' do
           subject.ror
-          expect(memory[address]).to eq(value >> 1 | 0x80)
+          expect(memory.get_byte(address)).to eq(value >> 1 | 0x80)
         end
 
         it 'sets the sign flag' do
@@ -6084,7 +6084,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.ror
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -6114,13 +6114,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address + offset] = value
+        memory.set_byte(address + offset, value)
         subject.x = offset
       end
 
       it 'shifts all bits right one position' do
         subject.ror
-        expect(memory[address + offset]).to eq(value >> 1)
+        expect(memory.get_byte(address + offset)).to eq(value >> 1)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -6143,7 +6143,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 7' do
           subject.ror
-          expect(memory[address + offset]).to eq(value >> 1 | 0x80)
+          expect(memory.get_byte(address + offset)).to eq(value >> 1 | 0x80)
         end
 
         it 'sets the sign flag' do
@@ -6157,7 +6157,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.ror
-          expect(memory[address + offset]).to eq(value)
+          expect(memory.get_byte(address + offset)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -6255,12 +6255,12 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[address] = value
+        memory.set_byte(address, value)
       end
 
       it 'shifts all bits right one position' do
         subject.ror
-        expect(memory[address]).to eq(value >> 1)
+        expect(memory.get_byte(address)).to eq(value >> 1)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -6283,7 +6283,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 7' do
           subject.ror
-          expect(memory[address]).to eq(value >> 1 | 0x80)
+          expect(memory.get_byte(address)).to eq(value >> 1 | 0x80)
         end
 
         it 'sets the sign flag' do
@@ -6297,7 +6297,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.ror
-          expect(memory[address]).to eq(value)
+          expect(memory.get_byte(address)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -6327,13 +6327,13 @@ describe Vic20::Processor do
 
       before do
         subject.p = flags
-        memory[(address + offset) & 0xff] = value
+        memory.set_byte((address + offset) & 0xff, value)
         subject.x = offset
       end
 
       it 'shifts all bits right one position' do
         subject.ror
-        expect(memory[(address + offset) & 0xff]).to eq(value >> 1)
+        expect(memory.get_byte((address + offset) & 0xff)).to eq(value >> 1)
       end
 
       it 'shifts bit 0 into the carry flag' do
@@ -6356,7 +6356,7 @@ describe Vic20::Processor do
 
         it 'shifts the carry flag into bit 7' do
           subject.ror
-          expect(memory[(address + offset) & 0xff]).to eq(value >> 1 | 0x80)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value >> 1 | 0x80)
         end
 
         it 'sets the sign flag' do
@@ -6370,7 +6370,7 @@ describe Vic20::Processor do
 
         it 'has a value of zero' do
           subject.ror
-          expect(memory[(address + offset) & 0xff]).to eq(value)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value)
         end
 
         it 'clears the carry flag' do
@@ -6394,7 +6394,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.ror
-          expect(memory[(address + offset) & 0xff]).to eq(value >> 1)
+          expect(memory.get_byte((address + offset) & 0xff)).to eq(value >> 1)
         end
       end
     end
@@ -6407,8 +6407,8 @@ describe Vic20::Processor do
     let(:irq) { 0xdead }
 
     before do
-      memory[top - 1, 2] = [lsb(pc), msb(pc)]
-      memory[top - 2] = subject.p = p
+      memory.set_bytes(top - 1, 2, [lsb(pc), msb(pc)])
+      memory.set_byte(top - 2, subject.p = p)
       subject.pc = irq
       subject.s = (top - 3) & 0xff
     end
@@ -6440,7 +6440,7 @@ describe Vic20::Processor do
     before do
       subject.s = (top - 2) & 0xff
       subject.pc = 0xfd4d
-      memory[top - 1, 2] = [lsb(destination) - 1, msb(destination)]
+      memory.set_bytes(top - 1, 2, [lsb(destination) - 1, msb(destination)])
     end
 
     it 'transfers program control to address+1' do
@@ -6469,7 +6469,7 @@ describe Vic20::Processor do
         let(:address) { 0x1dd1 }
 
         before do
-          memory[address] = value
+          memory.set_byte(address, value)
         end
 
         it 'subtracts the value from the accumulator' do
@@ -6527,7 +6527,7 @@ describe Vic20::Processor do
         let(:offset) { 0xd5 }
 
         before do
-          memory[address + offset] = value
+          memory.set_byte(address + offset, value)
           subject.x = offset
         end
 
@@ -6586,7 +6586,7 @@ describe Vic20::Processor do
         let(:offset) { 0xd5 }
 
         before do
-          memory[address + offset] = value
+          memory.set_byte(address + offset, value)
           subject.y = offset
         end
 
@@ -6759,8 +6759,8 @@ describe Vic20::Processor do
         let(:offset) { 5 }
 
         before do
-          memory[indirect_address] = value
-          memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+          memory.set_byte(indirect_address, value)
+          memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
           subject.x = offset
         end
 
@@ -6829,8 +6829,8 @@ describe Vic20::Processor do
         let(:offset) { 5 }
 
         before do
-          memory[indirect_address + offset] = value
-          memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+          memory.set_byte(indirect_address + offset, value)
+          memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
           subject.y = offset
         end
 
@@ -6897,7 +6897,7 @@ describe Vic20::Processor do
         let(:address) { 0xd1 }
 
         before do
-          memory[address] = value
+          memory.set_byte(address, value)
         end
 
         it 'subtracts the value from the accumulator' do
@@ -6955,7 +6955,7 @@ describe Vic20::Processor do
         let(:offset) { 5 }
 
         before do
-          memory[(address + offset) & 0xff] = value
+          memory.set_byte((address + offset) & 0xff, value)
           subject.x = offset
         end
 
@@ -7139,12 +7139,12 @@ describe Vic20::Processor do
       let(:address) { 0x0281 }
 
       before do
-        memory[address] = 0xff
+        memory.set_byte(address, 0xff)
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[address]).to eq(value)
+        expect(memory.get_byte(address)).to eq(value)
       end
     end
 
@@ -7155,13 +7155,13 @@ describe Vic20::Processor do
       let(:address) { 0x0200 }
 
       before do
-        memory[address + offset] = 0xff
+        memory.set_byte(address + offset, 0xff)
         subject.x = offset
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[address + offset]).to eq(value)
+        expect(memory.get_byte(address + offset)).to eq(value)
       end
     end
 
@@ -7172,13 +7172,13 @@ describe Vic20::Processor do
       let(:address) { 0x0200 }
 
       before do
-        memory[address + offset] = 0xff
+        memory.set_byte(address + offset, 0xff)
         subject.y = offset
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[address + offset]).to eq(value)
+        expect(memory.get_byte(address + offset)).to eq(value)
       end
     end
 
@@ -7191,15 +7191,15 @@ describe Vic20::Processor do
       let(:value) { 0x55 }
 
       before do
-        memory[indirect_address] = 0xff
-        memory[(address + offset) & 0xff, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address, 0xff)
+        memory.set_bytes((address + offset) & 0xff, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.x = offset
         subject.a = value
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[indirect_address]).to eq(value)
+        expect(memory.get_byte(indirect_address)).to eq(value)
       end
 
       context 'when the offset exceed page bounds' do
@@ -7207,7 +7207,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.sta
-          expect(memory[indirect_address]).to eq(value)
+          expect(memory.get_byte(indirect_address)).to eq(value)
         end
       end
     end
@@ -7221,15 +7221,15 @@ describe Vic20::Processor do
       let(:value) { 0x55 }
 
       before do
-        memory[indirect_address + offset] = 0xff
-        memory[address, 2] = [lsb(indirect_address), msb(indirect_address)]
+        memory.set_byte(indirect_address + offset, 0xff)
+        memory.set_bytes(address, 2, [lsb(indirect_address), msb(indirect_address)])
         subject.y = offset
         subject.a = value
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[indirect_address + offset]).to eq(value)
+        expect(memory.get_byte(indirect_address + offset)).to eq(value)
       end
     end
 
@@ -7239,12 +7239,12 @@ describe Vic20::Processor do
       let(:offset) { 0xc1 }
 
       before do
-        memory[offset] = 0xff
+        memory.set_byte(offset, 0xff)
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[offset]).to eq(value)
+        expect(memory.get_byte(offset)).to eq(value)
       end
     end
 
@@ -7255,13 +7255,13 @@ describe Vic20::Processor do
       let(:offset) { 0x0f }
 
       before do
-        memory[offset] = 0xff
+        memory.set_byte(offset, 0xff)
         subject.x = offset
       end
 
       it 'stores the accumulator value at the correct address' do
         subject.sta
-        expect(memory[offset]).to eq(value)
+        expect(memory.get_byte(offset)).to eq(value)
       end
 
       context 'when the offset exceeds page bounds' do
@@ -7269,7 +7269,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.sta
-          expect(memory[offset - 1]).to eq(value)
+          expect(memory.get_byte(offset - 1)).to eq(value)
         end
       end
     end
@@ -7289,7 +7289,7 @@ describe Vic20::Processor do
 
       it 'stores the x-index register value at the correct address' do
         subject.stx
-        expect(memory[address]).to eq(value)
+        expect(memory.get_byte(address)).to eq(value)
       end
     end
 
@@ -7300,7 +7300,7 @@ describe Vic20::Processor do
 
       it 'stores the x-index register value at the correct address' do
         subject.stx
-        expect(memory[address]).to eq(value)
+        expect(memory.get_byte(address)).to eq(value)
       end
     end
 
@@ -7316,7 +7316,7 @@ describe Vic20::Processor do
 
       it 'stores the x-index register value at the correct address' do
         subject.stx
-        expect(memory[address + offset]).to eq(value)
+        expect(memory.get_byte(address + offset)).to eq(value)
       end
 
       context 'when the offset exceeds page bounds' do
@@ -7324,7 +7324,7 @@ describe Vic20::Processor do
 
         it 'wraps around' do
           subject.stx
-          expect(memory[address + offset - 0x100]).to eq(value)
+          expect(memory.get_byte(address + offset - 0x100)).to eq(value)
         end
       end
     end
@@ -7344,7 +7344,7 @@ describe Vic20::Processor do
 
       it 'stores the y-index register value at the correct address' do
         subject.sty
-        expect(memory[address]).to eq(value)
+        expect(memory.get_byte(address)).to eq(value)
       end
     end
 
@@ -7355,7 +7355,7 @@ describe Vic20::Processor do
 
       it 'stores the y-index register value at the correct address' do
         subject.sty
-        expect(memory[address]).to eq(value)
+        expect(memory.get_byte(address)).to eq(value)
       end
     end
 
@@ -7366,13 +7366,13 @@ describe Vic20::Processor do
       let(:offset) { 0x0f }
 
       before do
-        memory[offset] = 0xff
+        memory.set_byte(offset, 0xff)
         subject.x = offset
       end
 
       it 'stores the y-index register value at the correct address' do
         subject.sty
-        expect(memory[offset]).to eq(value)
+        expect(memory.get_byte(offset)).to eq(value)
       end
 
       context 'when the offset exceeds page bounds' do
@@ -7380,7 +7380,7 @@ describe Vic20::Processor do
 
         it 'is subject to wrap-around' do
           subject.sty
-          expect(memory[offset - 1]).to eq(value)
+          expect(memory.get_byte(offset - 1)).to eq(value)
         end
       end
     end

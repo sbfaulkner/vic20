@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Vic20::Memory do
-  let(:rom) { subject[address, size] }
+  let(:rom) { subject.get_bytes(address, size) }
 
   RSpec::Matchers.define_negated_matcher :be_present, :be_nil
 
@@ -72,19 +72,19 @@ describe Vic20::Memory do
 
       it 'fills the specified location with the array contents when passed an array' do
         subject.load(address, array)
-        expect(subject[address, 256]).to eq(array)
+        expect(subject.get_bytes(address, 256)).to eq(array)
       end
 
       it 'fills the specified location with the file contents when passed a file path' do
         allow(File).to receive(:read).with(path, mode: 'rb').and_return(array.pack('c*'))
         subject.load(address, path)
-        expect(subject[address, 256]).to eq(array)
+        expect(subject.get_bytes(address, 256)).to eq(array)
       end
     end
 
-    describe '#word_at' do
+    describe '#get_word' do
       it 'returns the Basic cold start address' do
-        expect(subject.word_at(0xC000)).to eq(0xE378)
+        expect(subject.get_word(0xC000)).to eq(0xE378)
       end
     end
   end

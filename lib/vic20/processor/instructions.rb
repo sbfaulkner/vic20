@@ -170,52 +170,52 @@ module Vic20
       def load_operand
         case @addressing_mode
         when :absolute
-          @memory[@operand]
+          @memory.get_byte(@operand)
         when :absolute_x
-          @memory[@operand + @x]
+          @memory.get_byte(@operand + @x)
         when :absolute_y
-          @memory[@operand + @y]
+          @memory.get_byte(@operand + @y)
         when :accumulator
           @a
         when :immediate
           @operand
         when :indirect
-          @memory.word_at(@operand)
+          @memory.get_word(@operand)
         when :indirect_x
-          @memory[@memory.word_at((@operand + @x) & 0xff)]
+          @memory.get_byte(@memory.get_word((@operand + @x) & 0xff))
         when :indirect_y
-          @memory[@memory.word_at(@operand) + @y]
+          @memory.get_byte(@memory.get_word(@operand) + @y)
         when :relative
           @operand > 0x7f ? @operand - 0x100 : @operand
         when :zero_page
-          @memory[@operand]
+          @memory.get_byte(@operand)
         when :zero_page_x
-          @memory[(@operand + @x) & 0xff]
+          @memory.get_byte((@operand + @x) & 0xff)
         when :zero_page_y
-          @memory[(@operand + @y) & 0xff]
+          @memory.get_byte((@operand + @y) & 0xff)
         end
       end
 
       def store_result(value)
         case @addressing_mode
         when :absolute
-          @memory[@operand] = value
+          @memory.set_byte(@operand, value)
         when :absolute_x
-          @memory[@operand + @x] = value
+          @memory.set_byte(@operand + @x, value)
         when :absolute_y
-          @memory[@operand + @y] = value
+          @memory.set_byte(@operand + @y, value)
         when :accumulator
           @a = value
         when :indirect_x
-          @memory[@memory.word_at((@operand + @x) & 0xff)] = value
+          @memory.set_byte(@memory.get_word((@operand + @x) & 0xff), value)
         when :indirect_y
-          @memory[@memory.word_at(@operand) + @y] = value
+          @memory.set_byte(@memory.get_word(@operand) + @y, value)
         when :zero_page
-          @memory[@operand] = value
+          @memory.set_byte(@operand, value)
         when :zero_page_x
-          @memory[(@operand + @x) & 0xff] = value
+          @memory.set_byte((@operand + @x) & 0xff, value)
         when :zero_page_y
-          @memory[(@operand + @y) & 0xff] = value
+          @memory.set_byte((@operand + @y) & 0xff, value)
         end
       end
 
@@ -308,7 +308,7 @@ module Vic20
         @p |= B_FLAG
         push @p | 0b00100000
         @p |= I_FLAG
-        @pc = @memory.word_at(IRQ_VECTOR)
+        @pc = @memory.get_word(IRQ_VECTOR)
       end
 
       def bvc
@@ -421,7 +421,7 @@ module Vic20
         when :absolute
           @operand
         when :indirect
-          @memory.word_at(@operand)
+          @memory.get_word(@operand)
         end
       end
 

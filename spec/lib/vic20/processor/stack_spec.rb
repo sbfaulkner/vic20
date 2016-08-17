@@ -10,7 +10,7 @@ describe Vic20::Processor do
     let(:byte) { 0xbf }
 
     before do
-      memory[0x100 + top] = byte
+      memory.set_byte(0x100 + top, byte)
       subject.s = top - 1
     end
 
@@ -40,8 +40,8 @@ describe Vic20::Processor do
     let(:word) { 0xbeef }
 
     before do
-      memory[0x100 + top] = word >> 8
-      memory[0x100 + top - 1] = word & 0xff
+      memory.set_byte(0x100 + top, word >> 8)
+      memory.set_byte(0x100 + top - 1, word & 0xff)
       subject.s = top - 2
     end
 
@@ -65,7 +65,7 @@ describe Vic20::Processor do
 
     it 'stores a byte at the offset of the current stack pointer' do
       subject.push byte
-      expect(memory[0x100 + top]).to eq(byte)
+      expect(memory.get_byte(0x100 + top)).to eq(byte)
     end
 
     it 'decrements the stack pointer' do
@@ -95,12 +95,12 @@ describe Vic20::Processor do
 
     it 'pushes the most-significant byte first' do
       subject.push_word word
-      expect(memory[0x100 + top]).to eq(word >> 8)
+      expect(memory.get_byte(0x100 + top)).to eq(word >> 8)
     end
 
     it 'pushes the least-significant byte second' do
       subject.push_word word
-      expect(memory[0x100 + top - 1]).to eq(word & 0xff)
+      expect(memory.get_byte(0x100 + top - 1)).to eq(word & 0xff)
     end
 
     it 'decrements the stack pointer' do

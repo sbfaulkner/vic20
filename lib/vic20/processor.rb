@@ -131,7 +131,7 @@ module Vic20
     end
 
     def fetch_byte
-      byte = @memory[@pc]
+      byte = @memory.get_byte(@pc)
       @pc += 1
       byte
     end
@@ -146,7 +146,7 @@ module Vic20
     end
 
     def fetch_word
-      word = @memory.word_at(@pc)
+      word = @memory.get_word(@pc)
       @pc += 2
       word
     end
@@ -156,7 +156,7 @@ module Vic20
     end
 
     def reset(address = nil)
-      @pc = address || @memory.word_at(RESET_VECTOR)
+      @pc = address || @memory.get_word(RESET_VECTOR)
     end
 
     def run

@@ -5,7 +5,7 @@ module Vic20
 
       def pop
         self.s = (s + 1) & 0xff
-        @memory[STACK_PAGE + s]
+        @memory.get_byte(STACK_PAGE + s)
       end
 
       def pop_word
@@ -13,7 +13,7 @@ module Vic20
       end
 
       def push(byte)
-        @memory[STACK_PAGE + s] = byte
+        @memory.set_byte(STACK_PAGE + s, byte)
         self.s = (s - 1) & 0xff
       end
 

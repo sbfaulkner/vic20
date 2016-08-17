@@ -2,8 +2,6 @@ module Vic20
   class Memory
     extend Forwardable
 
-    def_delegators :@array, :[], :[]=
-
     FIRMWARE_DIR = File.expand_path('../../firmware', __dir__)
 
     def self.find_firmware(name)
@@ -20,24 +18,40 @@ module Vic20
       contents ||= DEFAULT_FIRMWARE
       contents = { 0 => contents } if contents.is_a?(String)
 
-      @array = Array.new(64 * 1024) { |offset| offset >> 8 }
+      @bytes = Array.new(64 * 1024) { |offset| offset >> 8 }
 
       contents.each { |address, content| load(address, content) }
+    end
+
+    def get_byte(address)
+      @bytes[address]
+    end
+
+    def get_bytes(address, count)
+      @bytes[address, count]
+    end
+
+    def get_word(address)
+      get_byte(address) | get_byte(address + 1) << 8
+    end
+
+    def set_byte(address, byte)
+      @bytes[address] = byte
+    end
+
+    def set_bytes(address, count, bytes)
+      @bytes[address, count] = bytes
     end
 
     def load(address, content)
       case content
       when Array
-        self[address, content.size] = content
+        set_bytes(address, content.size, content)
       when String
         load(address, File.read(content, mode: 'rb').bytes)
       else
         raise ArgumentError, "Unsupported content type: #{content.class.name}"
       end
-    end
-
-    def word_at(address)
-      self[address] | self[address + 1] << 8
     end
   end
 end

@@ -86,7 +86,7 @@ describe Vic20::Processor do
 
     before do
       program.each do |a, _m, b|
-        memory[a, b.size] = b
+        memory.set_bytes(a, b.size, b)
       end
       subject.pc = 0x0600
     end
