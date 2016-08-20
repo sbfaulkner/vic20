@@ -5680,7 +5680,7 @@ describe Vic20::Processor do
 
     it 'sets the processor status to the value pulled off the stack' do
       subject.plp
-      expect(subject.p).to eq(value & ~Vic20::Processor::B_FLAG)
+      expect(subject.p).to eq(value & Vic20::Processor::B_MASK)
     end
 
     it 'discards the breakpoint flag when restoring the processor state' do
@@ -6419,7 +6419,7 @@ describe Vic20::Processor do
 
     it 'restores the processor status' do
       subject.rti
-      expect(subject.p).to eq(p & ~Vic20::Processor::B_FLAG)
+      expect(subject.p).to eq(p & Vic20::Processor::B_MASK)
     end
 
     it 'clears breakpoint flag' do
@@ -7073,7 +7073,7 @@ describe Vic20::Processor do
         let(:value) { 0x02 }
 
         before do
-          subject.p &= ~Vic20::Processor::C_FLAG # borrow
+          subject.p &= Vic20::Processor::C_MASK # borrow
         end
 
         # SED      ; Decimal mode (BCD subtraction: 32 - 2 - 1 = 29)

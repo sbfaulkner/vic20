@@ -43,6 +43,14 @@ module Vic20
     V_FLAG = 0b01000000 # Overflow
     N_FLAG = 0b10000000 # Sign
 
+    C_MASK = ~C_FLAG & 0xff
+    Z_MASK = ~Z_FLAG & 0xff
+    I_MASK = ~I_FLAG & 0xff
+    D_MASK = ~D_FLAG & 0xff
+    B_MASK = ~B_FLAG & 0xff
+    V_MASK = ~V_FLAG & 0xff
+    N_MASK = ~N_FLAG & 0xff
+
     attr_accessor :a, :x, :y, :s, :pc
     attr_reader :p
 
@@ -59,42 +67,34 @@ module Vic20
     end
 
     def affect_sign_flag(value)
-      assign_sign_flag(value & N_FLAG == N_FLAG)
+      @p = if value & N_FLAG == N_FLAG
+        @p | N_FLAG
+      else
+        @p & N_MASK
+      end
     end
 
     def affect_zero_flag(value)
-      assign_zero_flag(value.zero?)
+      @p = if value.zero?
+        @p | Z_FLAG
+      else
+        @p & Z_MASK
+      end
     end
 
     def assign_carry_flag(value)
-      if value
-        @p |= C_FLAG
+      @p = if value
+        @p | C_FLAG
       else
-        @p &= ~C_FLAG
+        @p & C_MASK
       end
     end
 
     def assign_overflow_flag(value)
-      if value
-        @p |= V_FLAG
+      @p = if value
+        @p | V_FLAG
       else
-        @p &= ~V_FLAG
-      end
-    end
-
-    def assign_sign_flag(value)
-      if value
-        @p |= N_FLAG
-      else
-        @p &= ~N_FLAG
-      end
-    end
-
-    def assign_zero_flag(value)
-      if value
-        @p |= Z_FLAG
-      else
-        @p &= ~Z_FLAG
+        @p & V_MASK
       end
     end
 

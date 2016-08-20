@@ -320,19 +320,19 @@ module Vic20
       end
 
       def clc
-        @p &= ~C_FLAG
+        @p &= C_MASK
       end
 
       def cld
-        @p &= ~D_FLAG
+        @p &= D_MASK
       end
 
       def cli
-        @p &= ~I_FLAG
+        @p &= I_MASK
       end
 
       def clv
-        @p &= ~V_FLAG
+        @p &= V_MASK
       end
 
       def cmp
@@ -490,7 +490,7 @@ module Vic20
       end
 
       def plp
-        @p = pop & ~B_FLAG
+        @p = pop & B_MASK
       end
 
       def rol
@@ -520,7 +520,7 @@ module Vic20
       end
 
       def rti
-        @p = pop & ~B_FLAG
+        @p = pop & B_MASK
         @pc = pop_word
       end
 
