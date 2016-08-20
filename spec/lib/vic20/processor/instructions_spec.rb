@@ -5,7 +5,7 @@ describe Vic20::Processor do
   let(:operand) { nil }
 
   # TODO: refactor signature out into tests that need it
-  let(:signature_address) { 0x0d4d }
+  let(:signature_address) { 0x1d4d }
   let(:signature) { ['A'.ord, '0'.ord, 0xc3, 0xc2, 0xcd] }
   let(:memory) { Vic20::Memory.new([]) }
 
@@ -93,7 +93,7 @@ describe Vic20::Processor do
       context 'with absolute,x addressing mode' do
         let(:addressing_mode) { :absolute_x }
         let(:operand) { address }
-        let(:address) { 0x333f }
+        let(:address) { 0x133f }
         let(:offset) { 0xf5 }
 
         before do
@@ -158,7 +158,7 @@ describe Vic20::Processor do
       context 'with absolute,y addressing mode' do
         let(:addressing_mode) { :absolute_y }
         let(:operand) { address }
-        let(:address) { 0x333f }
+        let(:address) { 0x133f }
         let(:offset) { 0xf5 }
 
         before do
@@ -347,7 +347,7 @@ describe Vic20::Processor do
       context 'with indirect,x addressing mode' do
         let(:addressing_mode) { :indirect_x }
         let(:operand) { address }
-        let(:indirect_address) { 0x333f }
+        let(:indirect_address) { 0x133f }
         let(:address) { 0x3f }
         let(:offset) { 5 }
 
@@ -423,7 +423,7 @@ describe Vic20::Processor do
       context 'with indirect,y addressing mode' do
         let(:addressing_mode) { :indirect_y }
         let(:operand) { address }
-        let(:indirect_address) { 0x333f }
+        let(:indirect_address) { 0x133f }
         let(:address) { 0x3f }
         let(:offset) { 5 }
 
@@ -1101,7 +1101,7 @@ describe Vic20::Processor do
     context 'with absolute addressing mode' do
       let(:addressing_mode) { :absolute }
       let(:operand) { address }
-      let(:address) { 0x3e44 }
+      let(:address) { 0x1e44 }
       let(:value) { 0b11101010 }
       let(:flags) { 0 }
 
@@ -1158,7 +1158,7 @@ describe Vic20::Processor do
     context 'with absolute,x addressing mode' do
       let(:addressing_mode) { :absolute_x }
       let(:operand) { address }
-      let(:address) { 0x3e44 }
+      let(:address) { 0x1e44 }
       let(:value) { 0b11101010 }
       let(:flags) { 0 }
       let(:offset) { 0xcc }
@@ -4470,7 +4470,7 @@ describe Vic20::Processor do
     context 'with absolute,y addressing mode' do
       let(:addressing_mode) { :absolute_y }
       let(:operand) { address }
-      let(:address) { 0x09a0 }
+      let(:address) { 0x19a0 }
       let(:offset) { 5 }
       let(:value) { 0xc5 }
 
