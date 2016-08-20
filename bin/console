@@ -10,10 +10,16 @@ require 'scanf'
 
 $options = {
   breakpoints: [],
+  expansion: 0,
 }
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
+
+  opts.on('-e', '--expansion size', 'add specified RAM') do |size|
+    raise ArgumenError, "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)" unless %w(0 3 8 11 16 19 24 27).include?(size)
+    $options[:expansion] = size.to_i
+  end
 
   opts.on('-r', '--reset address', 'override reset vector') do |address, *|
     $options[:reset] = address.to_i(16)
@@ -45,7 +51,7 @@ end
 
 Vic20::Processor.prepend Vic20::Processor::Breakpoints
 
-memory = Vic20::Memory.new(ARGV[0])
+memory = Vic20::Memory.new(ARGV[0], expansion: $options[:expansion])
 processor = Vic20::Processor.new(memory)
 
 processor.reset($options[:reset])

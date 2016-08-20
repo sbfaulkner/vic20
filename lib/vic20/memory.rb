@@ -14,13 +14,71 @@ module Vic20
       0xe000 => find_firmware('kernal'),      # E000-FFFF   57344-65535   8K KERNAL ROM
     }.freeze
 
-    def initialize(contents = nil)
+    def initialize(contents = nil, expansion: 0)
       contents ||= DEFAULT_FIRMWARE
       contents = { 0 => contents } if contents.is_a?(String)
 
-      @bytes = Array.new(64 * 1024) { |offset| offset >> 8 }
+      @bytes = Array.new(64 * 1024, 0)
 
-      contents.each { |address, content| load(address, content) }
+      contents.each do |address, content|
+        load(address, content)
+      end
+
+      @expansion = expansion
+
+      @pages = Array.new(256) do |page|
+        method case page
+        when 0x00..0x03 # 1K RAM - jump vectors, etc.
+          :set_ram
+        when 0x04..0x0F # 3K Expansion RAM
+          @expansion & 0x03 ? :set_ram : :set_rom
+        when 0x10..0x11
+          # 0.5K User Basic RAM - without 8K expansion
+          # 0.5K Screen RAM - with 8K expansion
+          @expansion < 8 ? :set_ram : :set_screen
+        when 0x12..0x1D
+          # 3K User Basic RAM - without 8K expansion
+          # start of User Basic RAM - with 8K expansion
+          :set_ram
+        when 0x1E..0x1F
+          # 0.5K Screen RAM - without 8K expansion
+          @expansion < 8 ? :set_screen : :set_ram
+        when 0x20..0x3F # 8K Expansion RAM
+          @expansion > 3 ? :set_ram : :set_rom
+        when 0x40..0x5F # 8K Expansion RAM
+          @expansion > 11 ? :set_ram : :set_rom
+        when 0x60..0x7F # 8K Expansion RAM
+          @expansion > 19 ? :set_ram : :set_rom
+        when 0x80..0x8F # 4K Character Generator ROM
+          # read-only
+          :set_rom
+        when 0x90..0x93 # 1K I/O block
+          # TODO: implement VIA and VIC I/O
+          :set_ram
+        when 0x94..0x95 # 0.5K Color RAM (w/ expansion)
+          # TODO: relocate to here when expansion in block 1
+          :set_ram
+        when 0x96..0x97 # 0.5K Color RAM (normal)
+          # TODO: relocate from here when expansion in block 1
+          :set_ram
+        when 0x98..0x9B # 1K I/O block 2
+          # TODO: I/O?
+          :set_ram
+        when 0x98..0x9B # 1K I/O block 2
+          # TODO: I/O?
+          :set_ram
+        when 0x9C..0x9F # 1K I/O block 3
+          # TODO: I/O?
+          :set_ram
+        when 0xA0..0xBF # 8K Expansion ROM
+          # TODO: cartridge support
+          :set_rom
+        when 0xC0..0xDF # 8K Basic ROM
+          :set_rom
+        when 0xE0..0xFF # 8K KERNAL ROM
+          :set_rom
+        end
+      end
     end
 
     def get_byte(address)
@@ -36,56 +94,7 @@ module Vic20
     end
 
     def set_byte(address, byte)
-      case address
-      when 0x0000..0x03FF # 1K RAM - jump vectors, etc.
-        @bytes[address] = byte
-      when 0x0400..0x0FFF # 3K Expansion RAM
-        # TODO: this is ROM if expansion not present
-        @bytes[address] = byte
-      when 0x1000..0x1DFF # 3.5K User Basic RAM
-        # TODO: relocated if 8K expansion present
-        @bytes[address] = byte
-      when 0x1E00..0x1FFF # 0.5K Screen RAM
-        # TODO: relocated if 8K expansion present
-        @bytes[address] = byte
-      when 0x2000..0x3FFF # 8K Expansion RAM
-        # TODO: this is ROM if expansion not present
-        # TODO: relocate other memory if present
-        @bytes[address] = byte
-      when 0x4000..0x5FFF # 8K Expansion RAM
-        # TODO: this is ROM if expansion not present
-        @bytes[address] = byte
-      when 0x6000..0x7FFF # 8K Expansion RAM
-        # TODO: this is ROM if expansion not present
-        @bytes[address] = byte
-      when 0x8000..0x8FFF # 4K Character Generator ROM
-        # read-only
-      when 0x9000..0x93FF # 1K I/O block
-        # TODO: implement VIA and VIC I/O
-        @bytes[address] = byte
-      when 0x9400..0x95FF # 0.5K Color RAM (w/ expansion)
-        # TODO: relocate to here when expansion in block 1
-        @bytes[address] = byte
-      when 0x9600..0x97FF # 0.5K Color RAM (normal)
-        # TODO: relocate from here when expansion in block 1
-        @bytes[address] = byte
-      when 0x9800..0x9BFF # 1K I/O block 2
-        # TODO: I/O?
-        @bytes[address] = byte
-      when 0x9800..0x9BFF # 1K I/O block 2
-        # TODO: I/O?
-        @bytes[address] = byte
-      when 0x9C00..0x9FFF # 1K I/O block 3
-        # TODO: I/O?
-        @bytes[address] = byte
-      when 0xA000..0xBFFF # 8K Expansion ROM
-        # TODO: cartridge support
-        # read-only
-      when 0xC000..0xDFFF # 8K Basic ROM
-        # read-only
-      when 0xE000..0xFFFF # 8K KERNAL ROM
-        # read-only
-      end
+      @pages[address >> 8].call(address, byte)
     end
 
     def set_bytes(address, count, bytes)
@@ -101,6 +110,20 @@ module Vic20
       else
         raise ArgumentError, "Unsupported content type: #{content.class.name}"
       end
+    end
+
+    private
+
+    def set_ram(address, byte)
+      @bytes[address] = byte
+    end
+
+    def set_rom(address, byte)
+      raise "attempt to write #{byte.to_s(16)} to ROM @ $#{address.to_s(16)}"
+    end
+
+    def set_screen(address, byte)
+      @bytes[address] = byte
     end
   end
 end
