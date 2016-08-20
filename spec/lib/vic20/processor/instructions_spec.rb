@@ -5693,7 +5693,7 @@ describe Vic20::Processor do
     context 'with absolute addressing mode' do
       let(:addressing_mode) { :absolute }
       let(:operand) { address }
-      let(:address) { 0x4eee }
+      let(:address) { 0x1bee }
       let(:value) { 0b11101010 }
       let(:flags) { 0 }
 
@@ -5759,7 +5759,7 @@ describe Vic20::Processor do
     context 'with absolute,x addressing mode' do
       let(:addressing_mode) { :absolute_x }
       let(:operand) { address }
-      let(:address) { 0x4eee }
+      let(:address) { 0x1bee }
       let(:value) { 0b11101010 }
       let(:flags) { 0 }
       let(:offset) { 0xcc }
@@ -6036,7 +6036,7 @@ describe Vic20::Processor do
     context 'with absolute addressing mode' do
       let(:addressing_mode) { :absolute }
       let(:operand) { address }
-      let(:address) { 0x5aaa }
+      let(:address) { 0x1aaa }
       let(:value) { 0b01010101 }
       let(:flags) { 0 }
 
@@ -6107,7 +6107,7 @@ describe Vic20::Processor do
     context 'with absolute,x addressing mode' do
       let(:addressing_mode) { :absolute_x }
       let(:operand) { address }
-      let(:address) { 0x5aaa }
+      let(:address) { 0x1aaa }
       let(:value) { 0b01010101 }
       let(:flags) { 0 }
       let(:offset) { 0xcc }

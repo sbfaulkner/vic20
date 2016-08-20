@@ -64,7 +64,7 @@ describe Vic20::Memory do
     end
 
     describe '#load' do
-      subject { described_class.new({}) }
+      subject { described_class.new([]) }
 
       let(:address) { 0x2000 }
       let(:array) { Array(0..255) }
