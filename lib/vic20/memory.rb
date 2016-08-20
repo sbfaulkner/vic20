@@ -57,10 +57,10 @@ module Vic20
           :set_ram
         when 0x94..0x95 # 0.5K Color RAM (w/ expansion)
           # TODO: relocate to here when expansion in block 1
-          :set_ram
+          @expansion > 3 ? :set_color : :set_ram
         when 0x96..0x97 # 0.5K Color RAM (normal)
           # TODO: relocate from here when expansion in block 1
-          :set_ram
+          @expansion > 3 ? :set_ram : :set_color
         when 0x98..0x9B # 1K I/O block 2
           # TODO: I/O?
           :set_ram
@@ -113,6 +113,10 @@ module Vic20
     end
 
     private
+
+    def set_color(address, byte)
+      @bytes[address] = byte
+    end
 
     def set_ram(address, byte)
       @bytes[address] = byte
