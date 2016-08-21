@@ -33,7 +33,7 @@ module Vic20
         when 0x00..0x03 # 1K RAM - jump vectors, etc.
           :set_ram
         when 0x04..0x0F # 3K Expansion RAM
-          @expansion & 0x03 ? :set_ram : :set_rom
+          (@expansion & 3 == 3) ? :set_ram : :set_rom
         when 0x10..0x11
           # 0.5K User Basic RAM - without 8K expansion
           # 0.5K Screen RAM - with 8K expansion
