@@ -125,7 +125,6 @@ module Vic20
     end
 
     def set_rom(address, byte)
-      raise "attempt to write #{byte.to_s(16)} to ROM @ $#{address.to_s(16)}"
     end
 
     def set_screen(address, byte)

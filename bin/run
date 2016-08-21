@@ -22,6 +22,10 @@ OptionParser.new do |opts|
     options[:profile] = profile
   end
 
+  opts.on('-P', '--protection', 'protect ROM from writes') do |protection|
+    options[:protection] = protection
+  end
+
   opts.on('-r', '--reset address', 'override reset vector') do |address, *|
     options[:reset] = address.to_i(16)
   end
@@ -45,6 +49,10 @@ end
 
 if options[:profile]
   Vic20::Processor.prepend Vic20::Processor::Profile
+end
+
+if options[:protection]
+  Vic20::Memory.prepend Vic20::Memory::Protection
 end
 
 if options[:screendump]
