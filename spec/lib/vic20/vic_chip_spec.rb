@@ -125,6 +125,25 @@ describe Vic20::VicChip do
     #  Emulation note: some programs check this byte and don't continue until it
     #  reaches a certain value. For this reason make sure that this location is
     #  counting up all the time.
+    describe 'CR4' do
+      let(:address) { 0x9004 }
+      let(:register) { 4 }
+      let(:default) { 0 }
+      let(:value) { 255 }
+
+      before do
+        memory.set_byte(address, default)
+      end
+
+      it 'returns the value from memory' do
+        expect(subject.cr[register]).to eq(default)
+      end
+
+      it 'sets the value to memory' do
+        subject.cr[register] = value
+        expect(memory.get_byte(address)).to eq(value)
+      end
+    end
 
     # CR5: $9005 - 36869. Usual value 240.
     # A dual function register.
@@ -144,13 +163,70 @@ describe Vic20::VicChip do
     # Character table - bit 3 is reset, thereby addressing 'block 4'.
     # -Address lines A12, A11 and A10 are all reset and the full address is
     # $8000 as A15 is set and A13 and A14 are reset for 'block 4'.
+    describe 'CR5' do
+      let(:address) { 0x9005 }
+      let(:register) { 5 }
+      let(:default) { 240 }
+      let(:value) { 15 }
+
+      before do
+        memory.set_byte(address, default)
+      end
+
+      it 'returns the value from memory' do
+        expect(subject.cr[register]).to eq(default)
+      end
+
+      it 'sets the value to memory' do
+        subject.cr[register] = value
+        expect(memory.get_byte(address)).to eq(value)
+      end
+    end
 
     # CR6: $9006 - 36870. Usual value 0.
     # This register is used in conjunction with the light pen and holds the
     # horizontal postion.
+    describe 'CR6' do
+      let(:address) { 0x9006 }
+      let(:register) { 6 }
+      let(:default) { 0 }
+      let(:value) { 0x7f }
+
+      before do
+        memory.set_byte(address, default)
+      end
+
+      it 'returns the value from memory' do
+        expect(subject.cr[register]).to eq(default)
+      end
+
+      it 'sets the value to memory' do
+        subject.cr[register] = value
+        expect(memory.get_byte(address)).to eq(value)
+      end
+    end
 
     # CR7: $9007 - 36871. Usual value 1.
     # The vertical position of the light pen.
+    describe 'CR7' do
+      let(:address) { 0x9007 }
+      let(:register) { 7 }
+      let(:default) { 0 }
+      let(:value) { 0x7f }
+
+      before do
+        memory.set_byte(address, default)
+      end
+
+      it 'returns the value from memory' do
+        expect(subject.cr[register]).to eq(default)
+      end
+
+      it 'sets the value to memory' do
+        subject.cr[register] = value
+        expect(memory.get_byte(address)).to eq(value)
+      end
+    end
 
     # CR8: $9008 - 36872. Usual value 255.
     # The counter for potentiometer 1.
@@ -292,6 +368,25 @@ describe Vic20::VicChip do
     # are set the volume control is fully on.
     # Bits 4-7 hold the users slection of the auxiliary colour which is only used
     # when multicolour is switched on (discussed later).
+    describe 'CRE' do
+      let(:address) { 0x900e }
+      let(:register) { 14 }
+      let(:default) { 0 }
+      let(:value) { 15 }
+
+      before do
+        memory.set_byte(address, default)
+      end
+
+      it 'returns the value from memory' do
+        expect(subject.cr[register]).to eq(default)
+      end
+
+      it 'sets the value to memory' do
+        subject.cr[register] = value
+        expect(memory.get_byte(address)).to eq(value)
+      end
+    end
 
     # CRF: $900F - 36879. Usual value 27.
     # This is the main colour selecting register of the VIC and has three distinct
