@@ -102,7 +102,7 @@ commands = Pry::CommandSet.new do
       address = args.first ? args.first.to_i(16) : processor.pc
 
       _pry_.pager.open do |output|
-        memory[address..-1].each_slice(16) do |slice|
+        memory.get_bytes(address, 64 * 1024 - address + 1).each_slice(16) do |slice|
           output.puts format_memory(address, slice)
           address += 16
         end
