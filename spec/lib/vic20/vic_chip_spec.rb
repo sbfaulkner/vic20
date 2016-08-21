@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Vic20::VicChip do
+fdescribe Vic20::VicChip do
   let(:memory) { Vic20::Memory.new([]) }
 
   subject { described_class.new(memory) }
@@ -19,11 +19,8 @@ describe Vic20::VicChip do
       let(:default) { 12 }
       let(:value) { 13 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -43,11 +40,8 @@ describe Vic20::VicChip do
       let(:default) { 38 }
       let(:value) { 37 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -71,11 +65,8 @@ describe Vic20::VicChip do
       let(:default) { 150 }
       let(:value) { 22 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -104,11 +95,8 @@ describe Vic20::VicChip do
       let(:default) { 174 }
       let(:value) { 151 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -131,11 +119,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 255 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -169,11 +154,8 @@ describe Vic20::VicChip do
       let(:default) { 240 }
       let(:value) { 15 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -192,11 +174,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 0x7f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -214,11 +193,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 0x7f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -236,11 +212,8 @@ describe Vic20::VicChip do
       let(:default) { 255 }
       let(:value) { 0x7f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -258,11 +231,8 @@ describe Vic20::VicChip do
       let(:default) { 255 }
       let(:value) { 0x7f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -281,11 +251,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 0x80 + 0x3f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -303,11 +270,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 0x80 + 0x3f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -325,11 +289,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 0x80 + 0x3f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -347,11 +308,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 0x80 + 0x3f }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -374,11 +332,8 @@ describe Vic20::VicChip do
       let(:default) { 0 }
       let(:value) { 15 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 
@@ -434,11 +389,8 @@ describe Vic20::VicChip do
       let(:default) { 27 }
       let(:value) { 97 }
 
-      before do
-        memory.set_byte(address, default)
-      end
-
       it 'returns the value from memory' do
+        memory.set_byte(address, default)
         expect(subject.cr[register]).to eq(default)
       end
 

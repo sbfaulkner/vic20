@@ -1,5 +1,7 @@
 module Vic20
   class VicChip
+    REGISTER_ADDRESS = 0x9000
+
     BLACK = 0
     WHITE = 1
     RED = 2
@@ -17,24 +19,8 @@ module Vic20
     LIGHT_BLUE = 14
     LIGHT_YELLOW = 15
 
-    class Registers
-      IO_BLOCK = 0x9000
-
-      def initialize(memory)
-        @memory = memory
-      end
-
-      def [](index)
-        @memory.get_byte(IO_BLOCK + index)
-      end
-
-      def []=(index, value)
-        @memory.set_byte(IO_BLOCK + index, value)
-      end
-    end
-
     def initialize(memory)
-      @cr = Registers.new(memory)
+      @cr = Vic20::Memory::Mapping.new(memory, REGISTER_ADDRESS)
     end
 
     attr_reader :cr
