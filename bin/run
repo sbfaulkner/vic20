@@ -13,17 +13,21 @@ options = {
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
-  opts.on('-p', '--profile', 'profile execution') do |profile|
-    options[:profile] = profile
-  end
-
   opts.on('-e', '--expansion size', 'add specified RAM') do |size|
     raise ArgumenError, "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)" unless %w(0 3 8 11 16 19 24 27).include?(size)
     options[:expansion] = size.to_i
   end
 
+  opts.on('-p', '--profile', 'profile execution') do |profile|
+    options[:profile] = profile
+  end
+
   opts.on('-r', '--reset address', 'override reset vector') do |address, *|
     options[:reset] = address.to_i(16)
+  end
+
+  opts.on('-s', '--screendump', 'dump screen memory') do |dump|
+    options[:screendump] = dump
   end
 
   opts.on('-v', '--verbose', 'turn on verbose mode') do |verbose|
@@ -41,6 +45,10 @@ end
 
 if options[:profile]
   Vic20::Processor.prepend Vic20::Processor::Profile
+end
+
+if options[:screendump]
+  Vic20::Memory.prepend Vic20::Memory::Screendump
 end
 
 memory = Vic20::Memory.new(ARGV[0], expansion: options[:expansion])

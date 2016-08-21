@@ -1,3 +1,5 @@
+require_relative 'memory/screendump'
+
 module Vic20
   class Memory
     extend Forwardable
