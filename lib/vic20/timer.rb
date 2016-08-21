@@ -18,7 +18,9 @@ module Vic20
       end
     end
 
-    def initialize
+    def initialize(memory)
+      @memory = memory
+
       @pa = Register.new
       @pb = Register.new
     end

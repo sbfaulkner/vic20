@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe Vic20::Timer do
-  # let(:memory) { Vic20::Memory.new([]) }
-  #
-  # subject { described_class.new(memory) }
+  let(:memory) { Vic20::Memory.new([]) }
+
+  subject { described_class.new(memory) }
 
   describe 'register select lines' do
     pending
