@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-fdescribe Vic20::VicChip do
+describe Vic20::VIC do
   let(:memory) { Vic20::Memory.new([]) }
 
   subject { described_class.new(memory) }
