@@ -1,3 +1,4 @@
+require_relative 'processor/breakpoints'
 require_relative 'processor/format'
 require_relative 'processor/halt'
 require_relative 'processor/instructions'

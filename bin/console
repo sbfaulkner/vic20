@@ -8,8 +8,7 @@ require 'pry'
 require 'optparse'
 require 'scanf'
 
-$options = {
-  breakpoints: [],
+options = {
   expansion: 0,
 }
 
@@ -18,32 +17,21 @@ OptionParser.new do |opts|
 
   opts.on('-e', '--expansion size', 'add specified RAM') do |size|
     raise ArgumenError, "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)" unless %w(0 3 8 11 16 19 24 27).include?(size)
-    $options[:expansion] = size.to_i
+    options[:expansion] = size.to_i
   end
 
   opts.on('-r', '--reset address', 'override reset vector') do |address, *|
-    $options[:reset] = address.to_i(16)
+    options[:reset] = address.to_i(16)
   end
 
   opts.on('-v', '--verbose', 'turn on verbose mode') do |v|
-    $options[:verbose] = v
+    options[:verbose] = v
   end
 end.parse!
 
-module Vic20
-  class Processor
-    module Breakpoints
-      def execute(address, instruction)
-        super
-        raise Trap, pc if $options[:breakpoints].include?(pc)
-      end
-    end
-  end
-end
-
 Vic20::Processor.prepend Vic20::Processor::Halt
 
-if $options[:verbose]
+if options[:verbose]
   Vic20::Processor.prepend Vic20::Processor::Trace
 else
   Vic20::Processor.prepend Vic20::Processor::Report
@@ -51,10 +39,10 @@ end
 
 Vic20::Processor.prepend Vic20::Processor::Breakpoints
 
-memory = Vic20::Memory.new(ARGV[0], expansion: $options[:expansion])
+memory = Vic20::Memory.new(ARGV[0], expansion: options[:expansion])
 processor = Vic20::Processor.new(memory)
 
-processor.reset($options[:reset])
+processor.reset(options[:reset])
 
 commands = Pry::CommandSet.new do
   import_from Pry::Commands, 'help'
@@ -64,9 +52,9 @@ commands = Pry::CommandSet.new do
     description 'Set breakpoint at specified address.'
 
     def process
-      $options[:breakpoints] << args.first.to_i(16) if args.first
+      processor.breakpoints << args.first.to_i(16) if args.first
 
-      $options[:breakpoints].each_with_index do |address, index|
+      processor.breakpoints.each_with_index do |address, index|
         output.puts "#{index + 1}: $#{address.to_s(16).rjust(4, '0')}"
       end
     end
