@@ -4,6 +4,8 @@ require 'vic20/processor'
 require 'vic20/via'
 require 'vic20/vic'
 
+require 'vic20/computer'
+
 module Vic20
   # Your code goes here...
 end

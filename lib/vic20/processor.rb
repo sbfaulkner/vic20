@@ -107,28 +107,8 @@ module Vic20
       format('A=%02X X=%02X Y=%02X P=%s S=%02X PC=%04X', @a, @x, @y, current_flags, @s, @pc)
     end
 
-    def each
-      return enum_for(:each) unless block_given?
-
-      loop do
-        yield @pc, fetch_instruction
-      end
-    end
-
     def execute(_address, instruction)
       instruction[:instruction_method].call
-    end
-
-    def fetch_instruction
-      @opcode = fetch_byte
-
-      instruction = @instructions[@opcode]
-
-      @addressing_mode = instruction[:addressing_mode]
-
-      @operand = fetch_operand
-
-      instruction
     end
 
     def fetch_byte
@@ -160,10 +140,20 @@ module Vic20
       @pc = address || @memory.get_word(RESET_VECTOR)
     end
 
-    def run
-      each do |address, instruction|
-        execute(address, instruction)
-      end
+    def tick
+      pc = @pc
+
+      @opcode = fetch_byte
+
+      instruction = @instructions[@opcode]
+
+      @addressing_mode = instruction[:addressing_mode]
+
+      @operand = fetch_operand
+
+      execute(pc, instruction)
+
+      instruction[:cycles]
     end
   end
 end

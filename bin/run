@@ -64,4 +64,9 @@ processor = Vic20::Processor.new(memory)
 
 processor.reset(options[:reset])
 
-processor.run
+loop do
+  processor.tick
+end
+
+# computer = Vic20::Computer.new
+# computer.show
