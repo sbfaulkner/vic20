@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-fdescribe Vic20::VIA do
+describe Vic20::VIA do
   let(:memory) { Vic20::Memory.new([]) }
   let(:address) { 0x9110 }
 
