@@ -23,7 +23,11 @@ describe Vic20::Memory do
     end
   end
 
-  context 'when initialized with default content' do
+  context '#load_firmware' do
+    before do
+      subject.load_firmware
+    end
+
     describe 'Character generator ROM' do
       let(:address) { 0x8000 }
       let(:size) { 4 * 1024 }
@@ -45,7 +49,7 @@ describe Vic20::Memory do
         expect(rom).to all(be_present)
       end
 
-      it 'is 4K' do
+      it 'is 8K' do
         expect(rom.size).to eq(size)
       end
     end
@@ -64,20 +68,20 @@ describe Vic20::Memory do
     end
 
     describe '#load' do
-      subject { described_class.new([]) }
+      subject { described_class.new }
 
       let(:address) { 0x2000 }
       let(:array) { Array(0..255) }
       let(:path) { '/path/to/firmware' }
 
       it 'fills the specified location with the array contents when passed an array' do
-        subject.load(address, array)
+        subject.load(array, at: address)
         expect(subject.get_bytes(address, 256)).to eq(array)
       end
 
       it 'fills the specified location with the file contents when passed a file path' do
         allow(File).to receive(:read).with(path, mode: 'rb').and_return(array.pack('c*'))
-        subject.load(address, path)
+        subject.load(path, at: address)
         expect(subject.get_bytes(address, 256)).to eq(array)
       end
     end

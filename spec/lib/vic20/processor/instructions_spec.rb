@@ -7,7 +7,7 @@ describe Vic20::Processor do
   # TODO: refactor signature out into tests that need it
   let(:signature_address) { 0x1d4d }
   let(:signature) { ['A'.ord, '0'.ord, 0xc3, 0xc2, 0xcd] }
-  let(:memory) { Vic20::Memory.new([]) }
+  let(:memory) { Vic20::Memory.new }
 
   subject { described_class.new(memory) }
 

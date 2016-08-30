@@ -18,15 +18,8 @@ module Vic20
       0xe000 => find_firmware('kernal'),      # E000-FFFF   57344-65535   8K KERNAL ROM
     }.freeze
 
-    def initialize(contents = nil, expansion: 0)
-      contents ||= DEFAULT_FIRMWARE
-      contents = { 0 => contents } if contents.is_a?(String)
-
+    def initialize(expansion: 0)
       @bytes = Array.new(64 * 1024, 0)
-
-      contents.each do |address, content|
-        load(address, content)
-      end
 
       @expansion = expansion
 
@@ -105,14 +98,20 @@ module Vic20
       @bytes[address, count] = bytes
     end
 
-    def load(address, content)
+    def load(content, at: 0)
       case content
       when Array
-        set_bytes(address, content.size, content)
+        set_bytes(at, content.size, content)
       when String
-        load(address, File.read(content, mode: 'rb').bytes)
+        load(File.read(content, mode: 'rb').bytes, at: at)
       else
         raise ArgumentError, "Unsupported content type: #{content.class.name}"
+      end
+    end
+
+    def load_firmware
+      DEFAULT_FIRMWARE.each do |address, content|
+        load(content, at: address)
       end
     end
 

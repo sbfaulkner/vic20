@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Vic20::VIA do
-  let(:memory) { Vic20::Memory.new([]) }
+  let(:memory) { Vic20::Memory.new }
   let(:address) { 0x9110 }
 
   subject { described_class.new(memory, address) }

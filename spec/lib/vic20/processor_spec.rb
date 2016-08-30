@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Vic20::Processor do
-  let(:memory) { Vic20::Memory.new([]) }
+  let(:memory) { Vic20::Memory.new }
 
   subject { described_class.new(memory) }
 
@@ -117,11 +117,12 @@ describe Vic20::Processor do
     end
 
     let(:firmware) { File.expand_path('../../../firmware/6502_functional_test.bin', __dir__) }
-    let(:memory) { Vic20::Memory.new(firmware) }
+    let(:memory) { Vic20::Memory.new(expansion: 11) }
 
     subject { FunctionalTestProcessor.new(memory) }
 
     before do
+      memory.load(firmware)
       subject.reset(0x0400)
     end
 

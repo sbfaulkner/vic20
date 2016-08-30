@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Vic20::Memory::Mapping do
-  let(:memory) { Vic20::Memory.new([]) }
+  let(:memory) { Vic20::Memory.new }
   let(:address) { 0x1000 }
   let(:register) { 7 }
   let(:value) { 13 }
