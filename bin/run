@@ -47,10 +47,6 @@ else
   Vic20::Processor.prepend Vic20::Processor::Report
 end
 
-if options[:profile]
-  Vic20::Processor.prepend Vic20::Processor::Profile
-end
-
 if options[:protection]
   Vic20::Memory.prepend Vic20::Memory::Protection
 end
@@ -71,8 +67,22 @@ processor = Vic20::Processor.new(memory)
 
 processor.reset(options[:reset])
 
-loop do
-  processor.tick
+run = -> () { loop { processor.tick } }
+
+if options[:profile]
+  require 'stackprof'
+
+  profile = StackProf.run(mode: :cpu, interval: 1000, raw: true) do
+    begin
+      run.call
+    rescue Vic20::Processor::Trap => e
+      STDERR.puts e.message
+    end
+  end
+
+  StackProf::Report.new(profile).print_text
+else
+  run.call
 end
 
 # computer = Vic20::Computer.new
