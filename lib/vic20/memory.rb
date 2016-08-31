@@ -1,6 +1,5 @@
 require_relative 'memory/mapping'
 require_relative 'memory/protection'
-require_relative 'memory/screendump'
 
 module Vic20
   class Memory

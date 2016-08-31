@@ -5,6 +5,7 @@ require 'vic20'
 
 require 'optparse'
 require 'scanf'
+require 'stackprof'
 
 options = {
   expansion: 0,
@@ -55,9 +56,14 @@ processor = Vic20::Processor.new(memory)
 
 processor.reset(options[:reset])
 
-loop do
-  processor.tick
+profile = StackProf.run(mode: :cpu, interval: 1000, raw: true) do
+  begin
+    loop do
+      processor.tick
+    end
+  rescue Vic20::Processor::Trap => e
+    STDERR.puts e.message
+  end
 end
 
-# computer = Vic20::Computer.new
-# computer.show
+StackProf::Report.new(profile).print_text
