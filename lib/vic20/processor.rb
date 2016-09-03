@@ -6,8 +6,11 @@ require_relative 'processor/report'
 require_relative 'processor/stack'
 require_relative 'processor/trace'
 
+require 'celluloid'
+
 module Vic20
   class Processor
+    include Celluloid
     include Stack
     include Instructions
     include Format

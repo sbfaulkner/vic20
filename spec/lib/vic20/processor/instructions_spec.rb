@@ -17,6 +17,10 @@ describe Vic20::Processor do
     subject.instance_variable_set :@operand, operand
   end
 
+  after do
+    subject.terminate
+  end
+
   describe '#adc' do
     context 'in binary mode' do
       let(:a) { 0x40 }

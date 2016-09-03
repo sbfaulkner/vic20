@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
+  spec.add_dependency 'celluloid', '~> 0.16'
   spec.add_dependency 'gosu', '~> 0.10'
   spec.add_dependency 'texplay', '0.4.4.pre'
   spec.add_dependency 'pry', '~> 0.10'
