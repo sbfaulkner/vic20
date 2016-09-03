@@ -1,7 +1,5 @@
 module Vic20
   class VIC
-    BASE_ADDRESS = 0x9000
-
     BLACK        = 0
     WHITE        = 1
     RED          = 2
@@ -19,8 +17,9 @@ module Vic20
     LIGHT_BLUE   = 14
     LIGHT_YELLOW = 15
 
-    def initialize(memory)
-      @cr = Vic20::Memory::Mapping.new(memory, BASE_ADDRESS)
+    def initialize(memory, expanded: false)
+      @cr = memory.map_io_block
+      @characters = memory.map_character_rom
     end
 
     attr_reader :cr

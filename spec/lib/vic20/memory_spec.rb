@@ -23,6 +23,35 @@ describe Vic20::Memory do
     end
   end
 
+  describe '#get_word' do
+    context 'with the default firmware loaded' do
+      before do
+        subject.load_firmware
+      end
+
+      it 'returns the Basic cold start address' do
+        expect(subject.get_word(0xC000)).to eq(0xE378)
+      end
+    end
+  end
+
+  describe '#load' do
+    let(:address) { 0x2000 }
+    let(:array) { Array(0..255) }
+    let(:path) { '/path/to/firmware' }
+
+    it 'fills the specified location with the array contents when passed an array' do
+      subject.load(array, at: address)
+      expect(subject.get_bytes(address, 256)).to eq(array)
+    end
+
+    it 'fills the specified location with the file contents when passed a file path' do
+      allow(File).to receive(:read).with(path, mode: 'rb').and_return(array.pack('c*'))
+      subject.load(path, at: address)
+      expect(subject.get_bytes(address, 256)).to eq(array)
+    end
+  end
+
   context '#load_firmware' do
     before do
       subject.load_firmware
@@ -66,29 +95,120 @@ describe Vic20::Memory do
         expect(rom.size).to eq(size)
       end
     end
+  end
 
-    describe '#load' do
-      subject { described_class.new }
+  describe '#map_character_rom' do
+    let(:mapping) { subject.map_character_rom }
 
-      let(:address) { 0x2000 }
-      let(:array) { Array(0..255) }
-      let(:path) { '/path/to/firmware' }
+    it 'maps to 0x8000' do
+      subject.set_bytes(0x8000, 1, 0xff)
+      expect(mapping[0]).to eq(0xff)
+    end
 
-      it 'fills the specified location with the array contents when passed an array' do
-        subject.load(array, at: address)
-        expect(subject.get_bytes(address, 256)).to eq(array)
-      end
+    context 'when selecting uppercase characters' do
+      let(:mapping) { subject.map_character_rom(Vic20::Memory::UPPERCASE_CHARACTERS) }
 
-      it 'fills the specified location with the file contents when passed a file path' do
-        allow(File).to receive(:read).with(path, mode: 'rb').and_return(array.pack('c*'))
-        subject.load(path, at: address)
-        expect(subject.get_bytes(address, 256)).to eq(array)
+      it 'maps to 0x8000' do
+        subject.set_bytes(0x8000, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
       end
     end
 
-    describe '#get_word' do
-      it 'returns the Basic cold start address' do
-        expect(subject.get_word(0xC000)).to eq(0xE378)
+    context 'when selecting reversed characters' do
+      let(:mapping) { subject.map_character_rom(Vic20::Memory::REVERSE_CHARACTERS) }
+
+      it 'maps to 0x8400' do
+        subject.set_bytes(0x8400, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+
+    context 'when selecting lowercase characters' do
+      let(:mapping) { subject.map_character_rom(Vic20::Memory::LOWERCASE_CHARACTERS) }
+
+      it 'maps to 0x8800' do
+        subject.set_bytes(0x8800, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+
+    context 'when selecting reversed, lowercase characters' do
+      let(:mapping) do
+        subject.map_character_rom(Vic20::Memory::REVERSE_CHARACTERS | Vic20::Memory::LOWERCASE_CHARACTERS)
+      end
+
+      it 'maps to 0x8C00' do
+        subject.set_bytes(0x8C00, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+  end
+
+  describe '#map_colour_memory' do
+    let(:mapping) { subject.map_colour_memory }
+
+    context 'when unexpanded' do
+      it 'maps to 0x9600' do
+        subject.set_bytes(0x9600, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+
+    context 'when expanded' do
+      subject { described_class.new(expansion: 8) }
+
+      it 'maps to 0x9400' do
+        subject.set_bytes(0x9400, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+  end
+
+  describe '#map_io_block' do
+    let(:mapping) { subject.map_io_block }
+
+    it 'maps to 0x9000' do
+      subject.set_bytes(0x9000, 1, [0xff])
+      expect(mapping[0]).to eq(0xff)
+    end
+  end
+
+  describe '#map_program_memory' do
+    let(:mapping) { subject.map_program_memory }
+
+    context 'when unexpanded' do
+      it 'maps to 0x1000' do
+        subject.set_bytes(0x1000, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+
+    context 'when expanded' do
+      subject { described_class.new(expansion: 8) }
+
+      it 'maps to 0x1200' do
+        subject.set_bytes(0x1200, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+  end
+
+  describe '#map_screen_memory' do
+    let(:mapping) { subject.map_screen_memory }
+
+    context 'when unexpanded' do
+      it 'maps to 0x1E00' do
+        subject.set_bytes(0x1E00, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
+      end
+    end
+
+    context 'when expanded' do
+      subject { described_class.new(expansion: 8) }
+
+      it 'maps to 0x1000' do
+        subject.set_bytes(0x1000, 1, 0xff)
+        expect(mapping[0]).to eq(0xff)
       end
     end
   end
