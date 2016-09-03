@@ -139,6 +139,12 @@ module Vic20
       @pc = address || @memory.get_word(RESET_VECTOR)
     end
 
+    def run
+      loop do
+        tick
+      end
+    end
+
     def tick
       pc = @pc
 

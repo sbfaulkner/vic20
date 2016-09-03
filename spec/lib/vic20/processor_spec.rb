@@ -84,6 +84,12 @@ describe Vic20::Processor do
       ]
     end
 
+    class Runner < Vic20::Processor
+      prepend Vic20::Processor::Halt
+    end
+
+    subject { Runner.new(memory) }
+
     before do
       program.each do |a, b|
         memory.set_bytes(a, b.size, b)
@@ -91,13 +97,19 @@ describe Vic20::Processor do
       subject.pc = 0x0600
     end
 
-    describe '#tick' do
-      class Runner < Vic20::Processor
-        prepend Vic20::Processor::Halt
+    describe '#run' do
+      it 'advances the program counter' do
+        expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$0612/)
+        expect(subject.pc).to eq(0x0612)
       end
 
-      subject { Runner.new(memory) }
+      it 'runs the program' do
+        expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$0612/)
+        expect(subject.x).to eq 5
+      end
+    end
 
+    describe '#tick' do
       it 'advances the program counter' do
         21.times { subject.tick }
         expect(subject.pc).to eq(0x0612)
@@ -127,7 +139,7 @@ describe Vic20::Processor do
     end
 
     it 'runs the test successfully' do
-      expect { loop { subject.tick } }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$3399/)
+      expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$3399/)
     end
   end
 end

@@ -112,9 +112,7 @@ commands = Pry::CommandSet.new do
     description 'Run program from current program counter.'
 
     def process
-      loop do
-        processor.tick
-      end
+      processor.run
     end
   end
 
