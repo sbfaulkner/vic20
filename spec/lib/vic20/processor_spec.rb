@@ -99,12 +99,12 @@ describe Vic20::Processor do
 
     describe '#run' do
       it 'advances the program counter' do
-        expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$0612/)
+        subject.run
         expect(subject.pc).to eq(0x0612)
       end
 
       it 'runs the program' do
-        expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$0612/)
+        subject.run
         expect(subject.x).to eq 5
       end
     end
@@ -139,7 +139,7 @@ describe Vic20::Processor do
     end
 
     it 'runs the test successfully' do
-      expect { subject.run }.to raise_exception(Vic20::Processor::Trap, /Execution halted @ \$3399/)
+      expect(subject.run).to eq(0x3399)
     end
   end
 end

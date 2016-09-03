@@ -143,6 +143,8 @@ module Vic20
       loop do
         tick
       end
+    rescue Vic20::Processor::Trap => e
+      return @pc
     end
 
     def tick
