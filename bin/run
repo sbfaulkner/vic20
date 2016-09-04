@@ -43,21 +43,7 @@ if options[:protection]
   Vic20::Memory.prepend Vic20::Memory::Protection
 end
 
-memory = Vic20::Memory.new(expansion: options[:expansion])
+options[:firmware] = ARGV[0] if ARGV[0]
 
-if ARGV[0]
-  memory.load(ARGV[0])
-else
-  memory.load_firmware
-end
-
-processor = Vic20::Processor.new(memory)
-
-processor.reset(options[:reset])
-
-loop do
-  processor.tick
-end
-
-# computer = Vic20::Computer.new
-# computer.show
+computer = Vic20::Computer.new(options)
+computer.run
