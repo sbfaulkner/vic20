@@ -38,6 +38,8 @@ module Vic20
       @expansion = expansion
 
       @pages = build_pages
+
+      yield self if block_given?
     end
 
     def get_byte(address)

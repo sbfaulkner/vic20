@@ -23,6 +23,17 @@ describe Vic20::Memory do
     end
   end
 
+  describe '#new with a block' do
+    it 'yields the correct class' do
+      expect { |b| described_class.new(&b) }.to yield_with_args(described_class)
+    end
+
+    it 'returns the same object that was yielded' do
+      object = described_class.new { |m| m.set_bytes(0xC000, 1, [0xff]) }
+      expect(object.get_byte(0xC000)).to eq(0xff)
+    end
+  end
+
   describe '#get_word' do
     context 'with the default firmware loaded' do
       before do
