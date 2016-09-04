@@ -1,4 +1,5 @@
 require_relative 'memory/mapping'
+require_relative 'memory/memory_mapped_array'
 require_relative 'memory/protection'
 
 module Vic20
@@ -33,7 +34,7 @@ module Vic20
     }.freeze
 
     def initialize(expansion: 0)
-      @bytes = Array.new(64 * 1024, 0)
+      @bytes = MemoryMappedArray.new(64 * 1024)
 
       @expansion = expansion
 

@@ -112,7 +112,7 @@ describe Vic20::Memory do
     let(:mapping) { subject.map_character_rom }
 
     it 'maps to 0x8000' do
-      subject.set_bytes(0x8000, 1, 0xff)
+      subject.set_bytes(0x8000, 1, [0xff])
       expect(mapping[0]).to eq(0xff)
     end
 
@@ -120,7 +120,7 @@ describe Vic20::Memory do
       let(:mapping) { subject.map_character_rom(Vic20::Memory::UPPERCASE_CHARACTERS) }
 
       it 'maps to 0x8000' do
-        subject.set_bytes(0x8000, 1, 0xff)
+        subject.set_bytes(0x8000, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -129,7 +129,7 @@ describe Vic20::Memory do
       let(:mapping) { subject.map_character_rom(Vic20::Memory::REVERSE_CHARACTERS) }
 
       it 'maps to 0x8400' do
-        subject.set_bytes(0x8400, 1, 0xff)
+        subject.set_bytes(0x8400, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -138,7 +138,7 @@ describe Vic20::Memory do
       let(:mapping) { subject.map_character_rom(Vic20::Memory::LOWERCASE_CHARACTERS) }
 
       it 'maps to 0x8800' do
-        subject.set_bytes(0x8800, 1, 0xff)
+        subject.set_bytes(0x8800, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -149,7 +149,7 @@ describe Vic20::Memory do
       end
 
       it 'maps to 0x8C00' do
-        subject.set_bytes(0x8C00, 1, 0xff)
+        subject.set_bytes(0x8C00, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -160,7 +160,7 @@ describe Vic20::Memory do
 
     context 'when unexpanded' do
       it 'maps to 0x9600' do
-        subject.set_bytes(0x9600, 1, 0xff)
+        subject.set_bytes(0x9600, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -169,7 +169,7 @@ describe Vic20::Memory do
       subject { described_class.new(expansion: 8) }
 
       it 'maps to 0x9400' do
-        subject.set_bytes(0x9400, 1, 0xff)
+        subject.set_bytes(0x9400, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -189,7 +189,7 @@ describe Vic20::Memory do
 
     context 'when unexpanded' do
       it 'maps to 0x1000' do
-        subject.set_bytes(0x1000, 1, 0xff)
+        subject.set_bytes(0x1000, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -198,7 +198,7 @@ describe Vic20::Memory do
       subject { described_class.new(expansion: 8) }
 
       it 'maps to 0x1200' do
-        subject.set_bytes(0x1200, 1, 0xff)
+        subject.set_bytes(0x1200, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -209,7 +209,7 @@ describe Vic20::Memory do
 
     context 'when unexpanded' do
       it 'maps to 0x1E00' do
-        subject.set_bytes(0x1E00, 1, 0xff)
+        subject.set_bytes(0x1E00, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end
@@ -218,7 +218,7 @@ describe Vic20::Memory do
       subject { described_class.new(expansion: 8) }
 
       it 'maps to 0x1000' do
-        subject.set_bytes(0x1000, 1, 0xff)
+        subject.set_bytes(0x1000, 1, [0xff])
         expect(mapping[0]).to eq(0xff)
       end
     end

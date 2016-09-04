@@ -7,11 +7,12 @@ A VIC-20 emulator built in ruby.
 This is very much a work in progress.
 
 1. <del>Implementing the 6502 instruction set.</del>
-2. Refactoring to eliminate duplicate load and store operations, and clean up reading of operands.
+2. <del>Refactoring to eliminate duplicate load and store operations, and clean up reading of operands.</del>
 3. Consider switching to array indexing of flag bits.
-4. Reference instance variables directly instead of using accessors (performance).
+4. <del>Reference instance variables directly instead of using accessors (performance).</del>
 5. DRY up SBC implementation since it's just ADC with ones-complement of (2nd) operand.
 6. specs for ADC and SBC not complete/correct for carry & overflow.
+7. MemoryMappedArray implementation does not check bounds - SEGV may result if abused.
 
 ## Installation
 
