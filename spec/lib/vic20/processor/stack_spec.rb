@@ -5,10 +5,6 @@ describe Vic20::Processor do
 
   subject { described_class.new(memory) }
 
-  after do
-    subject.terminate
-  end
-
   describe '#pop' do
     let(:top)  { 0xff }
     let(:byte) { 0xbf }

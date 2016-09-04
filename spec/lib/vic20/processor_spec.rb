@@ -5,10 +5,6 @@ describe Vic20::Processor do
 
   subject { described_class.new(memory) }
 
-  after do
-    subject.terminate
-  end
-
   describe 'registers' do
     it 'has an 8-bit accumulator' do
       expect(subject.a).to be_a(Integer)
