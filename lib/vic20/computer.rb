@@ -6,16 +6,6 @@ module Vic20
     DISPLAY_WIDTH = 720
     DISPLAY_HEIGHT = 525
 
-    # CHARS = 22
-    # LINES = 23
-    #
-    # PIXELS = 8
-    # PIXEL_WIDTH = 4
-    # PIXEL_HEIGHT = 3
-
-    # SCREEN_WIDTH = CHARS * PIXELS
-    # SCREEN_HEIGHT = LINES * PIXELS
-
     def initialize(options)
       super DISPLAY_WIDTH, DISPLAY_HEIGHT
 
@@ -42,13 +32,20 @@ module Vic20
     end
 
     def run
-      @processor.run
-      # show
+      pid = fork do
+        @processor.run
+      end
+
+      show
+
+      Process.kill('HUP', pid)
+      Process.wait
+      STDERR.puts "COMPUTER exiting"
     end
 
     def update
       # STDERR.puts Time.now.to_f.to_s
-      @vic.generate_frame
+      @vic.paint_frame(@screen)
     end
 
     private

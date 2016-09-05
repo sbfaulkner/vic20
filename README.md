@@ -13,6 +13,10 @@ This is very much a work in progress.
 5. DRY up SBC implementation since it's just ADC with ones-complement of (2nd) operand.
 6. specs for ADC and SBC not complete/correct for carry & overflow.
 7. MemoryMappedArray implementation does not check bounds - SEGV may result if abused.
+8. proper signal handling for subprocesses? eg. HUP just kills it currently
+9. frame-based rendering
+10. replace frame-based rendering with scan line or cycle based rendering
+11. possibly remove map_xxxx methods from Memory? (originally created to provide VIC with easy addressing)
 
 ## Installation
 
