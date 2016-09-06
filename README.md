@@ -20,6 +20,12 @@ This is very much a work in progress.
 12. instead of extracting bits from registers in VIC, use memory setters to update instance variables?
 13. test multi-colour mode
 14. refactor common code in hi resolution and multi-colour modes
+15. support for double character size?
+16. sound support
+17. paddles, light pen, etc.
+18. joystick
+19. keyboard
+20. cursor
 
 ## Installation
 
