@@ -142,6 +142,7 @@ module Vic20
     def run
       loop do
         tick
+        Thread.pass
       end
     rescue Vic20::Processor::Trap => e
       return @pc

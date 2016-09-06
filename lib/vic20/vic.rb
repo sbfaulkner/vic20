@@ -33,37 +33,85 @@ module Vic20
 
     attr_reader :cr
 
-
-    PIXELS = 8
-    PIXEL_WIDTH = 4
-    PIXEL_HEIGHT = 3
+    PIXEL_WIDTH = 3
+    PIXEL_HEIGHT = 2
+    CHARACTER_WIDTH = 8 * PIXEL_WIDTH
+    CHARACTER_HEIGHT = 8 * PIXEL_HEIGHT
 
     # SCREEN_WIDTH = CHARS * PIXELS
     # SCREEN_HEIGHT = LINES * PIXELS
 
-    # TODO: what about the colour information?
     def paint_frame(screen)
       trace_registers('paint_frame')
 
-      screen_address = screen_location
+      foreground_value = reverse_mode? ? 0 : 1
+
+      background_rgb = COLOURS[background_colour][:rgb]
+      border_rgb = COLOURS[border_colour][:rgb]
+      auxiliary_rgb = COLOURS[auxiliary_colour][:rgb]
+
+      screen_base    = screen_location
       character_base = character_location
+      colour_base    = colour_location
+
+      screen.fill 0, 0, color: border_rgb
+
+      offset = 0
+
+      x_origin = screen_origin_x * 4 * PIXEL_WIDTH
+      y_origin = screen_origin_y * 2 * PIXEL_HEIGHT
 
       rows.times do |row|
-        y_base = row * PIXELS
+        y_base = y_origin + row * CHARACTER_HEIGHT
 
         columns.times do |column|
-          character_address = character_base + @memory.get_byte(screen_address) * PIXELS
-          x_base = column * PIXELS
+          character_address = character_base + (@memory.get_byte(screen_base + offset) << 3)
 
-          # TODO: double-height characters?
-          PIXELS.times do |y|
-            pixels = @memory.get_byte(character_address + y)
-            PIXELS.times do |x|
-              screen.pixel x_base + x, y_base + y, color: pixels[7 - x] == 1 ? :white : :black
+          character_colour = @memory.get_byte(colour_base + offset)
+          character_rgb = COLOURS[character_colour & 0x07][:rgb]
+
+          x_base = x_origin + column * CHARACTER_WIDTH
+
+          if character_colour[3] == 0
+            # hi resolution mode
+            8.times do |y|
+              character_matrix = @memory.get_byte(character_address + y)
+              y1 = y_base + y * PIXEL_HEIGHT
+
+              0.step(7, 1) do |x|
+                x1 = x_base + x * PIXEL_WIDTH
+
+                rgb = character_matrix[7 - x] == foreground_value ? character_rgb : background_rgb
+
+                screen.rect x1, y1, x1 + PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb
+              end
+            end
+          else
+            # multicolour mode
+            8.times do |y|
+              character_matrix = @memory.get_byte(character_address + y)
+              y1 = y_base + y * PIXEL_HEIGHT
+
+              0.step(7, 2) do |x|
+                x1 = x_base + x * PIXEL_WIDTH
+
+                rgb = case character_matrix >> 6 - x & 0x03
+                when 0x00
+                  background_rgb
+                when 0x01
+                  border_rgb
+                when 0x10
+                  character_rgb
+                when 0x11
+                  auxiliary_rgb
+                end
+
+                screen.rect x1, y1, x1 + 2 * PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb
+              end
             end
           end
 
-          screen_address += 1
+          offset += 1
         end
       end
     end
@@ -303,14 +351,14 @@ module Vic20
 
     # 900F XXXXYZZZ
     # X: screen colour
-    def screen_colour
+    def background_colour
       @cr[0xf] >> 4
     end
 
     # 900F XXXXYZZZ
     # Y: reverse mode
     def reverse_mode?
-      @cr[0xf][3] == 1
+      @cr[0xf][3] == 0
     end
 
     # 900F XXXXYZZZ
@@ -345,7 +393,7 @@ module Vic20
       STDERR.puts "\tnoise_frequency => #{noise_frequency.round(1)} Hz"
       STDERR.puts "\tauxiliary_colour => #{COLOURS[auxiliary_colour][:name]}"
       STDERR.puts "\tvolume => #{volume.inspect}"
-      STDERR.puts "\tscreen_colour => #{COLOURS[screen_colour][:name]}"
+      STDERR.puts "\tbackground_colour => #{COLOURS[background_colour][:name]}"
       STDERR.puts "\treverse_mode? => #{reverse_mode?.inspect}"
       STDERR.puts "\tborder_colour => #{COLOURS[border_colour][:name]}"
     end
