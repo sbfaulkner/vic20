@@ -1,13 +1,16 @@
 #!/usr/bin/env ruby
 
+require 'bundler/setup'
 require 'benchmark'
 
 ITERATIONS = 1_000_000
 
-ARRAY = Array.new(64) { |i| i >> 8 }
-HASH = Hash[Array.new(64) { |i| [i, i >> 8] }]
+SIZE = 64 * 1024
+
+ARRAY = Array.new(SIZE) { |i| i >> 8 }
+HASH = Hash[Array.new(SIZE) { |i| [i, i >> 8] }]
 
 Benchmark.bm(7) do |x|
-  x.report('array:') { ITERATIONS.times { |i| ARRAY[i % (64 * 1024)] } }
-  x.report('hash:')  { ITERATIONS.times { |i| HASH[i % (64 * 1024)] } }
+  x.report('array:') { ITERATIONS.times { |i| ARRAY[i % SIZE] } }
+  x.report('hash:')  { ITERATIONS.times { |i| HASH[i % SIZE] } }
 end

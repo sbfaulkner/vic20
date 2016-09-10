@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'bundler/setup'
 require 'benchmark'
 
 ITERATIONS = 1_000_000
