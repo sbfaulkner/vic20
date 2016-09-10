@@ -63,6 +63,38 @@ describe Vic20::Memory do
     end
   end
 
+  describe '#load_cartridge' do
+    let(:image) { Array.new(image_size, 0xcc) }
+    let(:path) { '/path/to/cartridge' }
+
+    before do
+      image[0] = 0x00
+      image[1] = 0x60
+      image[image_size - 2] = 0xef
+      image[image_size - 1] = 0xbe
+
+      allow(File).to receive(:read).with(path, mode: 'rb').and_return(image.pack('c*'))
+    end
+
+    context 'given an 8K image' do
+      let(:image_size) { 8 * 1024 }
+
+      it 'loads the cartridge at $A000' do
+        subject.load_cartridge(path)
+        expect(subject.get_word(0xa000 + 8 * 1024 - 2)).to eq(0xbeef)
+      end
+    end
+
+    context 'given an image with a leading address' do
+      let(:image_size) { 8 * 1024 + 2 }
+
+      it 'loads the cartridge at the specified address' do
+        subject.load_cartridge(path)
+        expect(subject.get_word(0x6000 + 8 * 1024 - 2)).to eq(0xbeef)
+      end
+    end
+  end
+
   context '#load_firmware' do
     before do
       subject.load_firmware

@@ -58,6 +58,8 @@ module Vic20
         else
           memory.load_firmware
         end
+
+        memory.load_cartridge(options[:cartridge]) if options[:cartridge]
       end
     end
   end

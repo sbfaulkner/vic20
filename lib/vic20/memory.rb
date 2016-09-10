@@ -74,6 +74,17 @@ module Vic20
       end
     end
 
+    def load_cartridge(path)
+      content = File.read(path, mode: 'rb').bytes
+
+      if content.size % 1024 == 2
+        address = content.shift + content.shift << 8
+        load(content, at: address)
+      else
+        load(content, at: 0xa000)
+      end
+    end
+
     def load_firmware
       DEFAULT_FIRMWARE.each do |address, content|
         load(content, at: address)
