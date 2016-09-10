@@ -33,11 +33,14 @@ module Vic20
       private :munmap
 
       def initialize(size)
-        @bytes = mmap(nil, size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANON, -1, 0)
+        @size  = size
+        @bytes = mmap(nil, @size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANON, -1, 0)
       end
 
       def [](index, length = nil)
+        raise IndexError, "index #{index} outside of array bounds" if index >= @size
         if length
+          raise IndexError, "index #{index} and length #{length} exceeds array bounds" if index + length - 1 >= @size
           @bytes.get_array_of_uchar(index, length)
         else
           @bytes.get_uchar(index)
@@ -45,7 +48,12 @@ module Vic20
       end
 
       def []=(index, length, value = nil)
+        raise IndexError, "index #{index} outside of array bounds" if index >= @size
         if value
+          array = Array.try_convert(value)
+          raise TypeError, 'assigned value is not an array' unless array
+          raise ArgumentError, "array length #{array.size} incorrect" if array.size != length
+          raise IndexError, "index #{index} and length #{length} exceeds array bounds" if index + length - 1 >= @size
           @bytes.put_array_of_uchar(index, value)
         else
           @bytes.put_uchar(index, length)
