@@ -12,11 +12,11 @@ end
 
 def use_temp(i)
   ii = i
-  i += 1
+  i += 1 # rubocop:disable Lint/UselessAssignment
   ii
 end
 
 Benchmark.bm(7) do |x|
-  x.report('tap:') { ITERATIONS.times { |i| use_tap(i) } }
+  x.report('tap:')  { ITERATIONS.times { |i| use_tap(i) } }
   x.report('temp:') { ITERATIONS.times { |i| use_temp(i) } }
 end

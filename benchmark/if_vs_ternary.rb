@@ -5,7 +5,7 @@ require 'benchmark'
 ITERATIONS = 1_000_000
 
 def useif(i)
-  if i.even?
+  if i.even? # rubocop:disable Style/ConditionalAssignment
     @p = i / 2
   else
     @p = i * 2
@@ -25,7 +25,7 @@ def userternary(i)
 end
 
 Benchmark.bm(9) do |x|
-  x.report('if:') { ITERATIONS.times { |i| useif(i) } }
-  x.report('ifret:') { ITERATIONS.times { |i| useifret(i) } }
+  x.report('if:')      { ITERATIONS.times { |i| useif(i) } }
+  x.report('ifret:')   { ITERATIONS.times { |i| useifret(i) } }
   x.report('ternary:') { ITERATIONS.times { |i| userternary(i) } }
 end

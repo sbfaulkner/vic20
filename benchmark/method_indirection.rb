@@ -17,7 +17,7 @@ def indirect2
 end
 
 Benchmark.bm(11) do |x|
-  x.report('direct:') { ITERATIONS.times { |i| direct } }
-  x.report('indirect:') { ITERATIONS.times { |i| indirect } }
-  x.report('indirect2:') { ITERATIONS.times { |i| indirect2 } }
+  x.report('direct:')    { ITERATIONS.times { direct } }
+  x.report('indirect:')  { ITERATIONS.times { indirect } }
+  x.report('indirect2:') { ITERATIONS.times { indirect2 } }
 end

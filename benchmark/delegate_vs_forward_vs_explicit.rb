@@ -33,8 +33,12 @@ class ExplicitAccess
   end
 end
 
+simple_delegator = SimpleDelegatorAccess.new
+forwardable      = ForwardableAccess.new
+explicit         = ExplicitAccess.new
+
 Benchmark.bm(17) do |x|
-  x.report('SimpleDelegator:') { a = SimpleDelegatorAccess.new; ITERATIONS.times { |i| a[i] } }
-  x.report('Forwardable:') { a = ForwardableAccess.new; ITERATIONS.times { |i| a[i] } }
-  x.report('Explicit:') { a = ExplicitAccess.new; ITERATIONS.times { |i| a[i] } }
+  x.report('SimpleDelegator:') { ITERATIONS.times { |i| simple_delegator[i] } }
+  x.report('Forwardable:')     { ITERATIONS.times { |i| forwardable[i] } }
+  x.report('Explicit:')        { ITERATIONS.times { |i| explicit[i] } }
 end

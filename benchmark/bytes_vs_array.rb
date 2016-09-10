@@ -4,10 +4,10 @@ require 'benchmark'
 
 ITERATIONS = 1_000_000
 
-AR = [1,2,3,4,5,6,7,8,9,10]
+AR = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].freeze
 
 def get_bytes(i)
-  o = AR[0]
+  o = AR[0] # rubocop:disable Lint/UselessAssignment
   case i
   when 1
     AR[1]
@@ -17,7 +17,7 @@ def get_bytes(i)
 end
 
 def get_array(i)
-  o, l, h = AR[i, i + 1]
+  _o, l, h = AR[i, i + 1]
   case i
   when 1
     l

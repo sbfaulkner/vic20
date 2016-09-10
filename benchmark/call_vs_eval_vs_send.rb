@@ -33,7 +33,10 @@ class Processor
   end
 
   def self.instruction(opcode, options, &block)
-    instructions[opcode] = options.merge(instance_method: instance_method("#{options[:addressing_mode]}_operand"), block: block)
+    instructions[opcode] = options.merge(
+      instance_method: instance_method("#{options[:addressing_mode]}_operand"),
+      block: block
+    )
   end
 
   instruction 0, addressing_mode: :relative do
@@ -103,10 +106,10 @@ end
 processor = Processor.new
 
 Benchmark.bm(15) do |x|
-  x.report('case:') { processor.each_with_case }
-  x.report('send:') { processor.each_with_send }
-  x.report('bind+call:') { processor.each_with_bind_and_call }
-  x.report('call:') { processor.each_with_call }
+  x.report('case:')          { processor.each_with_case }
+  x.report('send:')          { processor.each_with_send }
+  x.report('bind+call:')     { processor.each_with_bind_and_call }
+  x.report('call:')          { processor.each_with_call }
   x.report('instance_eval:') { processor.each_with_instance_eval }
   x.report('instance_exec:') { processor.each_with_instance_eval }
 end
