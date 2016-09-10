@@ -36,13 +36,13 @@ module Vic20
     PIXEL_WIDTH = 3
     PIXEL_HEIGHT = 2
     CHARACTER_WIDTH = 8 * PIXEL_WIDTH
-    CHARACTER_HEIGHT = 8 * PIXEL_HEIGHT
+    # CHARACTER_HEIGHT = 8 * PIXEL_HEIGHT
 
     # SCREEN_WIDTH = CHARS * PIXELS
     # SCREEN_HEIGHT = LINES * PIXELS
 
     def paint_frame(screen)
-      trace_registers('paint_frame')
+      # trace_registers('paint_frame')
 
       foreground_value = reverse_mode? ? 0 : 1
 
@@ -61,11 +61,16 @@ module Vic20
       x_origin = screen_origin_x * 4 * PIXEL_WIDTH
       y_origin = screen_origin_y * 2 * PIXEL_HEIGHT
 
-      rows.times do |row|
-        y_base = y_origin + row * CHARACTER_HEIGHT
+      row_count = rows
+      column_count = columns
+      character_size = character_size_doubled? ? 16 : 8
+      character_height = character_size * PIXEL_HEIGHT
 
-        columns.times do |column|
-          character_address = character_base + (@memory.get_byte(screen_base + offset) << 3)
+      row_count.times do |row|
+        y_base = y_origin + row * character_height
+
+        column_count.times do |column|
+          character_address = character_base + @memory.get_byte(screen_base + offset) * character_size
 
           character_colour = @memory.get_byte(colour_base + offset)
           character_rgb = COLOURS[character_colour & 0x07][:rgb]
@@ -74,7 +79,7 @@ module Vic20
 
           if character_colour[3] == 0
             # hi resolution mode
-            8.times do |y|
+            character_size.times do |y|
               character_matrix = @memory.get_byte(character_address + y)
               y1 = y_base + y * PIXEL_HEIGHT
 
@@ -88,7 +93,7 @@ module Vic20
             end
           else
             # multicolour mode
-            8.times do |y|
+            character_size.times do |y|
               character_matrix = @memory.get_byte(character_address + y)
               y1 = y_base + y * PIXEL_HEIGHT
 
