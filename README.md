@@ -12,7 +12,7 @@ This is very much a work in progress.
 4. <del>Reference instance variables directly instead of using accessors (performance).</del>
 5. DRY up SBC implementation since it's just ADC with ones-complement of (2nd) operand.
 6. specs for ADC and SBC not complete/correct for carry & overflow.
-7. MemoryMappedArray implementation does not check bounds - SEGV may result if abused.
+7. <del>MemoryMappedArray implementation does not check bounds - SEGV may result if abused.</del>
 8. proper signal handling for subprocesses? eg. HUP just kills it currently
 9. frame-based rendering - possibly working?
 10. replace frame-based rendering with scan line or cycle based rendering

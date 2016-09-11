@@ -1,10 +1,10 @@
-require_relative 'processor/breakpoints'
-require_relative 'processor/format'
-require_relative 'processor/halt'
-require_relative 'processor/instructions'
-require_relative 'processor/report'
-require_relative 'processor/stack'
-require_relative 'processor/trace'
+require 'vic20/processor/breakpoints'
+require 'vic20/processor/format'
+require 'vic20/processor/halt'
+require 'vic20/processor/instructions'
+require 'vic20/processor/report'
+require 'vic20/processor/stack'
+require 'vic20/processor/trace'
 
 module Vic20
   class Processor

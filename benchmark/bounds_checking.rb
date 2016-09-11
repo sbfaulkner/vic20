@@ -2,13 +2,13 @@
 
 require 'bundler/setup'
 require 'benchmark'
-require_relative '../lib/memory_mapped_array'
+require_relative '../lib/ipc/memory_mapped_array'
 
 ITERATIONS = 1_000_000
 
 SIZE = 64 * 1024
 
-class UncheckedArray < MemoryMappedArray
+class UncheckedArray < IPC::MemoryMappedArray
   def initialize(size)
     super
   end
@@ -30,7 +30,7 @@ class UncheckedArray < MemoryMappedArray
   end
 end
 
-class CheckedArray < MemoryMappedArray
+class CheckedArray < IPC::MemoryMappedArray
   def initialize(size)
     @size = size
     super

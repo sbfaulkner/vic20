@@ -1,7 +1,7 @@
-require_relative 'memory/mapping'
-require_relative 'memory/protection'
+require 'vic20/memory/mapping'
+require 'vic20/memory/protection'
 
-require 'memory_mapped_array'
+require 'ipc/memory_mapped_array'
 
 module Vic20
   class Memory
@@ -35,7 +35,7 @@ module Vic20
     }.freeze
 
     def initialize(expansion: 0)
-      @bytes = MemoryMappedArray.new(64 * 1024)
+      @bytes = IPC::MemoryMappedArray.new(64 * 1024)
 
       @expansion = expansion
 

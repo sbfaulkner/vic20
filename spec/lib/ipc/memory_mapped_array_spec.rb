@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MemoryMappedArray do
+describe IPC::MemoryMappedArray do
   let(:size) { 64 * 1024 }
 
   subject { described_class.new(size) }
