@@ -1,6 +1,7 @@
 require_relative 'memory/mapping'
-require_relative 'memory/memory_mapped_array'
 require_relative 'memory/protection'
+
+require 'memory_mapped_array'
 
 module Vic20
   class Memory

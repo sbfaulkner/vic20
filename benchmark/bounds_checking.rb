@@ -2,13 +2,13 @@
 
 require 'bundler/setup'
 require 'benchmark'
-require_relative '../lib/vic20/memory/memory_mapped_array'
+require_relative '../lib/memory_mapped_array'
 
 ITERATIONS = 1_000_000
 
 SIZE = 64 * 1024
 
-class UncheckedArray < Vic20::Memory::MemoryMappedArray
+class UncheckedArray < MemoryMappedArray
   def initialize(size)
     super
   end
@@ -30,7 +30,7 @@ class UncheckedArray < Vic20::Memory::MemoryMappedArray
   end
 end
 
-class CheckedArray < Vic20::Memory::MemoryMappedArray
+class CheckedArray < MemoryMappedArray
   def initialize(size)
     @size = size
     super

@@ -2,14 +2,14 @@
 
 require 'bundler/setup'
 require 'benchmark'
-require_relative '../lib/vic20/memory/memory_mapped_array'
+require_relative '../lib/memory_mapped_array'
 
 ITERATIONS = 1_000_000
 
 SIZE = 64 * 1024
 
 ARRAY = Array.new(SIZE) { |i| i >> 8 }
-MMAP = Vic20::Memory::MemoryMappedArray.new(SIZE) { |i| i >> 8 }
+MMAP = MemoryMappedArray.new(SIZE) { |i| i >> 8 }
 
 Benchmark.bm(8) do |x|
   x.report('array=:') { ITERATIONS.times { |i| ARRAY[i % (64 * 1024)] = i % 256 } }
