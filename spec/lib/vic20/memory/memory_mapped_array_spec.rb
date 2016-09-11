@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-fdescribe Vic20::Memory::MemoryMappedArray do
+describe Vic20::Memory::MemoryMappedArray do
   let(:size) { 64 * 1024 }
 
   subject { described_class.new(size) }
