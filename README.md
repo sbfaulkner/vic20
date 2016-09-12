@@ -27,6 +27,7 @@ This is very much a work in progress.
 19. keyboard
 20. cursor
 21. separate bus/computer and display into separate classes, so fork can be done before gosu initialization
+22. adjust 6502 cycle counts for crossing page boundaries, etc.
 
 ## Installation
 
