@@ -28,6 +28,8 @@ This is very much a work in progress.
 20. cursor
 21. separate bus/computer and display into separate classes, so fork can be done before gosu initialization
 22. adjust 6502 cycle counts for crossing page boundaries, etc.
+23. more accurate emulation of 6502 cycles
+  - see from http://nesdev.com/6502_cpu.txt and http://users.telenet.be/kim1-6502/6502/hwman.html#AA
 
 ## Installation
 
