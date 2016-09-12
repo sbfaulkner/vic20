@@ -2,6 +2,19 @@ require 'ffi'
 
 module IPC
   class MemoryMappedArray
+    extend FFI::Library
+
+    ffi_lib [FFI::CURRENT_PROCESS, 'c']
+
+    # sys/mman.h
+    attach_function :madvise, [:pointer, :size_t, :int], :int
+    attach_function :mmap, [:pointer, :size_t, :int, :int, :int, :off_t], :pointer
+    attach_function :munmap, [:pointer, :size_t], :int
+
+    private :madvise
+    private :mmap
+    private :munmap
+
     PROT_NONE  = 0x00
     PROT_READ  = 0x01
     PROT_WRITE = 0x02
@@ -17,19 +30,6 @@ module IPC
     MADV_NORMAL     = 0
     MADV_RANDOM     = 1
     MADV_SEQUENTIAL = 2
-
-    extend FFI::Library
-
-    ffi_lib [FFI::CURRENT_PROCESS, 'c']
-
-    # sys/mman.h
-    attach_function :madvise, [:pointer, :size_t, :int], :int
-    attach_function :mmap, [:pointer, :size_t, :int, :int, :int, :off_t], :pointer
-    attach_function :munmap, [:pointer, :size_t], :int
-
-    private :madvise
-    private :mmap
-    private :munmap
 
     def initialize(size)
       @size  = size
