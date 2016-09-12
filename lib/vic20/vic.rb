@@ -180,8 +180,8 @@ module Vic20
 
     # 9003 GEEEEEEF
     # E: number of video rows (0-63)
-    #    6560-101 practical range: 0-29; at C=5, >=32 gives 31 3/8
-    #    6561-101 practical range: 0-35; at C=5, >=38 gives 37¾
+    #    6560-101 practical range: 0-29; at C=5, >=32 gives 31-3/8
+    #    6561-101 practical range: 0-35; at C=5, >=38 gives 37-3/4
     def rows
       @cr[3] >> 1 & 0x3f
     end

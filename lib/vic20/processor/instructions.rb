@@ -153,7 +153,7 @@ module Vic20
         0xF9 => { method: :sbc, addressing_mode: :absolute_y,  cycles: 4 },
         0xFD => { method: :sbc, addressing_mode: :absolute_x,  cycles: 4 },
         0xFE => { method: :inc, addressing_mode: :absolute_x,  cycles: 7 },
-      }
+      }.freeze
 
       UNKNOWN_INSTRUCTION = {
         method: '???',

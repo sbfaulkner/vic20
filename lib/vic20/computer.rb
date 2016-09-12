@@ -41,7 +41,7 @@ module Vic20
 
       Process.kill('HUP', pid)
       Process.wait
-      STDERR.puts "COMPUTER exiting"
+      STDERR.puts 'COMPUTER exiting'
     end
 
     def update

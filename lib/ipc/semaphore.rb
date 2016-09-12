@@ -80,19 +80,19 @@ module IPC
     IPC_NOWAIT  = 004000 # Error if request must wait
 
     # Keys
-    IPC_PRIVATE = 0      # Private key
+    IPC_PRIVATE = 0 # Private key
 
     # Control commands
-    IPC_RMID    = 0      # Remove identifier
-    IPC_SET     = 1      # Set options
-    IPC_STAT    = 2      # Get options
+    IPC_RMID    = 0 # Remove identifier
+    IPC_SET     = 1 # Set options
+    IPC_STAT    = 2 # Get options
 
     # Possible flag values for sem_flg
     SEM_UNDO    = 010000 # Set up adjust on exit entry
 
     # Permissions
-    SEM_A       = 0200   # alter permission
-    SEM_R       = 0400   # read permission
+    SEM_A       = 0200 # alter permission
+    SEM_R       = 0400 # read permission
 
     class << self
       def finalize(semid)

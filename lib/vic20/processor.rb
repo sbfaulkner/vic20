@@ -99,7 +99,7 @@ module Vic20
     end
 
     def current_flags
-      Array.new(8) { |i| @p[7-i] == 1 ? 'NV?BDIZC'[i] : '-' }.join
+      Array.new(8) { |i| @p[7 - i] == 1 ? 'NV?BDIZC'[i] : '-' }.join
     end
 
     def current_state
@@ -144,7 +144,7 @@ module Vic20
         tick
         Thread.pass
       end
-    rescue Vic20::Processor::Trap => e
+    rescue Vic20::Processor::Trap
       return @pc
     end
 
