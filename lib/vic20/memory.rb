@@ -1,7 +1,7 @@
+require 'ipc/memory_mapped_array'
+
 require 'vic20/memory/mapping'
 require 'vic20/memory/protection'
-
-require 'ipc/memory_mapped_array'
 
 module Vic20
   class Memory
