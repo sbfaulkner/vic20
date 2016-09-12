@@ -26,6 +26,7 @@ This is very much a work in progress.
 18. joystick
 19. keyboard
 20. cursor
+21. separate bus/computer and display into separate classes, so fork can be done before gosu initialization
 
 ## Installation
 
