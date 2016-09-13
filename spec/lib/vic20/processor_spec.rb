@@ -122,7 +122,7 @@ describe Vic20::Processor do
     end
   end
 
-  context 'with the 6502 functional test suite', slow: true do
+  context 'with the 6502 functional test suite', suite: true do
     class FunctionalTestProcessor < Vic20::Processor
       prepend Vic20::Processor::Halt
       prepend Vic20::Processor::Report
