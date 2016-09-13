@@ -75,9 +75,9 @@ module IPC
     SETALL  = 9 # Set semvals from arg.array {ALTER}
 
     # Mode bits
-    IPC_CREAT   = 001000 # Create entry if key does not exist
-    IPC_EXCL    = 002000 # Fail if key exists
-    IPC_NOWAIT  = 004000 # Error if request must wait
+    IPC_CREAT   = 0o001000 # Create entry if key does not exist
+    IPC_EXCL    = 0o002000 # Fail if key exists
+    IPC_NOWAIT  = 0o004000 # Error if request must wait
 
     # Keys
     IPC_PRIVATE = 0 # Private key
@@ -88,11 +88,11 @@ module IPC
     IPC_STAT    = 2 # Get options
 
     # Possible flag values for sem_flg
-    SEM_UNDO    = 010000 # Set up adjust on exit entry
+    SEM_UNDO    = 0o010000 # Set up adjust on exit entry
 
     # Permissions
-    SEM_A       = 0200 # alter permission
-    SEM_R       = 0400 # read permission
+    SEM_A       = 0o0200 # alter permission
+    SEM_R       = 0o0400 # read permission
 
     class << self
       def finalize(semid)
