@@ -40,20 +40,20 @@ module IPC
     end
 
     class SemidDs < FFI::Struct
-      layout :sem_perm,  IpcPerm,   # operation permission struct
-             :sem_base,  Sem.ptr,   # pointer to first semaphore in set
-             :sem_nsems, :ushort,   # number of sems in set
-             :sem_otime, :time_t,   # last operation time
-             :sem_pad1,  :long,     # SVABI/386 says I need this here
-             :sem_ctime, :time_t,   # last change time
-             :sem_pad2,  :long,     # SVABI/386 says I need this here
-             :sem_pad3,  [:long, 4] # SVABI/386 says I need this here
+      layout :sem_perm,  IpcPerm,    # operation permission struct
+             :sem_base,  :int32,     # pointer to first semaphore in set
+             :sem_nsems, :ushort,    # number of sems in set
+             :sem_otime, :time_t,    # last operation time
+             :sem_pad1,  :int32,     # SVABI/386 says I need this here
+             :sem_ctime, :time_t,    # last change time
+             :sem_pad2,  :int32,     # SVABI/386 says I need this here
+             :sem_pad3,  [:int32, 4] # SVABI/386 says I need this here
     end
 
     class Semun < FFI::Union
       layout :val,   :int,        # value for SETVAL
              :buf,   SemidDs.ptr, # buffer for IPC_STAT & IPC_SET
-             :array, :ushort      # array for GETALL & SETALL
+             :array, :pointer     # array for GETALL & SETALL
     end
 
     attach_function :semctl, :semctl, [:int, :int, :int], :int
@@ -102,47 +102,94 @@ module IPC
       end
     end
 
-    def initialize(key: IPC_PRIVATE, mode: SEM_R | SEM_A | IPC_CREAT)
-      @semid = semget(key, 1, mode)
+    class SemaphoreProxy < Semaphore
+      def initialize(semaphore, index)
+        @semaphore = semaphore
+        @index = index
+      end
+
+      def value
+        @semaphore.get(@index)
+      end
+
+      def value=(value)
+        @semaphore.set(@index, value)
+      end
+
+      def release(count = 1)
+        @semaphore.release(index: @index, count: count)
+      end
+
+      def try_wait(count = 1)
+        @semaphore.try_wait(index: @index, count: count)
+      end
+
+      def wait(count = 1)
+        @semaphore.wait(index: @index, count: count)
+      end
+
+      def waiting_for_value
+        @semaphore.waiting_for_value(index: @index)
+      end
+
+      def waiting_for_zero
+        @semaphore.waiting_for_zero(index: @index)
+      end
+    end
+
+    def initialize(count: 1, key: IPC_PRIVATE, mode: SEM_R | SEM_A | IPC_CREAT)
+      @semid = semget(key, count, mode)
       raise SystemCallError, errno if @semid == -1
+      @proxies = Array.new(count) { |index| SemaphoreProxy.new(self, index) }
       ObjectSpace.define_finalizer(self, self.class.finalize(@semid))
     end
 
-    def value
-      handle_result semctl(@semid, 0, GETVAL)
+    def count
+      arg = Semun.new
+      arg[:buf] = SemidDs.new
+      handle_result semctl_ex(@semid, 0, IPC_STAT, arg)
+      arg[:buf][:sem_nsems]
     end
 
-    def value=(value)
+    def [](index)
+      SemaphoreProxy.new(self, index)
+    end
+
+    def get(index)
+      handle_result semctl(@semid, index, GETVAL)
+    end
+
+    def set(index, value)
       arg = Semun.new
       arg[:val] = value
-      handle_result semctl_ex(@semid, 0, SETVAL, arg), returning: value
+      handle_result semctl_ex(@semid, index, SETVAL, arg), returning: value
     end
 
-    def release(count = 1)
-      handle_result _sem_op(sem_op: count), returning: true
+    def release(index:, count:)
+      handle_result _sem_op(index: index, sem_op: count), returning: true
     end
 
-    def try_wait(count = 1)
-      handle_result _sem_op(sem_op: -count, sem_flg: IPC_NOWAIT), returning: true, ignoring: Errno::EAGAIN::Errno
+    def try_wait(index:, count:)
+      handle_result _sem_op(index: index, sem_op: -count, sem_flg: IPC_NOWAIT), returning: true, ignoring: Errno::EAGAIN::Errno
     end
 
-    def wait(count = 1)
-      handle_result _sem_op(sem_op: -count), returning: true
+    def wait(index:, count:)
+      handle_result _sem_op(index: index, sem_op: -count), returning: true
     end
 
-    def waiting_for_value
-      handle_result semctl(@semid, 0, GETNCNT)
+    def waiting_for_value(index:)
+      handle_result semctl(@semid, index, GETNCNT)
     end
 
-    def waiting_for_zero
-      handle_result semctl(@semid, 0, GETZCNT)
+    def waiting_for_zero(index:)
+      handle_result semctl(@semid, index, GETZCNT)
     end
 
     private
 
-    def _sem_op(sem_op:, sem_flg: 0)
+    def _sem_op(index:, sem_op:, sem_flg: 0)
       sops = Sembuf.new
-      sops[:sem_num] = 0
+      sops[:sem_num] = index
       sops[:sem_op]  = sem_op
       sops[:sem_flg] = sem_flg
       semop(@semid, sops, 1)
@@ -150,7 +197,7 @@ module IPC
 
     def handle_result(result, returning: result, ignoring: [])
       return returning unless result == -1
-      raise SystemCallError, errno unless Array(ignoring).include?(self.class.errno)
+      raise SystemCallError, self.class.errno unless Array(ignoring).include?(self.class.errno)
     end
   end
 end
