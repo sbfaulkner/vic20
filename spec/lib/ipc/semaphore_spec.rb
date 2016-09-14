@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'ipc/semaphore' # TODO: remove explicit require in spec
 
-describe IPC::Semaphore do
+fdescribe IPC::Semaphore do
   let(:count)   { 3 }
   let(:options) { { count: count } }
 
@@ -33,6 +33,39 @@ describe IPC::Semaphore do
     end
   end
 
+  describe '#release' do
+    it 'increments all semaphores' do
+      subject.release
+      expect(subject.map(&:value)).to all(eq(1))
+    end
+  end
+
+  describe '#try_wait' do
+    context 'when all semaphores have a value of 1' do
+      before do
+        count.times { |i| subject[i].value = 1 }
+      end
+
+      it 'decrements all semaphores' do
+        subject.try_wait
+        expect(subject.map(&:value)).to all(eq(0))
+      end
+    end
+  end
+
+  describe '#wait' do
+    context 'when all semaphores have a value of 1' do
+      before do
+        count.times { |i| subject[i].value = 1 }
+      end
+
+      it 'decrements all semaphores' do
+        subject.wait
+        expect(subject.map(&:value)).to all(eq(0))
+      end
+    end
+  end
+
   describe 'a proxied semaphore' do
     let(:semaphore) { subject[0] }
 
@@ -49,10 +82,59 @@ describe IPC::Semaphore do
       end
     end
 
+    describe '#release' do
+      it 'should increment the value' do
+        semaphore.release
+        expect(semaphore.value).to eq(1)
+      end
+
+      it 'does increment the other semaphore values' do
+        semaphore.release
+        expect(subject[1].value).to eq(0)
+      end
+
+      it 'should increment the value by 5' do
+        semaphore.release(5)
+        expect(semaphore.value).to eq(5)
+      end
+
+      context 'with a waiting process' do
+        around do |example|
+          subject # reference subject before fork to instantiate the semaphore
+
+          child = fork do
+            semaphore.wait
+            subject[2].value = 5
+            sleep 5
+            exit!
+          end
+
+          begin
+            example.run
+          ensure
+            Process.kill('TERM', child)
+            Process.wait
+          end
+        end
+
+        it 'should release the waiting process', slow: true do
+          sleep 0.5
+          semaphore.release
+          sleep 0.2
+          expect(subject[2].value).to eq(5)
+        end
+      end
+    end
+
     describe '#try_wait' do
       context 'waiting for 0' do
         it 'should return true' do
           expect(semaphore.try_wait(0)).to be_truthy
+        end
+
+        it 'should not change the value' do
+          semaphore.try_wait(0)
+          expect(semaphore.value).to eq(0)
         end
       end
 
@@ -60,11 +142,21 @@ describe IPC::Semaphore do
         it 'should return false' do
           expect(semaphore.try_wait(1)).to be_falsey
         end
+
+        it 'should not change the value' do
+          semaphore.try_wait(1)
+          expect(semaphore.value).to eq(0)
+        end
       end
 
       context 'waiting for 5' do
         it 'should return false' do
           expect(semaphore.try_wait(5)).to be_falsey
+        end
+
+        it 'should not change the value' do
+          semaphore.try_wait(5)
+          expect(semaphore.value).to eq(0)
         end
       end
 
@@ -77,17 +169,31 @@ describe IPC::Semaphore do
           it 'should return false' do
             expect(semaphore.try_wait(0)).to be_falsey
           end
+
+          it 'should not change the value' do
+            expect(semaphore.value).to eq(1)
+          end
         end
 
         context 'waiting for 1' do
           it 'should return true' do
             expect(semaphore.try_wait(1)).to be_truthy
           end
+
+          it 'decrements the value' do
+            semaphore.try_wait(1)
+            expect(semaphore.value).to eq(0)
+          end
         end
 
         context 'waiting for 5' do
           it 'should return false' do
             expect(semaphore.try_wait(5)).to be_falsey
+          end
+
+          it 'should not change the value' do
+            semaphore.try_wait(5)
+            expect(semaphore.value).to eq(1)
           end
         end
       end
@@ -101,11 +207,21 @@ describe IPC::Semaphore do
           it 'should return false' do
             expect(semaphore.try_wait(0)).to be_falsey
           end
+
+          it 'should not change the value' do
+            semaphore.try_wait(0)
+            expect(semaphore.value).to eq(5)
+          end
         end
 
         context 'waiting for 1' do
           it 'should return true' do
             expect(semaphore.try_wait(1)).to be_truthy
+          end
+
+          it 'decrements the value' do
+            semaphore.try_wait(1)
+            expect(semaphore.value).to eq(4)
           end
         end
 
@@ -113,11 +229,50 @@ describe IPC::Semaphore do
           it 'should return true' do
             expect(semaphore.try_wait(5)).to be_truthy
           end
+
+          it 'decrements the value by 5' do
+            semaphore.try_wait(5)
+            expect(semaphore.value).to eq(0)
+          end
         end
       end
     end
 
     describe '#wait' do
+      it 'should return true' do
+        expect(semaphore.wait(0)).to be_truthy
+      end
+
+      context 'with a value of 1' do
+        before do
+          semaphore.value = 1
+        end
+
+        it 'should return true' do
+          expect(semaphore.wait(1)).to be_truthy
+        end
+
+        it 'should decrement the value' do
+          semaphore.wait(1)
+          expect(semaphore.value).to eq(0)
+        end
+      end
+
+      context 'with a value of 5' do
+        before do
+          semaphore.value = 5
+        end
+
+        it 'should return true' do
+          expect(semaphore.wait(5)).to be_truthy
+        end
+
+        it 'should decrement the value by 5' do
+          semaphore.wait(5)
+          expect(semaphore.value).to eq(0)
+        end
+      end
+
       context 'when another process decrements the semaphore value', slow: true do
         around do |example|
           semaphore.value = 1
@@ -141,6 +296,11 @@ describe IPC::Semaphore do
           begin_at = Time.now.to_f
           expect(semaphore.wait(0)).to be_truthy
           expect(Time.now.to_f - begin_at).to be_within(0.1).of(0.5)
+        end
+
+        it 'should not change the value' do
+          semaphore.wait(0)
+          expect(semaphore.value).to eq(0)
         end
       end
 
@@ -167,6 +327,11 @@ describe IPC::Semaphore do
           begin_at = Time.now.to_f
           expect(semaphore.wait).to be_truthy
           expect(Time.now.to_f - begin_at).to be_within(0.1).of(0.5)
+        end
+
+        it 'decrements the value' do
+          semaphore.wait
+          expect(semaphore.value).to eq(0)
         end
       end
 
@@ -195,6 +360,11 @@ describe IPC::Semaphore do
           begin_at = Time.now.to_f
           expect(semaphore.wait(5)).to be_truthy
           expect(Time.now.to_f - begin_at).to be_within(0.1).of(0.5)
+        end
+
+        it 'decrements the value by 5' do
+          semaphore.wait(5)
+          expect(semaphore.value).to eq(0)
         end
       end
     end

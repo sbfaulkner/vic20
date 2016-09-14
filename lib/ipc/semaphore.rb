@@ -2,6 +2,8 @@ require 'ffi'
 
 module IPC
   class Semaphore
+    include Enumerable
+
     extend FFI::Library
 
     ffi_lib [FFI::CURRENT_PROCESS, 'c']
@@ -151,8 +153,12 @@ module IPC
       arg[:buf][:sem_nsems]
     end
 
+    def each(&block)
+      @proxies.each(&block)
+    end
+
     def [](index)
-      SemaphoreProxy.new(self, index)
+      @proxies[index]
     end
 
     def get(index)
@@ -165,15 +171,15 @@ module IPC
       handle_result semctl_ex(@semid, index, SETVAL, arg), returning: value
     end
 
-    def release(index:, count:)
+    def release(index: nil, count: 1)
       handle_result _sem_op(index: index, sem_op: count), returning: true
     end
 
-    def try_wait(index:, count:)
+    def try_wait(index: nil, count: 1)
       handle_result _sem_op(index: index, sem_op: -count, sem_flg: IPC_NOWAIT), returning: true, ignoring: Errno::EAGAIN::Errno
     end
 
-    def wait(index:, count:)
+    def wait(index: nil, count: 1)
       handle_result _sem_op(index: index, sem_op: -count), returning: true
     end
 
@@ -188,11 +194,15 @@ module IPC
     private
 
     def _sem_op(index:, sem_op:, sem_flg: 0)
-      sops = Sembuf.new
-      sops[:sem_num] = index
-      sops[:sem_op]  = sem_op
-      sops[:sem_flg] = sem_flg
-      semop(@semid, sops, 1)
+      nsops = index ? 1 : count
+      sops = FFI::MemoryPointer.new(Sembuf, nsops)
+      nsops.times do |i|
+        sop = Sembuf.new(sops + i * Sembuf.size)
+        sop[:sem_num] = index || i
+        sop[:sem_op]  = sem_op
+        sop[:sem_flg] = sem_flg
+      end
+      semop(@semid, Sembuf.new(sops), nsops)
     end
 
     def handle_result(result, returning: result, ignoring: [])
