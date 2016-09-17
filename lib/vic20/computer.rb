@@ -1,18 +1,6 @@
-require 'gosu'
-require 'texplay'
-
 module Vic20
-  class Computer < Gosu::Window
-    DISPLAY_WIDTH = 648
-    DISPLAY_HEIGHT = 568
-
+  class Computer
     def initialize(options)
-      super DISPLAY_WIDTH, DISPLAY_HEIGHT
-
-      self.caption = 'VIC20'
-
-      @screen = TexPlay.create_blank_image(self, width, height)
-
       @memory = build_memory(options)
 
       @vic = Vic20::VIC.new(@memory)
@@ -21,27 +9,16 @@ module Vic20
       @processor.reset(options[:reset])
     end
 
-    def draw
-      @screen.draw(0, 0, 0)
-    end
-
-    def milliseconds
-      @start = Time.now.to_f * 1000 unless @start
-
-      Time.now.to_f * 1000 - @start
-    end
-
     def run
       pid = fork do
         @processor.run
         exit!
       end
 
-      show
+      Display.new(@vic).show
 
       Process.kill('HUP', pid)
       Process.wait
-      STDERR.puts 'COMPUTER exiting'
     end
 
     def update
