@@ -3,8 +3,8 @@ require 'texplay'
 
 module Vic20
   class Computer < Gosu::Window
-    DISPLAY_WIDTH = 704
-    DISPLAY_HEIGHT = 576
+    DISPLAY_WIDTH = 648
+    DISPLAY_HEIGHT = 568
 
     def initialize(options)
       super DISPLAY_WIDTH, DISPLAY_HEIGHT
