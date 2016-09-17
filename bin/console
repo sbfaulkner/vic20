@@ -53,9 +53,7 @@ end
 
 memory.load_cartridge(options[:cartridge]) if options[:cartridge]
 
-processor = Vic20::Processor.new(memory)
-
-processor.reset(options[:reset])
+processor = Vic20::Processor.new(memory, pc: options[:reset])
 
 commands = Pry::CommandSet.new do
   import_from Pry::Commands, 'help'

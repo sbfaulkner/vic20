@@ -18,16 +18,13 @@ module Vic20
       end
     end
 
-    NMI_VECTOR    = 0xFFFA
-    RESET_VECTOR  = 0xFFFC
-    IRQ_VECTOR    = 0xFFFE
-
-    def initialize(memory)
+    def initialize(memory, options = {})
       initialize_instructions
 
       @memory = memory
 
-      @pc = 0
+      @pc = options[:pc] || @memory.reset_vector
+
       @a = 0
       @x = 0
       @y = 0
@@ -133,10 +130,6 @@ module Vic20
 
     def inspect
       format '#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state
-    end
-
-    def reset(address = nil)
-      @pc = address || @memory.get_word(RESET_VECTOR)
     end
 
     def run

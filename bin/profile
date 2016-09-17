@@ -52,9 +52,7 @@ else
   memory.load_firmware
 end
 
-processor = Vic20::Processor.new(memory)
-
-processor.reset(options[:reset])
+processor = Vic20::Processor.new(memory, pc: options[:reset])
 
 profile = StackProf.run(mode: :cpu, interval: 1000, raw: true) do
   processor.run

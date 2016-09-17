@@ -5,8 +5,7 @@ module Vic20
 
       @vic = Vic20::VIC.new(@memory)
 
-      @processor = Processor.new(@memory)
-      @processor.reset(options[:reset])
+      @processor = Processor.new(@memor, pc: options[:reset])
     end
 
     def run

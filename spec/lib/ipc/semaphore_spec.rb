@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'ipc/semaphore' # TODO: remove explicit require in spec
 
-fdescribe IPC::Semaphore do
+describe IPC::Semaphore do
   let(:count)   { 3 }
   let(:options) { { count: count } }
 

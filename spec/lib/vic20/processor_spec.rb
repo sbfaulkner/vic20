@@ -5,6 +5,28 @@ describe Vic20::Processor do
 
   subject { described_class.new(memory) }
 
+  context 'when created' do
+    let(:default) { 0x1234 }
+
+    before do
+      memory.set_bytes(Vic20::Memory::RESET_VECTOR, 2, [default & 0xff, default >> 8])
+    end
+
+    it 'initializes the pc using the RESET_VECTOR' do
+      expect(subject.pc).to eq(default)
+    end
+
+    context 'with an initial pc value' do
+      let(:override) { 0xbeef }
+
+      subject { described_class.new(memory, pc: override) }
+
+      it 'initializes the pc using the specified value' do
+        expect(subject.pc).to eq(override)
+      end
+    end
+  end
+
   describe 'registers' do
     it 'has an 8-bit accumulator' do
       expect(subject.a).to be_a(Integer)
@@ -131,11 +153,10 @@ describe Vic20::Processor do
     let(:firmware) { File.expand_path('../../../firmware/6502_functional_test.bin', __dir__) }
     let(:memory) { Vic20::Memory.new(expansion: 11) }
 
-    subject { FunctionalTestProcessor.new(memory) }
+    subject { FunctionalTestProcessor.new(memory, pc: 0x0400) }
 
     before do
       memory.load(firmware)
-      subject.reset(0x0400)
     end
 
     it 'runs the test successfully' do

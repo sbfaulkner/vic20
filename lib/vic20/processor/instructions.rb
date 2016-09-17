@@ -308,7 +308,7 @@ module Vic20
         @p |= B_FLAG
         push @p | 0b00100000
         @p |= I_FLAG
-        @pc = @memory.get_word(IRQ_VECTOR)
+        @pc = @memory.irq_vector
       end
 
       def bvc

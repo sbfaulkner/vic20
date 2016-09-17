@@ -20,6 +20,10 @@ module Vic20
     EXPANDED_SCREEN_MEMORY_ADDRESS  = 0x1000
     KERNAL_ROM_ADDRESS              = 0xE000
 
+    NMI_VECTOR    = 0xFFFA
+    RESET_VECTOR  = 0xFFFC
+    IRQ_VECTOR    = 0xFFFE
+
     UPPERCASE_CHARACTERS = 0x0000
     REVERSE_CHARACTERS   = 0x0400
     LOWERCASE_CHARACTERS = 0x0800
@@ -110,6 +114,18 @@ module Vic20
 
     def map_screen_memory
       Mapping.new(self, @expansion > 3 ? EXPANDED_SCREEN_MEMORY_ADDRESS : DEFAULT_SCREEN_MEMORY_ADDRESS)
+    end
+
+    def irq_vector
+      get_word(IRQ_VECTOR)
+    end
+
+    def nmi_vector
+      get_word(NMI_VECTOR)
+    end
+
+    def reset_vector
+      get_word(RESET_VECTOR)
     end
 
     private
