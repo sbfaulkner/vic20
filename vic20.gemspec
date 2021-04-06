@@ -17,16 +17,14 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'gosu', '~> 0.10'
+  spec.add_dependency 'gosu'#, '~> 0.10'
   spec.add_dependency 'texplay', '0.4.4.pre'
-  spec.add_dependency 'pry', '~> 0.10'
+  spec.add_dependency 'pry', '~> 0.14'
+  spec.add_dependency 'ffi'
+  spec.add_dependency 'scanf'
 
-  spec.add_development_dependency 'bundler', '~> 1.11'
-  spec.add_development_dependency 'guard', '~> 2.13'
-  spec.add_development_dependency 'guard-rspec', '~> 4.6'
-  spec.add_development_dependency 'pry-byebug', '~> 3.4'
-  spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 0.42'
-  spec.add_development_dependency 'stackprof', '~> 0.2'
+  spec.add_development_dependency 'rake', '~> 13.0'
+  spec.add_development_dependency 'rspec', '~> 3.10'
+  spec.add_development_dependency 'rubocop', '~> 1.12'
+  spec.add_development_dependency 'stackprof', '~> 0.2.16'
 end

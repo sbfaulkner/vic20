@@ -3,6 +3,8 @@ require 'ipc/memory_mapped_array'
 require 'vic20/memory/mapping'
 require 'vic20/memory/protection'
 
+require 'forwardable'
+
 module Vic20
   class Memory
     extend Forwardable
