@@ -14,10 +14,12 @@ module Vic20
         exit!
       end
 
-      Display.new(@vic).show
+      at_exit do
+        Process.kill('HUP', pid)
+        Process.wait
+      end
 
-      Process.kill('HUP', pid)
-      Process.wait
+      Display.new(@vic).show
     end
 
     def update
