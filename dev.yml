@@ -3,3 +3,8 @@ up:
     - sdl2
   - ruby: 2.7.2
   - bundler
+
+commands:
+  run: bin/run
+  test: bin/rake
+  style: bin/rubocop
