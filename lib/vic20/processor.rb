@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'vic20/processor/breakpoints'
 require 'vic20/processor/format'
 require 'vic20/processor/halt'

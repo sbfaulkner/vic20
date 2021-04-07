@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ipc/memory_mapped_array'
 
 require 'vic20/memory/mapping'

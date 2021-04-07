@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'vic20/version'
 require 'vic20/display'
 require 'vic20/memory'

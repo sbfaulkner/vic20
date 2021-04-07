@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 require 'ipc/semaphore' # TODO: remove explicit require in spec

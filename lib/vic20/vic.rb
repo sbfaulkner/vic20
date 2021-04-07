@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Vic20
   class VIC
     PHI2 = 14_318_181.0 / 14

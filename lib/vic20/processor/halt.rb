@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Vic20
   class Processor
     module Halt
