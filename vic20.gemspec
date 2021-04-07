@@ -18,16 +18,19 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'gosu'#, '~> 0.10'
-  spec.add_dependency 'texplay', '0.4.4.pre'
-  spec.add_dependency 'pry', '~> 0.14'
-  spec.add_dependency 'ffi'
-  spec.add_dependency 'scanf'
+  spec.add_dependency('gosu', '~> 1.2')
+  spec.add_dependency('texplay', '0.4.4.pre')
+  spec.add_dependency('pry', '~> 0.14')
+  spec.add_dependency('ffi')
+  spec.add_dependency('scanf')
 
-  spec.add_development_dependency 'rake', '~> 13.0'
-  spec.add_development_dependency 'rspec', '~> 3.10'
-  spec.add_development_dependency 'stackprof', '~> 0.2.16'
-  spec.add_development_dependency 'ruby-debug-ide'
-  spec.add_development_dependency 'debase'
-  spec.add_development_dependency 'rubocop-shopify'
+  spec.add_development_dependency('rake', '~> 13.0')
+  spec.add_development_dependency('rspec', '~> 3.10')
+  spec.add_development_dependency('stackprof', '~> 0.2.16')
+  spec.add_development_dependency('ruby-debug-ide')
+  spec.add_development_dependency('debase')
+  spec.add_development_dependency('rubocop-performance')
+  spec.add_development_dependency('rubocop-rake')
+  spec.add_development_dependency('rubocop-rspec')
+  spec.add_development_dependency('rubocop-shopify')
 end

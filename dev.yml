@@ -7,4 +7,4 @@ up:
 commands:
   run: bin/run
   test: bin/rake
-  style: bin/rubocop
+  style: bin/rake rubocop
