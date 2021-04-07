@@ -128,7 +128,7 @@ describe Vic20::Processor do
 
       it 'runs the program' do
         subject.run
-        expect(subject.x).to eq 5
+        expect(subject.x).to eq(5)
       end
     end
 
@@ -140,7 +140,7 @@ describe Vic20::Processor do
 
       it 'runs the program' do
         21.times { subject.tick }
-        expect(subject.x).to eq 5
+        expect(subject.x).to eq(5)
       end
     end
   end

@@ -9,3 +9,8 @@ require:
 AllCops:
   DisplayCopNames: true
   TargetRubyVersion: 2.7.2
+
+Style/MethodCallWithArgsParentheses:
+  IgnoredMethods:
+    - not_to
+    - to
