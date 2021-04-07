@@ -106,7 +106,7 @@ describe IPC::Semaphore do
           child = fork do
             semaphore.wait
             subject[2].value = 5
-            sleep 5
+            sleep(5)
             exit!
           end
 
@@ -119,9 +119,9 @@ describe IPC::Semaphore do
         end
 
         it 'should release the waiting process', slow: true do
-          sleep 0.5
+          sleep(0.5)
           semaphore.release
-          sleep 0.2
+          sleep(0.2)
           expect(subject[2].value).to eq(5)
         end
       end
@@ -279,9 +279,9 @@ describe IPC::Semaphore do
           semaphore.value = 1
 
           child = fork do
-            sleep 0.5
+            sleep(0.5)
             semaphore.wait
-            sleep 5
+            sleep(5)
             exit!
           end
 
@@ -310,9 +310,9 @@ describe IPC::Semaphore do
           subject # reference subject before fork to instantiate the semaphore
 
           child = fork do
-            sleep 0.5
+            sleep(0.5)
             semaphore.release
-            sleep 5
+            sleep(5)
             exit!
           end
 
@@ -342,10 +342,10 @@ describe IPC::Semaphore do
 
           child = fork do
             5.times do
-              sleep 0.1
+              sleep(0.1)
               semaphore.release
             end
-            sleep 5
+            sleep(5)
             exit!
           end
 
@@ -385,7 +385,7 @@ describe IPC::Semaphore do
           end
 
           begin
-            sleep 0.5
+            sleep(0.5)
             example.run
           ensure
             Process.kill('TERM', child)
@@ -420,7 +420,7 @@ describe IPC::Semaphore do
           end
 
           begin
-            sleep 0.5
+            sleep(0.5)
             example.run
           ensure
             Process.kill('TERM', child)

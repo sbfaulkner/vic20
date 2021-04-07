@@ -13,4 +13,6 @@ AllCops:
 Style/MethodCallWithArgsParentheses:
   IgnoredMethods:
     - not_to
+    - raise
     - to
+    - yield
