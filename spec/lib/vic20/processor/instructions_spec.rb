@@ -14,8 +14,8 @@ describe Vic20::Processor do
 
   before do
     memory.set_bytes(signature_address, 5, signature)
-    subject.instance_variable_set :@addressing_mode, addressing_mode
-    subject.instance_variable_set :@operand, operand
+    subject.instance_variable_set(:@addressing_mode, addressing_mode)
+    subject.instance_variable_set(:@operand, operand)
   end
 
   describe '#adc' do
@@ -284,15 +284,15 @@ describe Vic20::Processor do
         end
 
         [
-          [0x50, 0x10, 0x60, false, false, false],
-          [0x50, 0x50, 0xa0, false, true, true],
-          [0x50, 0x90, 0xe0, false, true, false],
-          [0x50, 0xd0, 0x20, true, false, false],
-          [0xd0, 0x10, 0xe0, false, true, false],
-          [0xd0, 0x50, 0x20, true, false, false],
-          [0xd0, 0x90, 0x60, true, false, true],
-          [0xd0, 0xd0, 0xa0, true, true, false],
-        ].each do |a, o, r, c, n, v|
+          [[0x50, 0x10], [0x60, false, false, false]],
+          [[0x50, 0x50], [0xa0, false, true, true]],
+          [[0x50, 0x90], [0xe0, false, true, false]],
+          [[0x50, 0xd0], [0x20, true, false, false]],
+          [[0xd0, 0x10], [0xe0, false, true, false]],
+          [[0xd0, 0x50], [0x20, true, false, false]],
+          [[0xd0, 0x90], [0x60, true, false, true]],
+          [[0xd0, 0xd0], [0xa0, true, true, false]],
+        ].each do |(a, o), (r, c, n, v)|
           context format('adding 0x%02X to 0x%02X', o, a) do
             let(:operand) { o }
 
@@ -6691,15 +6691,15 @@ describe Vic20::Processor do
         end
 
         [
-          [0x50, 0xf0, 0x60, false, false, false],
-          [0x50, 0xb0, 0xa0, false, true, true],
-          [0x50, 0x70, 0xe0, false, true, false],
-          [0x50, 0x30, 0x20, true, false, false],
-          [0xd0, 0xf0, 0xe0, false, true, false],
-          [0xd0, 0xb0, 0x20, true, false, false],
-          [0xd0, 0x70, 0x60, true, false, true],
-          [0xd0, 0x30, 0xa0, true, true, false],
-        ].each do |a, o, r, c, n, v|
+          [[0x50, 0xf0], [0x60, false, false, false]],
+          [[0x50, 0xb0], [0xa0, false, true, true]],
+          [[0x50, 0x70], [0xe0, false, true, false]],
+          [[0x50, 0x30], [0x20, true, false, false]],
+          [[0xd0, 0xf0], [0xe0, false, true, false]],
+          [[0xd0, 0xb0], [0x20, true, false, false]],
+          [[0xd0, 0x70], [0x60, true, false, true]],
+          [[0xd0, 0x30], [0xa0, true, true, false]],
+        ].each do |(a, o), (r, c, n, v)|
           context format('subtracting 0x%02X from 0x%02X', o, a) do
             let(:operand) { o }
 

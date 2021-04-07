@@ -8,7 +8,7 @@ ITERATIONS = 1_000_000
 
 def use_tap(i)
   i.tap do
-    i + 1
+    i + 1 # rubocop:disable Lint/Void
   end
 end
 

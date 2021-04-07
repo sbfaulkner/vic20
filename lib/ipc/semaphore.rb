@@ -78,9 +78,9 @@ module IPC
     SETALL  = 9 # Set semvals from arg.array {ALTER}
 
     # Mode bits
-    IPC_CREAT   = 0o001000 # Create entry if key does not exist
-    IPC_EXCL    = 0o002000 # Fail if key exists
-    IPC_NOWAIT  = 0o004000 # Error if request must wait
+    IPC_CREAT   = 01000 # Create entry if key does not exist
+    IPC_EXCL    = 02000 # Fail if key exists
+    IPC_NOWAIT  = 04000 # Error if request must wait
 
     # Keys
     IPC_PRIVATE = 0 # Private key
@@ -91,11 +91,11 @@ module IPC
     IPC_STAT    = 2 # Get options
 
     # Possible flag values for sem_flg
-    SEM_UNDO    = 0o010000 # Set up adjust on exit entry
+    SEM_UNDO    = 010000 # Set up adjust on exit entry
 
     # Permissions
-    SEM_A       = 0o0200 # alter permission
-    SEM_R       = 0o0400 # read permission
+    SEM_A       = 0200 # alter permission
+    SEM_R       = 0400 # read permission
 
     class << self
       def finalize(semid)
@@ -150,7 +150,7 @@ module IPC
     def count
       arg = Semun.new
       arg[:buf] = SemidDs.new
-      handle_result semctl_ex(@semid, 0, IPC_STAT, arg)
+      handle_result(semctl_ex(@semid, 0, IPC_STAT, arg))
       arg[:buf][:sem_nsems]
     end
 
@@ -163,33 +163,46 @@ module IPC
     end
 
     def get(index)
-      handle_result semctl(@semid, index, GETVAL)
+      handle_result(semctl(@semid, index, GETVAL))
     end
 
     def set(index, value)
       arg = Semun.new
       arg[:val] = value
-      handle_result semctl_ex(@semid, index, SETVAL, arg), returning: value
+      handle_result(
+        semctl_ex(@semid, index, SETVAL, arg),
+        returning: value
+      )
     end
 
     def release(index: nil, count: 1)
-      handle_result _sem_op(index: index, sem_op: count), returning: true
+      handle_result(
+        _sem_op(index: index, sem_op: count),
+        returning: true
+      )
     end
 
     def try_wait(index: nil, count: 1)
-      handle_result _sem_op(index: index, sem_op: -count, sem_flg: IPC_NOWAIT), returning: true, ignoring: Errno::EAGAIN::Errno
+      handle_result(
+        _sem_op(index: index, sem_op: -count, sem_flg: IPC_NOWAIT),
+        returning: true,
+        ignoring: Errno::EAGAIN::Errno
+      )
     end
 
     def wait(index: nil, count: 1)
-      handle_result _sem_op(index: index, sem_op: -count), returning: true
+      handle_result(
+        _sem_op(index: index, sem_op: -count),
+        returning: true
+      )
     end
 
     def waiting_for_value(index:)
-      handle_result semctl(@semid, index, GETNCNT)
+      handle_result(semctl(@semid, index, GETNCNT))
     end
 
     def waiting_for_zero(index:)
-      handle_result semctl(@semid, index, GETZCNT)
+      handle_result(semctl(@semid, index, GETZCNT))
     end
 
     private

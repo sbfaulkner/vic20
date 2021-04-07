@@ -13,6 +13,8 @@ options = {
   expansion: 0,
 }
 
+INVALID_EXPANSION_ERROR = "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)"
+
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
@@ -21,7 +23,7 @@ OptionParser.new do |opts|
   end
 
   opts.on('-e', '--expansion size', 'add specified RAM') do |size|
-    raise ArgumenError, "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)" unless %w(0 3 8 11 16 19 24 27).include?(size)
+    raise ArgumenError, INVALID_EXPANSION_ERROR unless %w(0 3 8 11 16 19 24 27).include?(size)
     options[:expansion] = size.to_i
   end
 
@@ -57,11 +59,11 @@ memory.load_cartridge(options[:cartridge]) if options[:cartridge]
 processor = Vic20::Processor.new(memory, pc: options[:reset])
 
 commands = Pry::CommandSet.new do
-  import_from Pry::Commands, 'help'
+  import_from(Pry::Commands, 'help')
 
-  create_command 'breakpoint' do
-    group 'Machine'
-    description 'Set breakpoint at specified address.'
+  create_command('breakpoint') do
+    group('Machine')
+    description('Set breakpoint at specified address.')
 
     def process
       processor.breakpoints << args.first.to_i(16) if args.first
@@ -72,11 +74,11 @@ commands = Pry::CommandSet.new do
     end
   end
 
-  alias_command 'b', 'breakpoint'
+  alias_command('b', 'breakpoint')
 
-  create_command 'dasm' do
-    group 'Machine'
-    description 'Disassemble instructions at current program counter.'
+  create_command('dasm') do
+    group('Machine')
+    description('Disassemble instructions at current program counter.')
 
     def process
       initial_pc = processor.pc
@@ -92,11 +94,11 @@ commands = Pry::CommandSet.new do
     end
   end
 
-  alias_command 'd', 'dasm'
+  alias_command('d', 'dasm')
 
-  create_command 'list' do
-    group 'Machine'
-    description 'List memory contents'
+  create_command('list') do
+    group('Machine')
+    description('List memory contents')
 
     def process
       address = args.first ? args.first.to_i(16) : processor.pc
@@ -110,22 +112,22 @@ commands = Pry::CommandSet.new do
     end
   end
 
-  alias_command 'l', 'list'
+  alias_command('l', 'list')
 
-  create_command 'run' do
-    group 'Machine'
-    description 'Run program from current program counter.'
+  create_command('run') do
+    group('Machine')
+    description('Run program from current program counter.')
 
     def process
       processor.run
     end
   end
 
-  alias_command 'r', 'run'
+  alias_command('r', 'run')
 
-  create_command 'step' do
-    group 'Machine'
-    description 'Execute single instruction at current program counter.'
+  create_command('step') do
+    group('Machine')
+    description('Execute single instruction at current program counter.')
 
     def process
       initial_pc = processor.pc
@@ -140,7 +142,7 @@ commands = Pry::CommandSet.new do
     end
   end
 
-  alias_command 's', 'step'
+  alias_command('s', 'step')
 
   helpers do
     def format_memory(address, bytes)
@@ -152,7 +154,7 @@ commands = Pry::CommandSet.new do
     end
 
     def memory
-      processor.instance_variable_get :@memory
+      processor.instance_variable_get(:@memory)
     end
 
     def processor
@@ -161,4 +163,7 @@ commands = Pry::CommandSet.new do
   end
 end
 
-processor.pry commands: commands, prompt: [proc { "#{processor.current_state} > " }, proc { ' | ' }]
+processor.pry(
+  commands: commands,
+  prompt: [proc { "#{processor.current_state} > " }, proc { ' | ' }]
+)

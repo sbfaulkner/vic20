@@ -12,11 +12,13 @@ options = {
   expansion: 0,
 }
 
+INVALID_EXPANSION_ERROR = "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)"
+
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
   opts.on('-e', '--expansion size', 'add specified RAM') do |size|
-    raise ArgumenError, "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)" unless %w(0 3 8 11 16 19 24 27).include?(size)
+    raise ArgumenError, INVALID_EXPANSION_ERROR unless %w(0 3 8 11 16 19 24 27).include?(size)
     options[:expansion] = size.to_i
   end
 

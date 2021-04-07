@@ -55,7 +55,7 @@ module Vic20
       character_base = character_location
       colour_base    = colour_location
 
-      screen.fill 0, 0, color: border_rgb
+      screen.fill(0, 0, color: border_rgb)
 
       offset = 0
 
@@ -89,7 +89,7 @@ module Vic20
 
                 rgb = character_matrix[7 - x] == foreground_value ? character_rgb : background_rgb
 
-                screen.rect x1, y1, x1 + PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb
+                screen.rect(x1, y1, x1 + PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb)
               end
             end
           else
@@ -112,7 +112,7 @@ module Vic20
                   auxiliary_rgb
                 end
 
-                screen.rect x1, y1, x1 + 2 * PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb
+                screen.rect(x1, y1, x1 + 2 * PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb)
               end
             end
           end
@@ -272,7 +272,8 @@ module Vic20
     # 00[0100]00 12	1000	4096	RAM
     # 00[0101]00 13	1400	5120	RAM
     # 00[0110]00 14	1800	6144	RAM
-    # 00[0111]00 15	1C00	7168	half RAM, half ROM of upper case normal characters since the 14-bit address space of the VIC wraps around
+    # 00[0111]00 15	1C00	7168	half RAM, half ROM of upper case normal characters since
+    #                           the 14-bit address space of the VIC wraps around
     def character_location
       ((@cr[5] ^ 0x08) & 0x08) << 12 | (@cr[5] & 0x07) << 10
     end

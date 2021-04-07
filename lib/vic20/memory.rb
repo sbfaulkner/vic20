@@ -149,53 +149,55 @@ module Vic20
     end
 
     def build_pages
-      Array.new(256) do |page|
-        method case page
-        when 0x00..0x03 # 1K RAM - jump vectors, etc.
-          :set_ram
-        when 0x04..0x0F # 3K Expansion RAM
-          (@expansion & 3 == 3) ? :set_ram : :set_rom
-        when 0x10..0x11
-          # 0.5K User Basic RAM - without 8K expansion
-          # 0.5K Screen RAM - with 8K expansion
-          @expansion > 3 ? :set_screen : :set_ram
-        when 0x12..0x1D
-          # 3K User Basic RAM - without 8K expansion
-          # start of User Basic RAM - with 8K expansion
-          :set_ram
-        when 0x1E..0x1F
-          # 0.5K Screen RAM - without 8K expansion
-          @expansion > 3 ? :set_ram : :set_screen
-        when 0x20..0x3F # 8K Expansion RAM
-          @expansion > 3 ? :set_ram : :set_rom
-        when 0x40..0x5F # 8K Expansion RAM
-          @expansion > 11 ? :set_ram : :set_rom
-        when 0x60..0x7F # 8K Expansion RAM
-          @expansion > 19 ? :set_ram : :set_rom
-        when 0x80..0x8F # 4K Character Generator ROM
-          # read-only
-          :set_rom
-        when 0x90..0x93 # 1K I/O block
-          # TODO: implement VIA and VIC I/O
-          :set_ram
-        when 0x94..0x95 # 0.5K Color RAM (w/ expansion)
-          @expansion > 3 ? :set_color : :set_ram
-        when 0x96..0x97 # 0.5K Color RAM (normal)
-          @expansion > 3 ? :set_ram : :set_color
-        when 0x98..0x9B # 1K I/O block 2
-          # TODO: I/O?
-          :set_ram
-        when 0x9C..0x9F # 1K I/O block 3
-          # TODO: I/O?
-          :set_ram
-        when 0xA0..0xBF # 8K Expansion ROM
-          # TODO: cartridge support
-          :set_rom
-        when 0xC0..0xDF # 8K Basic ROM
-          :set_rom
-        when 0xE0..0xFF # 8K KERNAL ROM
-          :set_rom
-        end
+      Array.new(256) { |page| method(page_method_name(page)) }
+    end
+
+    def page_method_name(page)
+      case page
+      when 0x00..0x03 # 1K RAM - jump vectors, etc.
+        :set_ram
+      when 0x04..0x0F # 3K Expansion RAM
+        @expansion & 3 == 3 ? :set_ram : :set_rom
+      when 0x10..0x11
+        # 0.5K User Basic RAM - without 8K expansion
+        # 0.5K Screen RAM - with 8K expansion
+        @expansion > 3 ? :set_screen : :set_ram
+      when 0x12..0x1D
+        # 3K User Basic RAM - without 8K expansion
+        # start of User Basic RAM - with 8K expansion
+        :set_ram
+      when 0x1E..0x1F
+        # 0.5K Screen RAM - without 8K expansion
+        @expansion > 3 ? :set_ram : :set_screen
+      when 0x20..0x3F # 8K Expansion RAM
+        @expansion > 3 ? :set_ram : :set_rom
+      when 0x40..0x5F # 8K Expansion RAM
+        @expansion > 11 ? :set_ram : :set_rom
+      when 0x60..0x7F # 8K Expansion RAM
+        @expansion > 19 ? :set_ram : :set_rom
+      when 0x80..0x8F # 4K Character Generator ROM
+        # read-only
+        :set_rom
+      when 0x90..0x93 # 1K I/O block
+        # TODO: implement VIA and VIC I/O
+        :set_ram
+      when 0x94..0x95 # 0.5K Color RAM (w/ expansion)
+        @expansion > 3 ? :set_color : :set_ram
+      when 0x96..0x97 # 0.5K Color RAM (normal)
+        @expansion > 3 ? :set_ram : :set_color
+      when 0x98..0x9B # 1K I/O block 2
+        # TODO: I/O?
+        :set_ram
+      when 0x9C..0x9F # 1K I/O block 3
+        # TODO: I/O?
+        :set_ram
+      when 0xA0..0xBF # 8K Expansion ROM
+        # TODO: cartridge support
+        :set_rom
+      when 0xC0..0xDF # 8K Basic ROM
+        :set_rom
+      when 0xE0..0xFF # 8K KERNAL ROM
+        :set_rom
       end
     end
   end

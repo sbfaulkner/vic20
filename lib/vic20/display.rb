@@ -8,7 +8,7 @@ module Vic20
     DISPLAY_HEIGHT = 568
 
     def initialize(vic)
-      super DISPLAY_WIDTH, DISPLAY_HEIGHT
+      super(DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
       self.caption = 'VIC20'
 

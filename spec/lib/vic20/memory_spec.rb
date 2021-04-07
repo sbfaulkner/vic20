@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Vic20::Memory do
   let(:rom) { subject.get_bytes(address, size) }
 
-  RSpec::Matchers.define_negated_matcher :be_present, :be_nil
+  RSpec::Matchers.define_negated_matcher(:be_present, :be_nil)
 
   describe 'find_firmware' do
     it 'returns nil for an unknown firmware' do

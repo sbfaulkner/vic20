@@ -305,9 +305,9 @@ module Vic20
       end
 
       def brk
-        push_word @pc + 1
+        push_word(@pc + 1)
         @p |= B_FLAG
-        push @p | 0b00100000
+        push(@p | 0b00100000)
         @p |= I_FLAG
         @pc = @memory.irq_vector
       end
@@ -427,7 +427,7 @@ module Vic20
       end
 
       def jsr
-        push_word @pc - 1
+        push_word(@pc - 1)
         @pc = @operand
       end
 
@@ -476,11 +476,11 @@ module Vic20
       end
 
       def pha
-        push @a
+        push(@a)
       end
 
       def php
-        push @p | 0b00100000 | B_FLAG
+        push(@p | 0b00100000 | B_FLAG)
       end
 
       def pla

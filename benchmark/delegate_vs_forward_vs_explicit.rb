@@ -11,7 +11,7 @@ require 'forwardable'
 
 class SimpleDelegatorAccess < SimpleDelegator
   def initialize
-    super Array(ITERATIONS) { |i| i }
+    super(Array(ITERATIONS) { |i| i })
   end
 end
 

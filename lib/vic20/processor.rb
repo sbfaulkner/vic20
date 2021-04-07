@@ -15,7 +15,7 @@ module Vic20
 
     class Trap < RuntimeError
       def initialize(pc)
-        super "Execution halted @ $#{pc.to_s(16).rjust(4, '0')}"
+        super("Execution halted @ $#{pc.to_s(16).rjust(4, '0')}")
       end
     end
 
@@ -130,7 +130,7 @@ module Vic20
     end
 
     def inspect
-      format '#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state
+      format('#<%s:0x%014x %s>', self.class.name, object_id << 1, current_state)
     end
 
     def run
@@ -139,7 +139,7 @@ module Vic20
         Thread.pass
       end
     rescue Vic20::Processor::Trap
-      return @pc
+      @pc
     end
 
     def tick

@@ -6,7 +6,7 @@ require 'bundler/setup'
 characters = File.read(ARGV[0] || 'firmware/characters.901460-03.bin', mode: 'rb').unpack('C*')
 
 characters.each_slice(8).with_index do |character, index|
-  STDERR.puts "Character ##{index}: #{[0xe200+index].pack('U')}"
+  STDERR.puts "Character ##{index}: #{[0xe200 + index].pack('U')}"
   STDERR.puts '+--------+'
   character.each do |pixels|
     STDERR.puts "|#{pixels.to_s(2).rjust(8, ' ').tr('10', '█ ')}|"

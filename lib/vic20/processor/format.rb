@@ -26,7 +26,7 @@ module Vic20
         [
           format('%04X', address),
           bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
-          "; #{instruction[:method].upcase} #{format addressing_mode[:format], @operand}",
+          "; #{instruction[:method].upcase} #{format(addressing_mode[:format], @operand)}",
         ].join('  ')
       end
     end

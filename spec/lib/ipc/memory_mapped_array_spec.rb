@@ -7,7 +7,7 @@ describe IPC::MemoryMappedArray do
   subject { described_class.new(size) }
 
   it 'is initialized to 0' do
-    expect(subject[0, size]).to all(eq 0)
+    expect(subject[0, size]).to all(eq(0))
   end
 
   describe '#[]' do
