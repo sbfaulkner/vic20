@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency('gosu', '~> 1.2')
-  spec.add_dependency('texplay', '0.4.4.pre')
   spec.add_dependency('pry', '~> 0.14')
   spec.add_dependency('ffi')
   spec.add_dependency('scanf')

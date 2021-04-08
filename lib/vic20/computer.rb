@@ -20,7 +20,7 @@ module Vic20
         Process.wait
       end
 
-      Display.new(@vic).show
+      @vic.run
     end
 
     def update
