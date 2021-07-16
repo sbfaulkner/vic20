@@ -64,7 +64,7 @@ describe Vic20::Memory do
     end
   end
 
-  describe '#load_cartridge' do
+  describe '#load_roms' do
     let(:image) { Array.new(image_size, 0xcc) }
     let(:path) { '/path/to/cartridge' }
 
@@ -80,8 +80,8 @@ describe Vic20::Memory do
     context 'given an 8K image' do
       let(:image_size) { 8 * 1024 }
 
-      it 'loads the cartridge at $A000' do
-        subject.load_cartridge(path)
+      it 'loads the rom at $A000' do
+        subject.load_roms(path)
         expect(subject.get_word(0xa000 + 8 * 1024 - 2)).to eq(0xbeef)
       end
     end
@@ -89,8 +89,8 @@ describe Vic20::Memory do
     context 'given an image with a leading address' do
       let(:image_size) { 8 * 1024 + 2 }
 
-      it 'loads the cartridge at the specified address' do
-        subject.load_cartridge(path)
+      it 'loads the rom at the specified address' do
+        subject.load_roms(path)
         expect(subject.get_word(0x6000 + 8 * 1024 - 2)).to eq(0xbeef)
       end
     end

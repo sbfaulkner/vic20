@@ -1,4 +1,7 @@
 # frozen_string_literal: true
+require 'gosu'
+require 'bitmap'
+
 module Vic20
   class VIC
     PHI2 = 14_318_181.0 / 14
@@ -30,6 +33,9 @@ module Vic20
       # TODO: registers hold these mappings... are mapping methods no longer needed?
       # @characters = memory.map_character_rom
       # @screen = memory.map_screen_memory
+
+      @frame = Bitmap.new(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+      @screen = Gosu::Image.new(@frame)
     end
 
     attr_reader :cr
@@ -42,7 +48,12 @@ module Vic20
     # SCREEN_WIDTH = CHARS * PIXELS
     # SCREEN_HEIGHT = LINES * PIXELS
 
-    def paint_frame(screen)
+    def draw
+      @screen.insert(@frame, 0, 0)
+      @screen.draw(0, 0, 0)
+    end
+
+    def update
       # trace_registers('paint_frame')
 
       foreground_value = reverse_mode? ? 0 : 1
@@ -55,7 +66,7 @@ module Vic20
       character_base = character_location
       colour_base    = colour_location
 
-      screen.fill(0, 0, color: border_rgb)
+      @frame.rect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, color: border_rgb)
 
       offset = 0
 
@@ -89,7 +100,7 @@ module Vic20
 
                 rgb = character_matrix[7 - x] == foreground_value ? character_rgb : background_rgb
 
-                screen.rect(x1, y1, x1 + PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb)
+                @frame.rect(x1, y1, PIXEL_WIDTH, PIXEL_HEIGHT, color: rgb)
               end
             end
           else
@@ -102,17 +113,17 @@ module Vic20
                 x1 = x_base + x * PIXEL_WIDTH
 
                 rgb = case character_matrix >> 6 - x & 0x03
-                when 0x00
+                when 0b00
                   background_rgb
-                when 0x01
+                when 0b01
                   border_rgb
-                when 0x10
+                when 0b10
                   character_rgb
-                when 0x11
+                when 0b11
                   auxiliary_rgb
                 end
 
-                screen.rect(x1, y1, x1 + 2 * PIXEL_WIDTH - 1, y1 + PIXEL_HEIGHT - 1, fill: true, color: rgb)
+                @frame.rect(x1, y1, 2 * PIXEL_WIDTH, PIXEL_HEIGHT, color: rgb)
               end
             end
           end
@@ -123,18 +134,6 @@ module Vic20
     end
 
     private
-
-    def build_frame(&block)
-      size = rows * columns
-
-      if @frame.nil? || @frame.size != size
-        @frame = Array.new(size, &block)
-      else
-        @frame.each_index do |index|
-          @frame[index] = yield(index)
-        end
-      end
-    end
 
     # 9000 ABBBBBBB
     # A: interlace mode (6560-101 only): 0=off, 1=on

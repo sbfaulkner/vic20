@@ -1,6 +1,38 @@
 # frozen_string_literal: true
 module Vic20
   class Computer
+    class Window < Gosu::Window
+      def initialize(vic)
+        @vic = vic
+        super(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        self.caption = 'VIC20'
+      end
+
+      def button_down(id)
+        position = KEYS[id]
+        return if position.nil?
+        column, row = position
+        STDERR.puts ">>>>> KEY DOWN #{id}: keyboard matrix #{row},#{column}"
+      end
+
+      def button_up(id)
+        position = KEYS[id]
+        return if position.nil?
+        column, row = position
+        STDERR.puts ">>>>> KEY UP #{id}: keyboard matrix #{row},#{column}"
+      end
+
+      # TODO: delegate
+      def draw
+        @vic.draw
+      end
+
+      # TODO: delegate
+      def update
+        @vic.update
+      end
+    end
+
     def initialize(options)
       @memory = build_memory(options)
 
@@ -20,7 +52,7 @@ module Vic20
         Process.wait
       end
 
-      Display.new(@vic).show
+      Window.new(@vic).show
     end
 
     def update
@@ -38,7 +70,7 @@ module Vic20
           memory.load_firmware
         end
 
-        memory.load_cartridge(options[:cartridge]) if options[:cartridge]
+        memory.load_roms(*options[:roms])
       end
     end
   end
