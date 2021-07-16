@@ -25,9 +25,6 @@ module Vic20
       { name: 'LIGHT_YELLOW', rgb: [0.9609375, 0.84765625, 0.65625] },
     ].freeze
 
-    DISPLAY_WIDTH = 648
-    DISPLAY_HEIGHT = 568
-
     def initialize(memory)
       @memory = memory
 
@@ -50,29 +47,6 @@ module Vic20
 
     # SCREEN_WIDTH = CHARS * PIXELS
     # SCREEN_HEIGHT = LINES * PIXELS
-
-    class Window < Gosu::Window
-      def initialize(vic)
-        @vic = vic
-        super(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        self.caption = 'VIC20'
-      end
-
-      # TODO: delegate
-      def draw
-        @vic.draw
-      end
-
-      # TODO: delegate
-      def update
-        @vic.update
-      end
-    end
-
-    def run
-      window = Window.new(self)
-      window.show
-    end
 
     def draw
       @screen.insert(@frame, 0, 0)
@@ -139,13 +113,13 @@ module Vic20
                 x1 = x_base + x * PIXEL_WIDTH
 
                 rgb = case character_matrix >> 6 - x & 0x03
-                when 0x00
+                when 0b00
                   background_rgb
-                when 0x01
+                when 0b01
                   border_rgb
-                when 0x10
+                when 0b10
                   character_rgb
-                when 0x11
+                when 0b11
                   auxiliary_rgb
                 end
 

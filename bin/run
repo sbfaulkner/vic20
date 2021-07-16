@@ -9,6 +9,7 @@ require 'scanf'
 
 options = {
   expansion: 0,
+  roms: [],
 }
 
 INVALID_EXPANSION_ERROR = "invalid size for expansion RAM (should be one of 0, 3, 8, 11, 16, 19, 24, or 27)"
@@ -16,13 +17,13 @@ INVALID_EXPANSION_ERROR = "invalid size for expansion RAM (should be one of 0, 3
 OptionParser.new do |opts|
   opts.banner = 'Usage: run [options] [firmware]'
 
-  opts.on('-c', '--cartridge path', 'load specified cartridge') do |path|
-    options[:cartridge] = path
-  end
-
   opts.on('-e', '--expansion size', 'add specified RAM') do |size|
     raise ArgumenError, INVALID_EXPANSION_ERROR unless %w(0 3 8 11 16 19 24 27).include?(size)
     options[:expansion] = size.to_i
+  end
+
+  opts.on('-l', '--load path', 'load specified rom') do |path|
+    options[:roms] << path
   end
 
   opts.on('-P', '--protection', 'protect ROM from writes') do |protection|
