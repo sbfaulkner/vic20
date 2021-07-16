@@ -12,14 +12,14 @@ module Vic20
         position = KEYS[id]
         return if position.nil?
         column, row = position
-        STDERR.puts ">>>>> KEY DOWN #{id}: keyboard matrix #{row},#{column}"
+        STDERR.puts ">>>>> KEY DOWN #{id}: keyboard matrix #{column},#{row}"
       end
 
       def button_up(id)
         position = KEYS[id]
         return if position.nil?
         column, row = position
-        STDERR.puts ">>>>> KEY UP #{id}: keyboard matrix #{row},#{column}"
+        STDERR.puts ">>>>> KEY UP #{id}: keyboard matrix #{column},#{row}"
       end
 
       # TODO: delegate
