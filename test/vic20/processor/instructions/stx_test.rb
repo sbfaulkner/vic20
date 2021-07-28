@@ -60,6 +60,5 @@ class Vic20::Processor::Instructions::STXTest < Vic20::Processor::Test
     @processor.stx
 
     assert_equal(value, @memory.get_byte(lsb(address + offset)))
-#         expect(memory.get_byte(address + offset - 0x100)).to eq(value)
   end
 end

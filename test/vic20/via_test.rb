@@ -78,7 +78,7 @@ class Vic20::VIATest < Minitest::Test
     assert_equal(0x58, @memory.get_byte(0x9110 + Vic20::VIA::DDRA))
   end
 
-    # 9114       37140  Timer 1 low byte
+  # 9114       37140  Timer 1 low byte
   def test_t1c_l_returns_the_value_from_memory
     @memory.set_byte(0x9110 + Vic20::VIA::T1C_L, 0x1f)
     assert_equal(0x1f, @via.ir[Vic20::VIA::T1C_L])
