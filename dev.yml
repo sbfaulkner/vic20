@@ -1,10 +1,17 @@
 up:
   - homebrew:
     - sdl2
-  - ruby: 2.7.2
+  - ruby: 2.7.3
   - bundler
 
 commands:
   run: bin/run
-  test: bin/rake
+
+  test: |
+    if [[ $# -eq 0 ]]; then
+      bin/rake test
+    else
+      ruby -Itest "$@"
+    fi
+
   style: bin/rubocop
