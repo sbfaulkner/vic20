@@ -58,7 +58,7 @@ class Vic20::MemoryTest < Minitest::Test
     assert_equal(array, memory.get_bytes(address, 256))
   end
 
-  def test_loads_8K_rom_at_a000
+  def test_loads_8k_rom_at_a000
     path = "/path/to/cartridge"
     image = Array.new(8 * 1024, 0xcc)
     image[0] = 0x00

@@ -51,12 +51,6 @@ Layout/TrailingEmptyLines:
     - 'test/vic20/processor/instructions/cli_test.rb'
     - 'test/vic20/processor/instructions/clv_test.rb'
 
-# Offense count: 1
-# Configuration parameters: IgnoredPatterns.
-# SupportedStyles: snake_case, camelCase
-Naming/MethodName:
-  EnforcedStyle: snake_case
-
 # Offense count: 68
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
