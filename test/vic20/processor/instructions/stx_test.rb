@@ -2,7 +2,6 @@
 require 'test_helper'
 
 class Vic20::Processor::Instructions::STXTest < Vic20::Processor::Test
-
   def test_absolute_addressing_mode
     value = 0x3c
     address = 0x0283
