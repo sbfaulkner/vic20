@@ -73,7 +73,6 @@ module Vic20::Processor::Instructions::ADC
       assert_zero_flag
     end
 
-
     def test_absolute_x_addressing_mode
       address = 0x133f
       offset = 0xf5
