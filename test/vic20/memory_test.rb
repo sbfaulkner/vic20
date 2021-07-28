@@ -130,7 +130,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_character_rom
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_character_rom_selecting_uppercase_characters
@@ -140,7 +140,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_character_rom(Vic20::Memory::UPPERCASE_CHARACTERS)
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_character_rom_selecting_reverse_characters
@@ -150,7 +150,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_character_rom(Vic20::Memory::REVERSE_CHARACTERS)
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_character_rom_selecting_lowercase_characters
@@ -160,7 +160,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_character_rom(Vic20::Memory::LOWERCASE_CHARACTERS)
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_character_rom_selecting_reverse_lowercase_characters
@@ -170,7 +170,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_character_rom(Vic20::Memory::REVERSE_CHARACTERS | Vic20::Memory::LOWERCASE_CHARACTERS)
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_colour_memory
@@ -180,7 +180,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_colour_memory
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_colour_memory_with_8k_expansion
@@ -190,7 +190,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_colour_memory
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_io_block
@@ -200,7 +200,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_io_block
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_program_memory
@@ -210,7 +210,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_program_memory
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_program_memory_with_8k_expansion
@@ -220,7 +220,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_program_memory
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_screen_memory
@@ -230,7 +230,7 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_screen_memory
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 
   def test_map_screen_memory_with_8k_expansion
@@ -240,6 +240,6 @@ class Vic20::MemoryTest < Minitest::Test
 
     mapping = memory.map_screen_memory
 
-    assert_equal(marker, ((mapping[0]<<8|mapping[1])<<8|mapping[2])<<8|mapping[3])
+    assert_equal(marker, ((mapping[0] << 8 | mapping[1]) << 8 | mapping[2]) << 8 | mapping[3])
   end
 end
