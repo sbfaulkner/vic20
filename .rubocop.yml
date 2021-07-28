@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 inherit_gem:
   rubocop-shopify: rubocop.yml
 
@@ -8,7 +10,7 @@ require:
 
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: 2.7.2
+  TargetRubyVersion: 2.7.3
 
 Style/MethodCallWithArgsParentheses:
   IgnoredMethods:
