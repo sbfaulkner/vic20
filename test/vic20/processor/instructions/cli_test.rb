@@ -10,4 +10,3 @@ class Vic20::Processor::Instructions::CLITest < Vic20::Processor::Test
     refute_interrupt_flag
   end
 end
-

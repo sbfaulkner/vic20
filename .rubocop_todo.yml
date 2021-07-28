@@ -42,15 +42,6 @@ Layout/SpaceAroundOperators:
   Exclude:
     - 'test/vic20/memory_test.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: final_newline, final_blank_line
-Layout/TrailingEmptyLines:
-  Exclude:
-    - 'test/vic20/processor/instructions/cli_test.rb'
-    - 'test/vic20/processor/instructions/clv_test.rb'
-
 # Offense count: 68
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

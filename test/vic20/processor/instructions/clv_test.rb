@@ -10,4 +10,3 @@ class Vic20::Processor::Instructions::CLVTest < Vic20::Processor::Test
     refute_overflow_flag
   end
 end
-
