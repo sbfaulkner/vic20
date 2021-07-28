@@ -194,8 +194,6 @@ module Vic20
 
           assert_equal(lsb(value >> 1), @memory.get_byte(lsb(address + offset)))
         end
-        #     end
-        #   end
       end
     end
   end

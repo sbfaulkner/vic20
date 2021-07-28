@@ -3,10 +3,6 @@ require 'test_helper'
 
 module Vic20
   class MemoryTest < Minitest::Test
-    # let(:rom) { subject.get_bytes(address, size) }
-
-    # RSpec::Matchers.define_negated_matcher(:be_present, :be_nil)
-
     def test_find_unknown_firmware
       assert_nil(Vic20::Memory.find_firmware('unknown'))
     end
@@ -88,11 +84,6 @@ module Vic20
 
       assert_equal(0xbeef, memory.get_word(0x6000 + 8 * 1024 - 2))
     end
-
-    # context '#load_firmware' do
-    #   before do
-    #     subject.load_firmware
-    #   end
 
     def test_character_generator_rom_loaded
       memory = Vic20::Memory.new
