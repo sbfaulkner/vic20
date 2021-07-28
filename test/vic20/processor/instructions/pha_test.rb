@@ -1,15 +1,21 @@
 # frozen_string_literal: true
 require 'test_helper'
 
-class Vic20::Processor::Instructions::PHATest < Vic20::Processor::Test
-  def test_push_accumulator
-    value = 0xbd
+module Vic20
+  class Processor
+    module Instructions
+      class PHATest < Vic20::Processor::Test
+        def test_push_accumulator
+          value = 0xbd
 
-    @processor.a = value
+          @processor.a = value
 
-    @processor.pha
+          @processor.pha
 
-    assert_equal(value, @processor.a)
-    assert_equal(value, @processor.pop)
+          assert_equal(value, @processor.a)
+          assert_equal(value, @processor.pop)
+        end
+      end
+    end
   end
 end
