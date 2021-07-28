@@ -21,14 +21,6 @@ class Vic20::Processor::Test < Minitest::Test
       @addressing_mode = :implied
       @operand = nil
     end
-
-    def addressing_mode=(value)
-      @addressing_mode = value
-    end
-
-    def operand=(value)
-      @operand = value
-    end
   end
 
   def setup
