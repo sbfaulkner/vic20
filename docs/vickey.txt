@@ -1,0 +1,115 @@
+source: https://vic-20.appspot.com/docs/vickey.txt
+THE VIC 20 KEYBOARD
+Written by Lance Ewing
+(27 Oct 96)
+
+ Note: This text has been corrected and added to since the original version.
+
+INTRODUCTION
+
+ Firstly, it is important to once again recognise that the VIC 20 is very
+similar to the C64. Both machines have very similar keyboards. They don't
+function entirely the same though. The difference is described later on.
+ Almost all my VIC 20 keyboard knowledge is based on the information and
+code provided by VICE.
+
+
+THE VIC 20 KEYBOARD AND ITS FEATURES
+
+ The keyboard is treated as a set of switches organized into a matrix
+of 8 columns by 8 rows. The keyboard matrix is scanned for key switch-
+closures by the KERNAL using the VIA #2 chip (MOS 6522 Versatile Interface
+Adapter). Two VIA registers are used to perform the scan:
+
+  register #0 at location 37152 ($9120) for keyboard columns and
+  register #1 at location 37153 ($9121) for keyboard rows.
+
+ Bits 0-7 of memory location 37152 correspond to the columns 0-7. Bits
+0-7 of memory location 37153 correspond to rows 0-7. By writing column
+values in sequence, then reading row values, the KERNAL decodes the switch
+closures into the CHR$(N) value of the key pressed.
+ Eight columns by eight rows yields 64 possible values.
+
+
+KEYBOARD LAYOUT
+
+ Below is shown the keyboard layout of a real VIC-20 and C64 computers.
+They both use the same keyboard mechanism, only wiring on the motherboard
+differs. The keyboard mechanism is interchangeable between VIC-20 and the C64.
+However, on the main circuit board (motherboard), the VIC-20 has all the lines
+connected to the VIA chip in order, whereas C64 has Column3 and Column7
+swapped. That's why the C64 gives different keyboard matrix. It also affects
+the keycodes returned.
+
+
+        VIC-20 / C64 Standard:
+
+  |  <-  1!  2"  3#  4$  5%  6&  7'  8(  9)  0   +   -  GBP HOME DEL |  | F1 |
+  | CTRL   q   w   e   r   t   y   u   i   o   p   @   *  ^~ RESTORE |  | F3 |
+ | RUN LOCK a   s   d   f   g   h   j   k   l   :[  ;]  =   RETURN  |   | F5 |
+ | C=  SHIFT  z   x   c   v   b   n   m   ,<  .>  /?  SHIFT DWN RGT |   | F7 |
+ -------------|_______________SPACE_______________|------------------
+
+        '~' is 'pi'
+
+
+VIC-20 KEYBOARD MATRIX
+
+ 9121   9120: (Write column value to this address)
+
+        7f      bf      df      ef      f7      fb      fd      fe
+
+  fe    2       q       CBM     Space   RunStop Control Lft_arr 1
+  fd    4       e       s       z       Shift_L a       w       3
+  fb    6       t       f       c       x       d       r       5
+  f7    8       u       h       b       v       g       y       7
+  ef    0       o       k       m       n       j       i       9
+  df    -       @       :       .       ,       l       p       +
+  bf    Home    Up_arr  =       Shift_R /       ;       *       GBP
+  7f    F7      F5      F3      F1      Down    Right   Return  Del
+
+ Note: the values above are the complements of the values 1, 2, 4, 8, 16
+ 32, 64, 128.
+
+ The VIC 20 uses one of its VIA chip timers to generate regular interrupts
+to check on such things as its keyboard. This procedure used to check the
+keyboard is described below.
+
+ The KERNEL begins by deciding if any key has been pressed. It does this by
+writing $00 to $9120 which is the code to scan all keyboard columns. If it
+receives back the value $FF, then it knows that no key is being pushed. If it
+receives a different value then a key is currently being pushed down. When
+this happens the KERNEL scans each row separately to determine which keys are
+being pushed down. For example, if the KERNEL sends the value $FE to the
+address $9120 and it receives the value $7f back at address $9121, then it
+would know that the Del key is being pushed down.
+
+
+HOW DOES IT KNOW WHEN TWO KEYS ARE BEING PUSHED ON THE SAME COLUMN
+
+ The way I understand it is that the kernel selects a column and the data that
+comes back is for all 8 keys on that column. The return value is an 8 bit number
+where each bit position represents one of the eight keys on that column. If a
+bit position is "0" then that key is being pushed down. If a bit position is
+"1" then that key isn't being pushed down. The return value read from $9121 can
+be any value from 0 to 255. If the value 0 is read from this address, then
+every key on the selected column is being held down.
+
+
+FAMILIARITY WITH THE VIC 20 KEYBOARD
+
+ I'm aware that some of you may not have used the original VIC 20. For this
+reason I'll mention what a few of the key combinations do. When the VIC 20 is
+turned on it is in upper/graphics mode. This means that if you push a letter
+like the "X/x" key, then you will get a capital X. If you hold down the SHIFT
+key and push X, you will get a graphics character which looks like a filled in
+circle. If you hold down the CBM key and push the X key, you will get a different
+graphics character.
+ If you push the CBM key and the SHIFT key at the same time, the mode is
+changed from upper/graphics to lower/upper. This means that when you now push
+the "X/x" key, a lower case x will be displayed. If you hold down the SHIFT key
+and push X, you will get a capital X.
+ The way the KERNEL determines which character to display is by scanning the
+keyboard to see what combinations of keys are being held down.
+
+

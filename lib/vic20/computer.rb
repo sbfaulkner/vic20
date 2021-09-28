@@ -2,8 +2,9 @@
 module Vic20
   class Computer
     class Window < Gosu::Window
-      def initialize(vic)
+      def initialize(vic, via)
         @vic = vic
+        @via = via
         super(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         self.caption = 'VIC20'
       end
@@ -12,7 +13,10 @@ module Vic20
         position = KEYS[id]
         return if position.nil?
         column, row = position
+        # @via.ir[Vic20::VIA::IRB] = column
+        # @via.ir[Vic20::VIA::IRA] = row
         STDERR.puts ">>>>> KEY DOWN #{id}: keyboard matrix #{column},#{row}"
+        STDERR.puts "ORB => #{@via.ir[Vic20::VIA::ORB]}"
       end
 
       def button_up(id)
@@ -38,6 +42,9 @@ module Vic20
 
       @vic = Vic20::VIC.new(@memory)
 
+      @via1 = Vic20::VIA.new(@memory, 0x9110)
+      @via2 = Vic20::VIA.new(@memory, 0x9120)
+
       @processor = Processor.new(@memory, pc: options[:reset])
     end
 
@@ -52,7 +59,7 @@ module Vic20
         Process.wait
       end
 
-      Window.new(@vic).show
+      Window.new(@vic, @via2).show
     end
 
     def update

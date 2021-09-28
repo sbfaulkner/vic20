@@ -52,7 +52,7 @@ module Vic20
     end
 
     def get_byte(address)
-      @bytes[address]
+      @bytes[address].tap { |b| viadebug("get_byte", address, b) }
     end
 
     def get_bytes(address, count)
@@ -135,11 +135,137 @@ module Vic20
 
     private
 
+    VIAREGISTERS = [
+      "ORB/IRB",
+      "ORA/IRA",
+      "DDRB",
+      "DDRA",
+      "T1C-L",
+      "T1C-H",
+      "T1L-L",
+      "T1L-H",
+      "T2C-L",
+      "T2C-H",
+      "SR",
+      "ACR",
+      "PCR",
+      "IFR",
+      "IER",
+      "ORA/IRA"
+    ]
+
+    def self.viadecodebyte(b)
+      b.chr.inspect
+    end
+
+    def self.viadecodeddr(b)
+      format("%08b", b).tr("01", "IO")
+    end
+
+    # clock rate is 1.02 MHz (NTSC)
+    # VIA2 timer 1 set to 17033 ($4289)
+    # 1.02MHz / 17033 => (approx) 60Hz
+
+    VIAACRT1 = [
+      "timed interrupt each time
+      T1 is loaded - PB7 disabled",
+      "continuous interrupts - PB7 disabled",
+      "timed interrupt each time
+      T1 is loaded - PB7 one-shot",
+      "continuous interrupts - PB7 square wave output",
+    ]
+
+    VIAACRT2 = [
+      "timed interrupt",
+      "countdown with pulses on PB6",
+    ]
+
+    VIAACRSR = [
+      "disabled",
+      "shift in under control of T2",
+      "shift in under control of PHI2",
+      "shift in under control of external clock",
+      "shift out free-running at T2 rate",
+      "shift out under control of T2",
+      "shift out under control of PHI2",
+      "shift out under control of external clock",
+    ]
+
+    VIAACRLATCH = [
+      "disable",
+      "enable",
+    ]
+
+    def self.viadecodeacr(b)
+      t1 = VIAACRT1[(b & 0b11000000) >> 6]
+      t2 = VIAACRT2[(b & 0b00100000) >> 5]
+      sr = VIAACRSR[(b & 0b00011100) >> 2]
+      pb = VIAACRLATCH[(b & 0b00000010) >> 1]
+      pa = VIAACRLATCH[(b & 0b00000010) >> 1]
+
+      "T1 #{t1}, T2 #{t2}, SR #{sr}, PB latch #{pb}, PA latch #{pa}"
+    end
+
+    VIAIERBITS = [
+      "CA2",
+      "CA1",
+      "SR",
+      "CB2",
+      "CB1",
+      "T2",
+      "T1",
+    ]
+
+    def self.viadecodeier(b)
+      op = (b & 0x80) == 0 ? "disable" : "enable"
+      bits = VIAIERBITS.each_with_index.map do |name, bit|
+        name unless b[bit].zero?
+      end
+      "Interrupt #{op} (#{bits.compact.reverse.join(",")})"
+    end
+
+    VIADECODE = [
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodeddr),
+      method(:viadecodeddr),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodeacr),
+      method(:viadecodebyte),
+      method(:viadecodebyte),
+      method(:viadecodeier),
+      method(:viadecodebyte),
+    ]
+
+    def viaregister(address)
+      "VIA##{(address & 0xff) >> 4} #{}"
+    end
+
+    def viadebug(label, address, b)
+      return unless via?(address)
+
+      via = (address & 0xff) >> 4
+      register = address&0x0f
+
+      warn "[#{label}]\t$#{format("%04x: $%02x", address, b)} ; VIA##{via} #{VIAREGISTERS[register]}\t#{VIADECODE[register].call(b)}"
+    end
+
+    def via?(address)
+      [0x9110, 0x9120].include?(address & 0xfff0)
+    end
+
     def set_color(address, byte)
       @bytes[address] = byte
     end
 
     def set_ram(address, byte)
+      viadebug("set_ram", address, byte)
       @bytes[address] = byte
     end
 

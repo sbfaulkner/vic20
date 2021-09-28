@@ -134,9 +134,13 @@ module Vic20
     end
 
     def run
+      count = 0
       loop do
-        tick
-        Thread.pass
+        1020000.times do
+          tick
+          Thread.pass
+        end
+        warn "#{Time.now}"
       end
     rescue Vic20::Processor::Trap
       @pc
