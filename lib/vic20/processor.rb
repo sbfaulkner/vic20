@@ -101,7 +101,7 @@ module Vic20
     end
 
     def current_state
-      format('A=%02X X=%02X Y=%02X P=%s S=%02X PC=%04X', @a, @x, @y, current_flags, @s, @pc)
+      format('A:%02x X:%02x Y:%02x P:%s S:%02x PC:%04x', @a, @x, @y, current_flags, @s, @pc)
     end
 
     def execute(_address, instruction)
@@ -147,6 +147,14 @@ module Vic20
     end
 
     def tick
+      pc, instruction = fetch_instruction
+
+      execute(pc, instruction)
+
+      instruction[:cycles]
+    end
+
+    def fetch_instruction
       pc = @pc
 
       @opcode = fetch_byte
@@ -157,9 +165,7 @@ module Vic20
 
       @operand = fetch_operand
 
-      execute(pc, instruction)
-
-      instruction[:cycles]
+      [pc, instruction]
     end
   end
 end

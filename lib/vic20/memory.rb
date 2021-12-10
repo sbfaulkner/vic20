@@ -52,7 +52,7 @@ module Vic20
     end
 
     def get_byte(address)
-      @bytes[address].tap { |b| viadebug("get_byte", address, b) }
+      @bytes[address].tap { |b| memdebug("get_byte", address, b) }
     end
 
     def get_bytes(address, count)
@@ -206,6 +206,49 @@ module Vic20
       "T1 #{t1}, T2 #{t2}, SR #{sr}, PB latch #{pb}, PA latch #{pa}"
     end
 
+    VIAPCRCONTROL = [
+      "Input-negative active edge",
+      "Independent interrupt input-negative edge",
+      "Input-positive active edge",
+      "Independent interrupt input-positive edge",
+      "Handshake output",
+      "Pulse output",
+      "Low output",
+      "High output ",
+    ]
+
+    VIAPCRINTERRUPTCONTROL = [
+      "Negative active edge",
+      "Positive active edge",
+    ]
+
+    def self.viadecodepcr(b)
+      cb2 = VIAPCRCONTROL[(b & 0b11100000) >> 5]
+      cb1 = VIAPCRINTERRUPTCONTROL[(b & 0b00010000) >> 4]
+      ca2 = VIAPCRCONTROL[(b & 0b00001110) >> 1]
+      ca1 = VIAPCRINTERRUPTCONTROL[b & 0b00000001]
+
+      "CB2 #{cb2}, CB1 #{cb1}, CA2 #{ca2}, CA1 #{ca1}"
+    end
+
+    VIAIFRBITS = [
+      "CA2",
+      "CA1",
+      "SR",
+      "CB2",
+      "CB1",
+      "T2",
+      "T1",
+      "IRQ",
+    ]
+
+    def self.viadecodeifr(b)
+      bits = VIAIFRBITS.each_with_index.map do |name, bit|
+        name unless b[bit].zero?
+      end
+      bits.compact.reverse.join(",")
+    end
+
     VIAIERBITS = [
       "CA2",
       "CA1",
@@ -237,8 +280,8 @@ module Vic20
       method(:viadecodebyte),
       method(:viadecodebyte),
       method(:viadecodeacr),
-      method(:viadecodebyte),
-      method(:viadecodebyte),
+      method(:viadecodepcr),
+      method(:viadecodeifr),
       method(:viadecodeier),
       method(:viadecodebyte),
     ]
@@ -247,9 +290,12 @@ module Vic20
       "VIA##{(address & 0xff) >> 4} #{}"
     end
 
-    def viadebug(label, address, b)
-      return unless via?(address)
+    def memdebug(label, address, b)
+      return viadebug(label, address, b) if via?(address)
+      warn "[#{label}]\t$#{format("%04x: $%02x", address, b)}"
+    end
 
+    def viadebug(label, address, b)
       via = (address & 0xff) >> 4
       register = address&0x0f
 
@@ -257,7 +303,8 @@ module Vic20
     end
 
     def via?(address)
-      [0x9110, 0x9120].include?(address & 0xfff0)
+      # [0x9110, 0x9120].include?(address & 0xfff0)
+      (address & 0xfff0) == 0x9120
     end
 
     def set_color(address, byte)
@@ -265,7 +312,7 @@ module Vic20
     end
 
     def set_ram(address, byte)
-      viadebug("set_ram", address, byte)
+      memdebug("set_ram", address, byte)
       @bytes[address] = byte
     end
 

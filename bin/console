@@ -132,7 +132,8 @@ commands = Pry::CommandSet.new do
     def process
       initial_pc = processor.pc
 
-      address, instruction = processor.each.next
+      address, instruction = processor.fetch_instruction
+
       output.puts processor.format_instruction(address, instruction)
       processor.execute(address, instruction)
 

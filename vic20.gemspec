@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('pry', '~> 0.14')
   spec.add_dependency('ffi')
 
-  spec.add_development_dependency('debase')
+  spec.add_development_dependency('debase', '0.2.5.beta2')
   spec.add_development_dependency('minitest-focus')
   spec.add_development_dependency('minitest-reporters')
   spec.add_development_dependency('minitest')

@@ -3,19 +3,19 @@ module Vic20
   class Processor
     module Format
       ADDRESSING_MODES = {
-        absolute: { bytes: 3, format: '$%04X' },
-        absolute_x: { bytes: 3, format: '$%04X,X' },
-        absolute_y: { bytes: 3, format: '$%04X,Y' },
-        accumulator: { bytes: 1, format: 'A' },
-        immediate: { bytes: 2, format: '#$%02X' },
+        absolute: { bytes: 3, format: '$%04x' },
+        absolute_x: { bytes: 3, format: '$%04x,x' },
+        absolute_y: { bytes: 3, format: '$%04x,y' },
+        accumulator: { bytes: 1, format: 'a' },
+        immediate: { bytes: 2, format: '#$%02x' },
         implied: { bytes: 1, format: '' },
-        indirect: { bytes: 3, format: '($%02X)' },
-        indirect_x: { bytes: 2, format: '($%02X,X)' },
-        indirect_y: { bytes: 2, format: '($%02X),Y' },
-        relative: { bytes: 2, format: '$%02X' },
-        zero_page: { bytes: 2, format: '$%02X' },
-        zero_page_x: { bytes: 2, format: '$%02X,X' },
-        zero_page_y: { bytes: 2, format: '$%02X,Y' },
+        indirect: { bytes: 3, format: '($%02x)' },
+        indirect_x: { bytes: 2, format: '($%02x,x)' },
+        indirect_y: { bytes: 2, format: '($%02x),y' },
+        relative: { bytes: 2, format: '$%02x' },
+        zero_page: { bytes: 2, format: '$%02x' },
+        zero_page_x: { bytes: 2, format: '$%02x,x' },
+        zero_page_y: { bytes: 2, format: '$%02x,y' },
       }.freeze
 
       # TODO: fix this... it's ugly
@@ -24,10 +24,12 @@ module Vic20
         bytes = @memory.get_bytes(address, addressing_mode[:bytes])
 
         [
-          format('%04X', address),
-          bytes.map { |byte| format('%02X', byte) }.join(' ').ljust(8, ' '),
-          "; #{instruction[:method].upcase} #{format(addressing_mode[:format], @operand)}",
-        ].join('  ')
+          format('%04x : ', address),
+          bytes.map { |byte| format('%02x', byte) }.join.ljust(6, ' '),
+          " ; #{instruction[:method].downcase} #{format(addressing_mode[:format], @operand)}",
+        ].join.ljust(34, ' ')
+
+
       end
     end
   end

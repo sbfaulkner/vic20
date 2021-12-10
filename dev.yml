@@ -1,7 +1,7 @@
 up:
   - homebrew:
     - sdl2
-  - ruby: 2.7.3
+  - ruby: 3.0.2
   - bundler
 
 commands:
